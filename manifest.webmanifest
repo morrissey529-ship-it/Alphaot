@@ -1,0 +1,16 @@
+{
+  "name": "Alpha OT",
+  "short_name": "Alpha OT",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#02080d",
+  "theme_color": "#06121b",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
