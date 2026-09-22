@@ -7,9 +7,9 @@
   "theme_color": "#06121b",
   "icons": [
     {
-      "src": "alpha-crew-icon.svg?v=alpha-crew-20260922",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "assets/alpha-crew-icon.jpg?v=alpha-crew-20260922b",
+      "sizes": "256x256",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     }
   ]
