@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="theme-color" content="#06121b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Alpha OT">
+<title>Alpha OT — Seniority</title>
+<style>
+:root{--bg:#02080d;--p:#09131b;--b:#172734;--t:#f2f6f9;--m:#9fb1be;--blue:#2da8ef}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.app{max-width:760px;margin:auto;padding:env(safe-area-inset-top) 10px calc(90px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:9;background:rgba(2,8,13,.96);backdrop-filter:blur(12px);padding:10px 0;border-bottom:1px solid #101c25}
+.head{display:flex;align-items:center;justify-content:space-between;gap:10px}.title{display:flex;align-items:center;gap:12px}
+.logo{width:58px;height:58px;border-radius:16px;background:#75b7e6;display:grid;place-items:center;color:white;font-size:34px;font-weight:300}
+h1{margin:0;font-size:24px}.sub{color:var(--m);font-size:12px;margin-top:3px}.pill{background:#102332;color:#a8dfff;border-radius:999px;padding:8px 12px;font-size:12px}
+.tools{display:flex;gap:8px;margin-top:10px;overflow:auto}button{border:0;border-radius:12px;padding:11px 13px;font-size:14px;font-weight:750}
+.dark{background:#0b1720;color:var(--t);border:1px solid var(--b)}.blue{background:var(--blue);color:#06121b}
+.section{font-size:12px;color:var(--m);text-transform:uppercase;letter-spacing:.08em;margin:16px 2px 8px}
+.rowcard{display:grid;grid-template-columns:64px 1fr auto;align-items:center;gap:12px;background:var(--p);border:1px solid var(--b);border-radius:16px;padding:12px;margin-bottom:8px}
+.num{width:56px;height:56px;border-radius:16px;background:#0e4562;display:grid;place-items:center;color:var(--blue);font-size:24px;font-weight:850}
+.name{font-size:18px;font-weight:800}.editbtn{padding:9px 11px}
+.note{background:#091720;border:1px solid #1a2d39;border-radius:14px;padding:12px;color:#b4c3ce;font-size:13px;line-height:1.45;margin:12px 0}
+dialog{width:min(92vw,520px);border:1px solid var(--b);border-radius:18px;background:#08131b;color:var(--t);padding:0}
+dialog::backdrop{background:#0009}.modal{padding:18px}
+label{display:block;font-weight:800;margin:12px 0 6px}input{width:100%;background:#071018;color:var(--t);border:1px solid #243643;border-radius:12px;padding:13px;font-size:16px}
+.twocol{display:flex;gap:8px;margin-top:14px}.twocol>*{flex:1}.hidden{display:none!important}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#122531;border:1px solid #2d4859;border-radius:999px;padding:10px 14px;opacity:0;transition:.2s;z-index:20;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<div class="head">
+<div class="title"><div class="logo">A</div><div><h1>Seniority</h1><div class="sub">Department seniority list</div></div></div>
+<div id="mode" class="pill">View only</div>
+</div>
+<div class="tools">
+<button class="dark" onclick="location.href='index.html'">← Overtime</button>
+<button class="dark" onclick="loadAll()">Refresh</button>
+<button id="addBtn" class="dark hidden" onclick="openAdd()">+ Add Officer</button>
+</div>
+</header>
+
+<div class="note">This seniority list is separate from the overtime rotation. Changes here do not change OT order.</div>
+<div class="section">Seniority Order</div>
+<div id="list"></div>
+</div>
+
+<dialog id="editDlg"><div class="modal">
+<h2 id="editTitle">Move Officer</h2>
+<label>Seniority Number</label>
+<input id="editPos" type="number" min="1" inputmode="numeric">
+<div class="twocol"><button class="dark" onclick="editDlg.close()">Cancel</button><button class="blue" onclick="saveMove()">Save</button></div>
+</div></dialog>
+
+<dialog id="addDlg"><div class="modal">
+<h2>Add Officer</h2>
+<label>Name</label>
+<input id="newName" autocomplete="off">
+<label>Seniority Number</label>
+<input id="newPos" type="number" min="1" inputmode="numeric" placeholder="Leave blank to add at bottom">
+<div class="twocol"><button class="dark" onclick="addDlg.close()">Cancel</button><button class="blue" onclick="addOfficer()">Add</button></div>
+</div></dialog>
+<div id="toast" class="toast"></div>
+
+<script>
+const U='https://hvihhsrhoqbbhkobayhx.supabase.co',K='sb_publishable_XrolNcWigiHLyj_96h7TmA_306hd00Y';
+let session=JSON.parse(localStorage.getItem('alpha_session')||'null'),role='viewer',rows=[],editingId=null;
+function headers(auth=true){let h={'apikey':K,'Content-Type':'application/json'};h.Authorization='Bearer '+(auth&&session?.access_token?session.access_token:K);return h}
+async function api(path,opt={}){let r=await fetch(U+path,{...opt,headers:{...headers(opt.auth!==false),...(opt.headers||{})}}),txt=await r.text(),data;try{data=txt?JSON.parse(txt):null}catch{data=txt}if(!r.ok)throw new Error(data?.msg||data?.message||data?.error_description||data?.hint||('HTTP '+r.status));return data}
+function toast(m){let t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(window.tt);window.tt=setTimeout(()=>t.classList.remove('show'),2200)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+async function loadRole(){role='viewer';if(session?.access_token){try{let p=await api('/rest/v1/profiles?select=role&id=eq.'+encodeURIComponent(session.user.id));if(p?.[0]?.role)role=p[0].role}catch(e){session=null;localStorage.removeItem('alpha_session')}}mode.textContent=role==='admin'?'Admin':'View only';addBtn.classList.toggle('hidden',role!=='admin')}
+async function loadAll(){try{rows=await api('/rest/v1/seniority?select=id,name,position&order=position.asc',{auth:false});render()}catch(e){toast('Unable to load seniority: '+e.message)}}
+function render(){list.innerHTML='';for(let r of rows){let c=document.createElement('div');c.className='rowcard';c.innerHTML='<div class="num">'+r.position+'</div><div class="name">'+esc(r.name)+'</div>'+(role==='admin'?'<button class="dark editbtn" onclick="openEdit(\''+r.id+'\')">Move</button>':'');list.appendChild(c)}}
+function openEdit(id){if(role!=='admin')return;let r=rows.find(x=>x.id===id);if(!r)return;editingId=id;editTitle.textContent='Move '+r.name;editPos.value=r.position;editDlg.showModal()}
+async function saveMove(){if(role!=='admin'||!editingId)return;let p=parseInt(editPos.value,10);if(!p||p<1)return toast('Enter a valid number');try{await api('/rest/v1/rpc/seniority_set_position_auth',{method:'POST',body:JSON.stringify({p_id:editingId,p_position:p})});editDlg.close();toast('Seniority updated');await loadAll()}catch(e){toast(e.message)}}
+function openAdd(){if(role!=='admin')return;newName.value='';newPos.value='';addDlg.showModal()}
+async function addOfficer(){if(role!=='admin')return;let name=newName.value.trim();if(!name)return toast('Enter a name');let p=newPos.value?parseInt(newPos.value,10):null;try{await api('/rest/v1/rpc/seniority_add_officer_auth',{method:'POST',body:JSON.stringify({p_name:name,p_position:p})});addDlg.close();toast(name+' added');await loadAll()}catch(e){toast(e.message)}}
+(async()=>{await loadRole();await loadAll()})();setInterval(loadAll,30000);
+</script>
+</body>
+</html>
