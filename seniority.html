@@ -10,8 +10,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Alpha OT">
-<link rel="icon" href="assets/alpha-crew-icon.jpg?v=alpha-crew-20260922b" type="image/jpeg">
-<link rel="apple-touch-icon" href="assets/alpha-crew-icon.jpg?v=alpha-crew-20260922b">
+<link rel="icon" href="assets/alpha-crew-v3/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/alpha-crew-v3/apple-touch-icon.png" sizes="180x180">
 <title>Alpha OT — Seniority</title>
 <style>
 :root{--bg:#02080d;--p:#09131b;--b:#172734;--t:#f2f6f9;--m:#9fb1be;--blue:#2da8ef}
@@ -33,13 +33,26 @@ dialog::backdrop{background:#0009}.modal{padding:18px}
 label{display:block;font-weight:800;margin:12px 0 6px}input{width:100%;background:#071018;color:var(--t);border:1px solid #243643;border-radius:12px;padding:13px;font-size:16px}
 .twocol{display:flex;gap:8px;margin-top:14px}.twocol>*{flex:1}.hidden{display:none!important}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#122531;border:1px solid #2d4859;border-radius:999px;padding:10px 14px;opacity:0;transition:.2s;z-index:20;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}.toast.show{opacity:1}
+
+/* Shared mobile-first Alpha Crew header */
+header .head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+header .title{display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;min-width:0;align-items:center}
+header .logo{width:92px;height:92px;border-radius:20px}
+header .logo img{object-fit:contain}
+header .brand,header .title>div:last-child{min-width:0}
+header .brandWordmark{width:148px;max-width:100%;height:auto}
+header .sub{font-size:12px;line-height:1.4;margin-top:6px;overflow-wrap:break-word}
+header .pill{white-space:nowrap;padding:7px 9px;font-size:11px;justify-self:end}
+header .tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;overflow:visible;margin-top:14px}
+header .tools button{min-width:0;min-height:44px;padding:10px 6px;font-size:13px;line-height:1.25}
+@media(max-width:374px){header .title{grid-template-columns:80px minmax(0,1fr);gap:8px}header .logo{width:80px;height:80px;border-radius:18px}header .head{gap:6px}header .sub{font-size:11px}header h1{font-size:21px}}
 </style>
-</head>
+<link rel="manifest" href="manifest.webmanifest?v=alpha-crew-v3"></head>
 <body>
 <div class="app">
 <header>
 <div class="head">
-<div class="title"><div class="logo"><img src="alpha-crew-icon.svg?v=alpha-crew-fix-20260922" alt=""></div><div><h1>Seniority</h1><div class="sub">Department seniority list</div></div></div>
+<div class="title"><div class="logo"><img src="assets/alpha-crew-v3/icon-192.png" width="92" height="92" alt="Alpha Crew"></div><div><h1>Seniority</h1><div class="sub">Department seniority list</div></div></div>
 <div id="mode" class="pill">View only</div>
 </div>
 <div class="tools">

@@ -7,10 +7,16 @@
   "theme_color": "#06121b",
   "icons": [
     {
-      "src": "assets/alpha-crew-icon.jpg?v=alpha-crew-20260922b",
-      "sizes": "256x256",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
+      "src": "assets/alpha-crew-v3/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/alpha-crew-v3/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
