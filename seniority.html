@@ -53,10 +53,12 @@ label{display:block;font-weight:800;margin:12px 0 6px}input{width:100%;backgroun
 </div>
 
 <dialog id="editDlg"><div class="modal">
-<h2 id="editTitle">Move Officer</h2>
+<h2 id="editTitle">Edit Officer</h2>
+<label>Name</label>
+<input id="editName" autocomplete="off">
 <label>Seniority Number</label>
 <input id="editPos" type="number" min="1" inputmode="numeric">
-<div class="twocol"><button class="dark" onclick="editDlg.close()">Cancel</button><button class="blue" onclick="saveMove()">Save</button></div>
+<div class="twocol"><button class="dark" onclick="editDlg.close()">Cancel</button><button class="blue" onclick="saveEdit()">Save</button></div>
 </div></dialog>
 
 <dialog id="addDlg"><div class="modal">
@@ -78,9 +80,9 @@ function toast(m){let t=document.getElementById('toast');t.textContent=m;t.class
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 async function loadRole(){role='viewer';if(session?.access_token){try{let p=await api('/rest/v1/profiles?select=role&id=eq.'+encodeURIComponent(session.user.id));if(p?.[0]?.role)role=p[0].role}catch(e){session=null;localStorage.removeItem('alpha_session')}}mode.textContent=role==='admin'?'Admin':'View only';addBtn.classList.toggle('hidden',role!=='admin')}
 async function loadAll(){try{rows=await api('/rest/v1/seniority?select=id,name,position&order=position.asc',{auth:false});render()}catch(e){toast('Unable to load seniority: '+e.message)}}
-function render(){list.innerHTML='';for(let r of rows){let c=document.createElement('div');c.className='rowcard';c.innerHTML='<div class="num">'+r.position+'</div><div class="name">'+esc(r.name)+'</div>'+(role==='admin'?'<button class="dark editbtn" onclick="openEdit(\''+r.id+'\')">Move</button>':'');list.appendChild(c)}}
-function openEdit(id){if(role!=='admin')return;let r=rows.find(x=>x.id===id);if(!r)return;editingId=id;editTitle.textContent='Move '+r.name;editPos.value=r.position;editDlg.showModal()}
-async function saveMove(){if(role!=='admin'||!editingId)return;let p=parseInt(editPos.value,10);if(!p||p<1)return toast('Enter a valid number');try{await api('/rest/v1/rpc/seniority_set_position_auth',{method:'POST',body:JSON.stringify({p_id:editingId,p_position:p})});editDlg.close();toast('Seniority updated');await loadAll()}catch(e){toast(e.message)}}
+function render(){list.innerHTML='';for(let r of rows){let c=document.createElement('div');c.className='rowcard';c.innerHTML='<div class="num">'+r.position+'</div><div class="name">'+esc(r.name)+'</div>'+(role==='admin'?'<button class="dark editbtn" onclick="openEdit(\''+r.id+'\')">Edit</button>':'');list.appendChild(c)}}
+function openEdit(id){if(role!=='admin')return;let r=rows.find(x=>x.id===id);if(!r)return;editingId=id;editTitle.textContent='Edit '+r.name;editName.value=r.name;editPos.value=r.position;editDlg.showModal()}
+async function saveEdit(){if(role!=='admin'||!editingId)return;let name=editName.value.trim(),p=parseInt(editPos.value,10);if(!name)return toast('Enter a name');if(!p||p<1)return toast('Enter a valid number');try{await api('/rest/v1/rpc/seniority_update_officer_auth',{method:'POST',body:JSON.stringify({p_id:editingId,p_name:name,p_position:p})});editDlg.close();toast('Seniority updated');await loadAll()}catch(e){toast(e.message)}}
 function openAdd(){if(role!=='admin')return;newName.value='';newPos.value='';addDlg.showModal()}
 async function addOfficer(){if(role!=='admin')return;let name=newName.value.trim();if(!name)return toast('Enter a name');let p=newPos.value?parseInt(newPos.value,10):null;try{await api('/rest/v1/rpc/seniority_add_officer_auth',{method:'POST',body:JSON.stringify({p_name:name,p_position:p})});addDlg.close();toast(name+' added');await loadAll()}catch(e){toast(e.message)}}
 (async()=>{await loadRole();await loadAll()})();setInterval(loadAll,30000);
