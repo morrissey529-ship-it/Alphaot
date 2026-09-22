@@ -1,4 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="104" fill="#02080d"/>
-  <image href="assets/alpha-crew-icon.jpg" x="0" y="0" width="512" height="512" preserveAspectRatio="xMidYMid slice"/>
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#06121b"/><stop offset="1" stop-color="#0b2433"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<rect width="512" height="512" rx="105" fill="url(#g)"/>
+<rect x="18" y="18" width="476" height="476" rx="90" fill="none" stroke="#28d8ff" stroke-width="14" filter="url(#glow)"/>
+<circle cx="256" cy="194" r="126" fill="#071018" stroke="#28d8ff" stroke-width="9"/>
+<g transform="translate(256 194)" fill="#28d8ff">
+<circle r="23"/>
+<path d="M0-105A105 105 0 0 1 91-52L37-21A43 43 0 0 0 0-43Z"/>
+<path d="M91 52A105 105 0 0 1 0 105V43A43 43 0 0 0 37 21Z"/>
+<path d="M-91 52A105 105 0 0 1-91-52L-37-21A43 43 0 0 0-37 21Z"/>
+</g>
+<text x="256" y="375" text-anchor="middle" font-family="Impact,Arial Black,sans-serif" font-size="92" font-weight="900" font-style="italic" fill="#f4f7f9" stroke="#02080d" stroke-width="8" paint-order="stroke">ALPHA</text>
+<text x="256" y="446" text-anchor="middle" font-family="Impact,Arial Black,sans-serif" font-size="72" font-weight="900" font-style="italic" fill="#28d8ff" stroke="#02080d" stroke-width="7" paint-order="stroke">CREW</text>
 </svg>
