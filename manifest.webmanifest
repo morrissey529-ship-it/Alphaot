@@ -3,17 +3,17 @@
   "short_name": "Alpha OT",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#02080d",
-  "theme_color": "#06121b",
+  "background_color": "#f3f6fa",
+  "theme_color": "#17324d",
   "icons": [
     {
-      "src": "assets/alpha-metal-20260927/icon-192.png",
+      "src": "assets/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/alpha-metal-20260927/icon-512.png",
+      "src": "assets/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
