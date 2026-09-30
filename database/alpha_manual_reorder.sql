@@ -195,6 +195,18 @@ begin
     raise exception 'Move within the same crew and status group' using errcode='22023';
   end if;
   v_crew:=v_moved->>'crew'; v_status:=v_moved->>'status';
+  if exists (
+    select 1 from jsonb_array_elements(v_cards) with ordinality as x(value,ord)
+    where ord between least(
+      (select ord from jsonb_array_elements(v_cards) with ordinality as a(value,ord) where value->>'id'=p_officer_id::text),
+      (select ord from jsonb_array_elements(v_cards) with ordinality as a(value,ord) where value->>'id'=p_anchor_id::text))
+      and greatest(
+      (select ord from jsonb_array_elements(v_cards) with ordinality as a(value,ord) where value->>'id'=p_officer_id::text),
+      (select ord from jsonb_array_elements(v_cards) with ordinality as a(value,ord) where value->>'id'=p_anchor_id::text))
+      and (value->>'crew'<>v_crew or value->>'status'<>v_status)
+  ) then
+    raise exception 'Move within one contiguous crew and status section' using errcode='22023';
+  end if;
   select array_agg((value->>'id')::uuid order by group_ord),
          max(group_ord::integer) filter(where value->>'id'=p_officer_id::text),
          max(group_ord::integer) filter(where value->>'id'=p_anchor_id::text)
