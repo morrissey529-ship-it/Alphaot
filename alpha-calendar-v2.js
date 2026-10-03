@@ -90,7 +90,7 @@
   calendarPanel.hidden = true;
   calendarPanel.innerHTML = `
     <div class="alpha-calendar">
-      <p class="alpha-calendar-kicker">Alpha Crew schedule &amp; Tactical training</p>
+      <p class="alpha-calendar-kicker">Alpha Crew schedule &amp; Training</p>
       <div class="alpha-calendar-nav">
         <button type="button" class="dark" id="alphaPreviousMonth" aria-label="Previous month">&#8249;</button>
         <h2 id="alphaCalendarMonth" aria-live="polite" aria-atomic="true"></h2>
@@ -104,17 +104,17 @@
       <div class="alpha-calendar-legend" id="alphaCalendarLegend">
         <span><i class="alpha-calendar-swatch work" aria-hidden="true"></i>Alpha working</span>
         <span><i class="alpha-calendar-swatch" aria-hidden="true"></i>Off</span>
-        <span><i class="alpha-calendar-swatch training" aria-hidden="true"></i>Tactical</span>
+        <span><i class="alpha-calendar-swatch training" aria-hidden="true"></i>Training</span>
         <span><i class="alpha-calendar-swatch today" aria-hidden="true"></i>Today</span>
       </div>
-      <p class="alpha-calendar-note" id="alphaCalendarNote">Blue highlights show Alpha's regular workdays. Tap Tactical to see the Alpha officers scheduled that day. Training is calendar-only and does not change the OT list.</p>
+      <p class="alpha-calendar-note" id="alphaCalendarNote">Blue highlights show Alpha's regular workdays. Tap Training to see the Alpha officers scheduled that day. Training is calendar-only and does not change the OT list.</p>
     </div>
-    <section class="alpha-training-roster" aria-labelledby="alphaTrainingHeading"><h3 id="alphaTrainingHeading">Tactical this month</h3><div id="alphaTrainingDates"></div></section>`;
+    <section class="alpha-training-roster" aria-labelledby="alphaTrainingHeading"><h3 id="alphaTrainingHeading">Training this month</h3><div id="alphaTrainingDates"></div></section>`;
   app.appendChild(calendarPanel);
   const detail = document.createElement('dialog');
   detail.id = 'alphaTacticalDialog';
   detail.setAttribute('aria-labelledby', 'alphaTacticalTitle');
-  detail.innerHTML = '<div class="modal"><div class="alpha-training-modal-head"><div><h2 id="alphaTacticalTitle">Tactical</h2><p id="alphaTacticalDate"></p></div><button type="button" class="dark" id="alphaTacticalClose">Close</button></div><ul class="alpha-training-names" id="alphaTacticalNames"></ul><p class="alpha-training-source">Calendar-only schedule. No OT assignment, drop, or attendance record is created.</p></div>';
+  detail.innerHTML = '<div class="modal"><div class="alpha-training-modal-head"><div><h2 id="alphaTacticalTitle">Training</h2><p id="alphaTacticalDate"></p></div><button type="button" class="dark" id="alphaTacticalClose">Close</button></div><ul class="alpha-training-names" id="alphaTacticalNames"></ul><p class="alpha-training-source">Calendar-only schedule. No OT assignment, drop, or attendance record is created.</p></div>';
   document.body.appendChild(detail);
   document.getElementById('alphaTacticalClose').addEventListener('click', () => detail.close());
   const tabs = document.createElement('div');
@@ -160,15 +160,15 @@
       const names = tactical[iso];
       const classes = [workday ? 'alpha-workday' : '', outside ? 'alpha-calendar-outside' : ''].filter(Boolean).join(' ');
       const label = `${dayFormatter.format(date)}: ${workday ? 'Alpha working' : 'Alpha off'}${isToday ? '; Today' : ''}`;
-      const trainingHTML = names ? `<button type="button" class="alpha-calendar-training" data-training-date="${iso}" aria-label="Tactical on ${escapeHTML(dayFormatter.format(date))}, ${names.length} Alpha officers; show names">Tactical<span>${names.length} officers</span></button><ul class="alpha-calendar-names" aria-label="Alpha Tactical officers">${namesHTML(names)}</ul>` : '';
+      const trainingHTML = names ? `<button type="button" class="alpha-calendar-training" data-training-date="${iso}" aria-label="Training on ${escapeHTML(dayFormatter.format(date))}, ${names.length} Alpha officers; show names">Training<span>${names.length} officers</span></button><ul class="alpha-calendar-names" aria-label="Alpha Training officers">${namesHTML(names)}</ul>` : '';
       html += `<td class="${classes}" data-date="${iso}" data-workday="${workday}" aria-label="${escapeHTML(label)}"${isToday ? ' aria-current="date"' : ''}><div class="alpha-calendar-day"><span class="alpha-calendar-date">${date.getUTCDate()}</span><span class="alpha-calendar-duty">${workday ? 'Work' : 'Off'}</span>${trainingHTML}</div></td>`;
       if (index % 7 === 6) html += '</tr>';
     }
     calendarDays.innerHTML = html;
     const prefix = month.toISOString().slice(0, 7);
     const dates = Object.keys(tactical).filter(iso => iso.startsWith(prefix)).sort();
-    document.getElementById('alphaTrainingHeading').textContent = `Tactical · ${monthFormatter.format(month)}`;
-    document.getElementById('alphaTrainingDates').innerHTML = dates.length ? dates.map(iso => `<article class="alpha-training-card" data-training-roster="${iso}"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso + 'T00:00:00Z')))}</h4><span class="badge">Tactical · ${tactical[iso].length}</span></div><ul class="alpha-training-names">${namesHTML(tactical[iso])}</ul></article>`).join('') + '<p class="alpha-training-source">Alpha roster matches only · Supplied Tactical schedule, Rev-2 (Oct. 1, 2026). Names without an assigned date are not placed on the calendar.</p>' : '<p class="alpha-training-empty">No Alpha Tactical dates have been added for this month.</p>';
+    document.getElementById('alphaTrainingHeading').textContent = `Training · ${monthFormatter.format(month)}`;
+    document.getElementById('alphaTrainingDates').innerHTML = dates.length ? dates.map(iso => `<article class="alpha-training-card" data-training-roster="${iso}"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso + 'T00:00:00Z')))}</h4><span class="badge">Training · ${tactical[iso].length}</span></div><ul class="alpha-training-names">${namesHTML(tactical[iso])}</ul></article>`).join('') + '<p class="alpha-training-source">Alpha roster matches only · Supplied Training schedule, Rev-2 (Oct. 1, 2026). Names without an assigned date are not placed on the calendar.</p>' : '<p class="alpha-training-empty">No Alpha Training dates have been added for this month.</p>';
   }
   calendarDays.addEventListener('click', event => {
     const button = event.target.closest('[data-training-date]');
