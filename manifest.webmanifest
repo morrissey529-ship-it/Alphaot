@@ -3,8 +3,8 @@
   "short_name": "Alpha OT",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f3f6fa",
-  "theme_color": "#17324d",
+  "background_color": "#0d141e",
+  "theme_color": "#0d141e",
   "icons": [
     {
       "src": "assets/icon-192.png",
