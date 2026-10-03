@@ -1,0 +1,27 @@
+/* Shared dark presentation only. No permissions, data, or rotation rules. */
+:root{color-scheme:dark;--bg:#0d141e;--surface:#151f2c;--line:#304255;--text:#e8eff7;--muted:#a5b6c9;--navy:#d9e8f7;--blue:#91c9fc;--blue-soft:#203e5b;--green:#89dbb8;--green-soft:#173c31;--amber:#f0cd86;--amber-soft:#463820;--red:#ffadb6;--red-soft:#482a34;--raised:#1c2a3a;--primary:#315f8e}
+html,body{background:var(--bg);color:var(--text)}
+header{background:rgba(13,20,30,.97);border-color:var(--line)}
+.pill{background:#1b3045;border-color:#3a5671;color:#c3dff9}
+.dark{background:var(--raised);color:var(--text);border-color:#40556c}
+.dark:hover{background:#26384c}
+.blue{background:var(--primary);color:#fff;border-color:#497cac}
+.blue:hover{background:#3d73a7}
+.note{background:#192c3e;border-color:#344e66;color:#c0d2e4}
+.section{color:var(--muted)}
+.card,.rowcard,.stat{box-shadow:0 2px 5px #0003}
+.num.off,.offshift,.unavailbadge{background:#25313e;color:#b2c0ce}
+.powerbadge,.num.power{background:#362b48;color:#d4b8f1}
+.powercard{border-left-color:#a686c8}
+.meta,.activityLine span{color:#c2d0df}
+.power-ineligible,.temp-unavailable{background:#131c27}
+.power-ineligible .name,.temp-unavailable .name{color:#a7b5c5}
+.actions,.editor,.historyItem{background:#111b28}
+input,select,textarea{background:#101a27;color:var(--text);border-color:#435972;color-scheme:dark}
+input::placeholder{color:#99a9bd;opacity:1}
+dialog{background:var(--surface);color:var(--text);box-shadow:0 20px 65px #0009}
+dialog::backdrop{background:#000a}
+.toast{background:#254866;color:#f2f7ff;border:1px solid #50799e}
+#accessList>div{background:#111b28!important;border-color:var(--line)!important}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #a0d4ff;outline-offset:2px}
+a{color:var(--blue)}
