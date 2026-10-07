@@ -226,7 +226,7 @@
       if (!Array.isArray(records)) throw new Error('Invalid calendar response');
       const grouped = Object.create(null);
       for (const item of records) {
-        if (!item || !/^\\d{4}-\\d{2}-\\d{2}$/.test(item.date) || typeof item.name !== 'string' || !['V','R'].includes(item.code)) continue;
+        if (!item || !/^\d{4}-\d{2}-\d{2}$/.test(item.date) || typeof item.name !== 'string' || !['V','R'].includes(item.code)) continue;
         (grouped[item.date] ||= []).push({name:item.name,code:item.code});
       }
       otByDate = grouped;
