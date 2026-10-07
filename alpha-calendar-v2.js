@@ -43,19 +43,17 @@
     .alpha-calendar-duty{font-size:11px;line-height:1.2;color:var(--muted)}
     .alpha-workday .alpha-calendar-duty{color:var(--blue);font-weight:750}
     .alpha-calendar-outside .alpha-calendar-date,.alpha-calendar-outside .alpha-calendar-duty{opacity:.48}
-    .alpha-calendar-training{width:calc(100% - 4px);min-height:44px;padding:5px 1px;border:1px solid #8c733f;border-radius:5px;background:var(--amber-soft);color:var(--amber);font-size:11px;line-height:1.25}
+    .alpha-calendar-training{width:calc(100% - 4px);min-height:40px;padding:5px 1px;border:1px solid #8c733f;border-radius:5px;background:var(--amber-soft);color:var(--amber);font-size:11px;line-height:1.25}
     .alpha-calendar-training span{display:block;font-size:10px;font-weight:500;margin-top:2px}
     .alpha-calendar-training:hover{background:#594829}
     .alpha-calendar-ot{width:calc(100% - 4px);min-height:40px;padding:5px 1px;border:1px solid #477da9;border-radius:5px;background:#18354e;color:#b6dfff;font-size:11px;font-weight:750;line-height:1.25}
     .alpha-calendar-ot span{display:block;font-size:10px;font-weight:500;margin-top:2px}
     .alpha-calendar-ot:hover{background:#234c6d}
-    .alpha-calendar-ot-names{display:none}
-    .alpha-ot-code{display:inline-block;margin-left:3px;padding:0 4px;border-radius:3px;color:#fff;background:#376796;font-size:10px;font-weight:800;line-height:1.5}
+        .alpha-ot-code{display:inline-block;margin-left:3px;padding:0 4px;border-radius:3px;color:#fff;background:#376796;font-size:10px;font-weight:800;line-height:1.5}
     .alpha-ot-code.required{background:#934452}
     .alpha-ot-card{border-left-color:#477da9}
     .alpha-ot-card .alpha-training-heading .badge{background:#193b57;color:#b6dfff}
-    .alpha-calendar-names{display:none}
-    .alpha-calendar-legend{display:flex;gap:15px;flex-wrap:wrap;margin-top:16px;color:var(--muted);font-size:12px}
+        .alpha-calendar-legend{display:flex;gap:15px;flex-wrap:wrap;margin-top:16px;color:var(--muted);font-size:12px}
     .alpha-calendar-legend span{display:inline-flex;align-items:center;gap:7px}
     .alpha-calendar-swatch{display:inline-block;width:14px;height:14px;border:1px solid var(--line);border-radius:3px;background:var(--surface)}
     .alpha-calendar-swatch.work{background:var(--blue-soft);border-color:#4c769e}
@@ -76,7 +74,7 @@
     .alpha-training-modal-head h2{margin:0 0 4px;font-size:19px}
     .alpha-training-modal-head p{margin:0;color:var(--muted);font-size:13px}
     .alpha-training-modal-head button{flex:0 0 auto}
-    @media(min-width:650px){.alpha-calendar-names,.alpha-calendar-ot-names{display:block;list-style:none;padding:2px 5px 6px;margin:0;width:100%;font-size:11px;line-height:1.45;color:var(--text);overflow-wrap:anywhere}.alpha-calendar-names li,.alpha-calendar-ot-names li{padding:2px 0}.alpha-calendar-training,.alpha-calendar-ot{font-size:12px}.alpha-calendar-training span,.alpha-calendar-ot>span{display:none}}
+    @media(min-width:650px){.alpha-calendar-training,.alpha-calendar-ot{font-size:12px}}
     @media(max-width:460px){.alpha-calendar{padding:10px;margin-top:14px}.alpha-calendar-nav h2{font-size:20px}.alpha-calendar-day{min-height:83px;padding:7px 0;gap:4px}.alpha-calendar-date{width:27px;height:27px;font-size:14px}.alpha-calendar-duty{font-size:10px}.alpha-calendar-legend{gap:12px}.alpha-calendar-training,.alpha-calendar-ot{font-size:10px}.alpha-calendar-training span,.alpha-calendar-ot>span{font-size:9px}.alpha-ot-code{font-size:9px}}
     @media(max-width:345px){.alpha-calendar{padding:7px}.alpha-calendar-nav h2{font-size:18px}.alpha-calendar-table th{font-size:10px}.alpha-calendar-legend{gap:9px;font-size:11px}.alpha-tabs [role="tab"]{font-size:13px}.alpha-calendar-training{font-size:9px}}
   `;
@@ -183,8 +181,8 @@
       const otEntries = otByDate[iso] || [];
       const classes = [workday ? 'alpha-workday' : '', outside ? 'alpha-calendar-outside' : ''].filter(Boolean).join(' ');
       const label = `${dayFormatter.format(date)}: ${workday ? 'Alpha working' : 'Alpha off'}${isToday ? '; Today' : ''}`;
-      const trainingHTML = names ? `<button type="button" class="alpha-calendar-training" data-training-date="${iso}" aria-label="Training on ${escapeHTML(dayFormatter.format(date))}, ${names.length} Alpha officers; show names">Training<span>${names.length} officers</span></button><ul class="alpha-calendar-names" aria-label="Alpha Training officers">${namesHTML(names)}</ul>` : '';
-      const otHTML = otEntries.length ? `<button type="button" class="alpha-calendar-ot" data-ot-date="${iso}" aria-label="Overtime on ${escapeHTML(dayFormatter.format(date))}, ${otEntries.length} recorded assignments; show names">OT<span>${otEntries.length} officers</span></button><ul class="alpha-calendar-ot-names" aria-label="OT officers">${otNamesHTML(otEntries)}</ul>` : '';
+      const trainingHTML = names ? `<button type="button" class="alpha-calendar-training" data-training-date="${iso}" aria-label="Training on ${escapeHTML(dayFormatter.format(date))}, ${names.length} Alpha officers; show names">Training</button>` : '';
+      const otHTML = otEntries.length ? `<button type="button" class="alpha-calendar-ot" data-ot-date="${iso}" aria-label="Overtime on ${escapeHTML(dayFormatter.format(date))}, ${otEntries.length} recorded assignments; show names">OT</button>` : '';
       html += `<td class="${classes}" data-date="${iso}" data-workday="${workday}" aria-label="${escapeHTML(label)}"${isToday ? ' aria-current="date"' : ''}><div class="alpha-calendar-day"><span class="alpha-calendar-date">${date.getUTCDate()}</span><span class="alpha-calendar-duty">${workday ? 'Work' : 'Off'}</span>${trainingHTML}${otHTML}</div></td>`;
       if (index % 7 === 6) html += '</tr>';
     }
