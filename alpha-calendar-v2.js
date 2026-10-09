@@ -258,7 +258,7 @@
       for (const response of responses) {
         if (!Array.isArray(response)) throw new Error('Unexpected OT history response');
         for (const item of response) {
-          if (!item || !/^\\d{4}-\\d{2}-\\d{2}$/.test(item.date) || typeof item.name !== 'string' || !['V','R'].includes(item.code)) continue;
+          if (!item || !/^\d{4}-\d{2}-\d{2}$/.test(item.date) || typeof item.name !== 'string' || !['V','R'].includes(item.code)) continue;
           const monthKey = item.date.slice(0,7);
           if (!grouped[monthKey]) grouped[monthKey] = Object.create(null);
           if (!grouped[monthKey][item.date]) grouped[monthKey][item.date] = [];
