@@ -53,6 +53,17 @@
     .alpha-ot-code.required{background:#934452}
     .alpha-ot-card{border-left-color:#477da9}
     .alpha-ot-card .alpha-training-heading .badge{background:#193b57;color:#b6dfff}
+    .alpha-ot-month{margin:0 0 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+    .alpha-ot-month summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:51px;padding:12px 15px;cursor:pointer;color:var(--text);font-weight:750;list-style:none}
+    .alpha-ot-month summary::-webkit-details-marker{display:none}
+    .alpha-ot-month summary::after{content:'▾';font-size:17px;color:var(--muted);transition:transform .15s;flex-shrink:0}
+    .alpha-ot-month:not([open]) summary::after{transform:rotate(-90deg)}
+    .alpha-ot-month summary:focus-visible{outline:3px solid var(--blue);outline-offset:-3px}
+    .alpha-ot-month-label{display:flex;align-items:center;gap:9px;min-width:0}
+    .alpha-ot-month-count{font-size:11px;font-weight:650;color:var(--muted)}
+    .alpha-ot-month-content{padding:0 12px 4px}
+    .alpha-ot-month-content .alpha-training-card{margin-bottom:8px}
+    .alpha-ot-month-content .alpha-training-heading h4{font-size:13px}
         .alpha-calendar-legend{display:flex;gap:15px;flex-wrap:wrap;margin-top:16px;color:var(--muted);font-size:12px}
     .alpha-calendar-legend span{display:inline-flex;align-items:center;gap:7px}
     .alpha-calendar-swatch{display:inline-block;width:14px;height:14px;border:1px solid var(--line);border-radius:3px;background:var(--surface)}
@@ -117,7 +128,7 @@
       </div>
       <p class="alpha-calendar-note" id="alphaCalendarNote">Blue highlights show Alpha's regular workdays. Tap Training or OT to see officers for that date. V = Volunteer OT, R = Required OT. Calendar display does not change the rotation.</p>
     </div>
-    <section class="alpha-training-roster" aria-labelledby="alphaOTHeading"><h3 id="alphaOTHeading">OT this month</h3><div id="alphaOTDates" aria-live="polite"></div></section>
+    <section class="alpha-training-roster" aria-labelledby="alphaOTHeading"><h3 id="alphaOTHeading">OT history · Newest first</h3><div id="alphaOTDates" aria-live="polite"></div><p class="alpha-training-source">Last 12 months and next 2 months · V = Volunteer, R = Required. Canceled or called-off OT is excluded.</p></section>
     <section class="alpha-training-roster" aria-labelledby="alphaTrainingHeading"><h3 id="alphaTrainingHeading">Training this month</h3><div id="alphaTrainingDates"></div></section>`;
   app.appendChild(calendarPanel);
   const detail = document.createElement('dialog');
@@ -161,6 +172,10 @@
   let otRequest = 0;
   let otLoading = false;
   let otError = '';
+  let historyRequest = 0;
+  let historyLoading = false;
+  const monthOpenStates = new Map();
+  let historyInitialized = false;
   function renderCalendar() {
     const todayISO = centralToday();
     renderedToday = todayISO;
@@ -191,17 +206,75 @@
     const dates = Object.keys(tactical).filter(iso => iso.startsWith(prefix)).sort();
     document.getElementById('alphaTrainingHeading').textContent = `Training · ${monthFormatter.format(month)}`;
     document.getElementById('alphaTrainingDates').innerHTML = dates.length ? dates.map(iso => `<article class="alpha-training-card" data-training-roster="${iso}"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso + 'T00:00:00Z')))}</h4><span class="badge">Training · ${tactical[iso].length}</span></div><ul class="alpha-training-names">${namesHTML(tactical[iso])}</ul></article>`).join('') + '<p class="alpha-training-source">Alpha roster matches only · Supplied Training schedule, Rev-2 (Oct. 1, 2026). Names without an assigned date are not placed on the calendar.</p>' : '<p class="alpha-training-empty">No Alpha Training dates have been added for this month.</p>';
-    const otDates = Object.keys(otByDate).filter(iso => iso.startsWith(prefix)).sort();
-    document.getElementById('alphaOTHeading').textContent = `OT · ${monthFormatter.format(month)}`;
-    document.getElementById('alphaOTDates').innerHTML = otLoading
-      ? '<p class="alpha-training-empty">Loading OT assignments…</p>'
-      : otError
-        ? `<p class="alpha-training-empty" role="alert">${escapeHTML(otError)}</p>`
-        : otDates.length
-          ? otDates.map(iso => `<article class="alpha-training-card alpha-ot-card"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso + 'T00:00:00Z')))}</h4><span class="badge">OT · ${otByDate[iso].length}</span></div><ul class="alpha-training-names">${otNamesHTML(otByDate[iso])}</ul></article>`).join('') + '<p class="alpha-training-source">Current recorded OT assignments only. Called-off and reversed assignments are excluded. R = Required; V = Volunteer.</p>'
-          : '<p class="alpha-training-empty">No recorded OT assignments for this month.</p>';
+    // The monthly OT history is rendered independently of the calendar month.
+    // Changing calendar pages does not reset expanded/collapsed sections.
   }
 
+
+  // Keep each month expanded/collapsed as the viewer chooses.
+  const otHistoryContainer = document.getElementById('alphaOTDates');
+  otHistoryContainer.addEventListener('toggle', event => {
+    const details = event.target;
+    if (details.tagName === 'DETAILS' && details.dataset.otMonth) {
+      monthOpenStates.set(details.dataset.otMonth, details.open);
+    }
+  }, true);
+  function renderOTHistory(grouped) {
+    const months = Object.keys(grouped).sort().reverse();
+    if (!months.length) {
+      otHistoryContainer.innerHTML = '<p class="alpha-training-empty">No recorded OT assignments in the displayed history range.</p>';
+      return;
+    }
+    // Default: newest OT month expanded; all older months collapsed.
+    otHistoryContainer.innerHTML = months.map((key,index) => {
+      const entries = grouped[key];
+      const label = monthFormatter.format(monthOf(key + '-01'));
+      const open = monthOpenStates.has(key) ? monthOpenStates.get(key) : index === 0;
+      const dates = Object.keys(entries).sort().reverse();
+      return `<details class="alpha-ot-month" data-ot-month="${key}"${open ? ' open' : ''}><summary><span class="alpha-ot-month-label">${escapeHTML(label)} <span class="alpha-ot-month-count">${dates.length} OT days</span></span></summary><div class="alpha-ot-month-content">${dates.map(iso => `<article class="alpha-training-card alpha-ot-card"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso+'T00:00:00Z')))}</h4><span class="badge">OT · ${entries[iso].length}</span></div><ul class="alpha-training-names">${otNamesHTML(entries[iso])}</ul></article>`).join('')}</div></details>`;
+    }).join('');
+  }
+  // Read the independent, read-only OT history without changing any assignments.
+  // The existing RPC limits reads to 63 days, so request successive 60-day windows.
+  async function loadOTHistory() {
+    if (historyLoading) return;
+    const request = ++historyRequest;
+    historyLoading = true;
+    if (!historyInitialized) otHistoryContainer.innerHTML = '<p class="alpha-training-empty">Loading OT history…</p>';
+    const todayMonth = monthOf(centralToday());
+    const start = new Date(Date.UTC(todayMonth.getUTCFullYear(),todayMonth.getUTCMonth()-11,1));
+    const end = new Date(Date.UTC(todayMonth.getUTCFullYear(),todayMonth.getUTCMonth()+3,0));
+    const parts = [];
+    for (let begin = new Date(start); begin <= end; begin.setUTCDate(begin.getUTCDate()+60)) {
+      const last = new Date(Math.min(Date.UTC(begin.getUTCFullYear(),begin.getUTCMonth(),begin.getUTCDate()+59),end.getTime()));
+      parts.push({p_from:begin.toISOString().slice(0,10),p_through:last.toISOString().slice(0,10)});
+    }
+    try {
+      const responses = await Promise.all(parts.map(params => api('/rest/v1/rpc/alpha_calendar_ot', {
+        method:'POST', auth:false, body:JSON.stringify(params)
+      })));
+      if (request !== historyRequest) return;
+      const grouped = Object.create(null);
+      for (const response of responses) {
+        if (!Array.isArray(response)) throw new Error('Unexpected OT history response');
+        for (const item of response) {
+          if (!item || !/^\\d{4}-\\d{2}-\\d{2}$/.test(item.date) || typeof item.name !== 'string' || !['V','R'].includes(item.code)) continue;
+          const monthKey = item.date.slice(0,7);
+          if (!grouped[monthKey]) grouped[monthKey] = Object.create(null);
+          if (!grouped[monthKey][item.date]) grouped[monthKey][item.date] = [];
+          grouped[monthKey][item.date].push({name:item.name,code:item.code});
+        }
+      }
+      historyInitialized = true;
+      renderOTHistory(grouped);
+    } catch(error) {
+      if (request === historyRequest && !historyInitialized) {
+        otHistoryContainer.innerHTML = '<p class="alpha-training-empty" role="alert">Unable to load OT history. Reopen Calendar/Training to retry.</p>';
+      }
+    } finally {
+      if (request === historyRequest) historyLoading = false;
+    }
+  }
   // Read-only monthly OT lookup. This never inserts/edits events or touches rotation.
   async function loadCalendarOT() {
     const request = ++otRequest;
@@ -257,7 +330,7 @@
   });
   function selectTab(index, focus) {
     if ((typeof reorderBusy !== 'undefined' && reorderBusy) || (typeof drag !== 'undefined' && drag)) return;
-    if (index === 1) loadCalendarOT(); else otRequest++;
+    if (index === 1) { loadCalendarOT(); loadOTHistory(); } else otRequest++;
     tabButtons.forEach((button, i) => {
       button.setAttribute('aria-selected', String(i === index));
       button.tabIndex = i === index ? 0 : -1;
@@ -297,4 +370,5 @@
   setInterval(refreshToday, 60000);
   // Keep the open calendar current when supervisors record/call off OT.
   setInterval(() => { if (!calendarPanel.hidden && document.visibilityState === 'visible' && !otLoading) loadCalendarOT(); }, 60000);
+  setInterval(() => { if (!calendarPanel.hidden && document.visibilityState === 'visible' && !historyLoading) loadOTHistory(); }, 300000);
 })();
