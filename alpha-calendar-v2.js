@@ -129,7 +129,7 @@
       <p class="alpha-calendar-note" id="alphaCalendarNote">Blue highlights show Alpha's regular workdays. Tap Training or OT to see officers for that date. V = Volunteer OT, R = Required OT. Calendar display does not change the rotation.</p>
     </div>
     <section class="alpha-training-roster" aria-labelledby="alphaOTHeading"><h3 id="alphaOTHeading">OT history · Newest first</h3><div id="alphaOTDates" aria-live="polite"></div><p class="alpha-training-source">Last 12 months and next 2 months · V = Volunteer, R = Required. Canceled or called-off OT is excluded.</p></section>
-    <section class="alpha-training-roster" aria-labelledby="alphaTrainingHeading"><h3 id="alphaTrainingHeading">Training this month</h3><div id="alphaTrainingDates"></div></section>`;
+    <section class="alpha-training-roster" aria-labelledby="alphaTrainingHeading"><h3 id="alphaTrainingHeading">Training schedule · Newest first</h3><div id="alphaTrainingDates"></div><p class="alpha-training-source">Alpha roster matches only · Supplied Training schedule, Rev-2 (Oct. 1, 2026). Calendar-only annotations; no OT assignment, drop, or attendance record is created.</p></section>`;
   app.appendChild(calendarPanel);
   const detail = document.createElement('dialog');
   detail.id = 'alphaTacticalDialog';
@@ -176,6 +176,7 @@
   let historyLoading = false;
   const monthOpenStates = new Map();
   let historyInitialized = false;
+  const trainingMonthOpenStates = new Map();
   function renderCalendar() {
     const todayISO = centralToday();
     renderedToday = todayISO;
@@ -203,13 +204,36 @@
     }
     calendarDays.innerHTML = html;
     const prefix = month.toISOString().slice(0, 7);
-    const dates = Object.keys(tactical).filter(iso => iso.startsWith(prefix)).sort();
-    document.getElementById('alphaTrainingHeading').textContent = `Training · ${monthFormatter.format(month)}`;
-    document.getElementById('alphaTrainingDates').innerHTML = dates.length ? dates.map(iso => `<article class="alpha-training-card" data-training-roster="${iso}"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso + 'T00:00:00Z')))}</h4><span class="badge">Training · ${tactical[iso].length}</span></div><ul class="alpha-training-names">${namesHTML(tactical[iso])}</ul></article>`).join('') + '<p class="alpha-training-source">Alpha roster matches only · Supplied Training schedule, Rev-2 (Oct. 1, 2026). Names without an assigned date are not placed on the calendar.</p>' : '<p class="alpha-training-empty">No Alpha Training dates have been added for this month.</p>';
+    // Training's chronological schedule is separate from the visible calendar month.
     // The monthly OT history is rendered independently of the calendar month.
     // Changing calendar pages does not reset expanded/collapsed sections.
   }
 
+
+  // Training is display-only; render all known dates newest-first, grouped by
+  // month, independently of the calendar's currently selected month.
+  const trainingDatesContainer = document.getElementById('alphaTrainingDates');
+  trainingDatesContainer.addEventListener('toggle', event => {
+    const details = event.target;
+    if (details.tagName === 'DETAILS' && details.dataset.trainingMonth) {
+      trainingMonthOpenStates.set(details.dataset.trainingMonth, details.open);
+    }
+  }, true);
+  function renderTrainingMonths() {
+    const grouped = Object.create(null);
+    for (const iso of Object.keys(tactical)) {
+      const key = iso.slice(0,7);
+      (grouped[key] ||= []).push(iso);
+    }
+    const months = Object.keys(grouped).sort().reverse();
+    trainingDatesContainer.innerHTML = months.length ? months.map((key,index) => {
+      const dates = grouped[key].sort().reverse();
+      const label = monthFormatter.format(monthOf(key + '-01'));
+      const open = trainingMonthOpenStates.has(key) ? trainingMonthOpenStates.get(key) : index === 0;
+      return `<details class="alpha-ot-month alpha-training-month" data-training-month="${key}"${open ? ' open' : ''}><summary><span class="alpha-ot-month-label">${escapeHTML(label)} <span class="alpha-ot-month-count">${dates.length} Training days</span></span></summary><div class="alpha-ot-month-content">${dates.map(iso => `<article class="alpha-training-card" data-training-roster="${iso}"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso+'T00:00:00Z')))}</h4><span class="badge">Training · ${tactical[iso].length}</span></div><ul class="alpha-training-names">${namesHTML(tactical[iso])}</ul></article>`).join('')}</div></details>`;
+    }).join('') : '<p class="alpha-training-empty">No Training dates have been added.</p>';
+  }
+  renderTrainingMonths();
 
   // Keep each month expanded/collapsed as the viewer chooses.
   const otHistoryContainer = document.getElementById('alphaOTDates');
