@@ -397,3 +397,76 @@
   setInterval(() => { if (!calendarPanel.hidden && document.visibilityState === 'visible' && !historyLoading) loadOTHistory(); }, 300000);
 })();
 // Bereavement feature: October 2026
+
+
+/* Bereavement: dated eligibility hold without a rotation event. */
+(function(){
+  const oldApi=api;
+  api=async function(path,options){
+    if(path==='/rest/v1/rpc/alpha_list_summary'){
+      return oldApi('/rest/v1/rpc/alpha_list_summary_with_bereavement',options);
+    }
+    if(path==='/rest/v1/rpc/alpha_apply_action_auth'){
+      return oldApi('/rest/v1/rpc/alpha_apply_action_with_bereavement',options);
+    }
+    if(path==='/rest/v1/rpc/process_vacation_returns'){
+      const result=await oldApi(path,options);
+      await oldApi('/rest/v1/rpc/process_bereavement_dates',options);
+      return result;
+    }
+    return oldApi(path,options);
+  };
+  const style=document.createElement('style');
+  style.textContent='.badge.bereavement{background:#274350;color:#b9ebf4}.bereavement-dates{font-size:12px;color:var(--muted);margin:6px 0}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}@media(max-width:460px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}';
+  document.head.appendChild(style);
+  const stats=document.querySelector('.stats');
+  if(stats&&!document.getElementById('bc')){
+    const stat=document.createElement('div');
+    stat.className='stat';
+    stat.innerHTML='<b id="bc">0</b><span>Bereavement</span>';
+    stats.appendChild(stat);
+  }
+  const priorRender=render;
+  render=function(){
+    priorRender();
+    document.getElementById('oc').textContent=officers.filter(o=>o.status==='Off Shift').length;
+    document.getElementById('bc').textContent=officers.filter(o=>o.status==='Bereavement').length;
+    for(const o of officers){
+      const card=document.getElementById('c-'+o.id);
+      if(!card)continue;
+      if(o.status==='Bereavement'){
+        const badge=card.querySelector('.nameRow .offshift');
+        if(badge){badge.classList.replace('offshift','bereavement');badge.textContent='Bereavement'}
+      }
+      if(o.bereavement_start_date&&o.bereavement_return_date){
+        const text=document.createElement('div');
+        text.className='bereavement-dates';
+        text.textContent=(o.status==='Bereavement'?'Bereavement':'Bereavement scheduled')+' · '+fmt(o.bereavement_start_date)+' to '+fmt(o.bereavement_return_date);
+        card.querySelector('.activityTitle')?.before(text);
+      }
+      const actions=document.getElementById('a-'+o.id);
+      if(actions&&!Array.from(actions.options).some(x=>x.value==='Bereavement')){
+        const option=new Option('Bereavement','Bereavement');
+        const index=Array.from(actions.options).findIndex(x=>x.value==='Unavailable Today');
+        actions.add(option,index<0?undefined:index);
+      }
+    }
+  };
+  const priorChg=chg;
+  chg=function(id){
+    priorChg(id);
+    const action=document.getElementById('a-'+id)?.value;
+    const start=document.getElementById('dw-'+id),ret=document.getElementById('rw-'+id);
+    if(!start||!ret)return;
+    start.querySelector('label').textContent=action==='Bereavement'?'Bereavement Start Date':'Date';
+    ret.querySelector('label').textContent=action==='Bereavement'?'Bereavement Return Date':'Vacation Return Date';
+    if(action==='Bereavement'){
+      start.classList.remove('hidden');ret.classList.remove('hidden');
+      const o=officers.find(x=>x.id===id);
+      const tomorrow=new Date();
+      tomorrow.setDate(tomorrow.getDate()+1);
+      document.getElementById('d-'+id).value=o?.bereavement_start_date||today();
+      document.getElementById('r-'+id).value=o?.bereavement_return_date||isoLocal(tomorrow);
+    }
+  };
+})();
