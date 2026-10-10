@@ -168,7 +168,7 @@
     event.preventDefault();
     if(trainingSaving||!canEditTraining()||!editingTrainingName)return;
     const date=document.getElementById('alphaTrainingMoveDate').value;
-    if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date))return toast('Select a Training date');
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return toast('Select a Training date');
     trainingSaving=true;
     document.getElementById('alphaTrainingMoveSave').disabled=true;
     try {
@@ -289,7 +289,7 @@
     if(!Array.isArray(rows))throw new Error('Invalid Training schedule response');
     const grouped=Object.create(null);
     for(const item of rows){
-      if(!item||typeof item.name!=='string'||!/^\\d{4}-\\d{2}-\\d{2}$/.test(item.date))continue;
+      if(!item||typeof item.name!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(item.date))continue;
       (grouped[item.date]||=([])).push(item.name);
     }
     tactical=grouped;
