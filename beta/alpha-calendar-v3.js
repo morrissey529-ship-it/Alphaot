@@ -498,7 +498,7 @@
       }
     }
     document.getElementById('oc').textContent=officers.filter(o=>o.status==='Off Shift').length;
-    document.getElementById('bc').textContent=officers.filter(o=>o.status==='Bereavement').length;
+    document.getElementById('bc').textContent=officers.filter(o=>(o.status==='Active'||o.status==='Bereavement')&&voidForBereavement(o,upcoming)).length;
     for(const o of officers){
       const card=document.getElementById('c-'+o.id);
       if(!card)continue;
