@@ -396,3 +396,4 @@
   setInterval(() => { if (!calendarPanel.hidden && document.visibilityState === 'visible' && !otLoading) loadCalendarOT(); }, 60000);
   setInterval(() => { if (!calendarPanel.hidden && document.visibilityState === 'visible' && !historyLoading) loadOTHistory(); }, 300000);
 })();
+// Bereavement feature: October 2026
