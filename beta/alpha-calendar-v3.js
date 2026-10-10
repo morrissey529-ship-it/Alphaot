@@ -9,12 +9,14 @@
   // Transcribed from the supplied Tactical schedule, Rev-2 (10/1/2026).
   // Only names matched to the current Alpha officer roster are included.
   // These are calendar annotations, not ot_events or attendance records.
-  const tactical = Object.freeze({
-    '2026-10-05': Object.freeze(['Stockman, R', 'Marchetti', 'Esparza, S', 'Morrissey, C', 'Pantoja-Toledo']),
-    '2026-10-14': Object.freeze(['Leadingham', 'Luttrell', 'Kent, C', 'Boggetto', 'Engelman', 'Reigh']),
-    '2026-10-19': Object.freeze(['Akre, A', 'Pettyjohn']),
-    '2026-10-28': Object.freeze(['Alvarado, D', 'Camacho', 'Urbano', 'Sprys, C', 'Foley', 'Slattery', 'Juarez'])
-  });
+  // Verified server-side schedule. This local list is only a fallback if offline.
+  // Calendar Training dates do not create ot_events or rotate officers.
+  let tactical = {
+    '2026-10-05': ['Marchetti', 'Esparza, S', 'Morrissey, C', 'Pantoja-Toledo'],
+    '2026-10-14': ['Leadingham', 'Luttrell', 'Kent, C', 'Boggetto', 'Engelman', 'Reigh'],
+    '2026-10-19': ['Akre, A', 'Pettyjohn', 'Stockman, R'],
+    '2026-10-28': ['Alvarado, D', 'Camacho', 'Urbano', 'Sprys, C', 'Foley', 'Slattery', 'Juarez']
+  };
   const escapeHTML = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const styles = document.createElement('style');
   styles.id = 'alphaCalendarStyles';
@@ -79,7 +81,11 @@
     .alpha-training-heading h4{margin:0;color:var(--text);font-size:14px}
     .alpha-training-heading .badge{background:var(--amber-soft);color:var(--amber)}
     .alpha-training-names{list-style:none;display:flex;gap:7px;flex-wrap:wrap;padding:0;margin:0}
-    .alpha-training-names li{padding:5px 9px;background:var(--raised,#1c2a3a);border:1px solid var(--line);border-radius:5px;font-size:13px;color:var(--text)}
+    .alpha-training-names li{padding:5px 9px;background:var(--raised,#1c2a3a);border:1px solid var(--line);border-radius:5px;font-size:13px;color:var(--text);display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap}
+    .alpha-training-move{min-height:32px;padding:5px 9px;background:var(--blue-soft);border:1px solid var(--blue);border-radius:5px;color:var(--blue);font-size:12px;font-weight:750}
+    .alpha-training-edit-form{display:grid;gap:10px}
+    .alpha-training-edit-form input{min-height:44px}
+    .alpha-training-edit-buttons{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
     .alpha-training-empty,.alpha-training-source{color:var(--muted);font-size:12px;line-height:1.5}
     .alpha-training-modal-head{display:flex;justify-content:space-between;align-items:start;gap:10px;margin-bottom:15px}
     .alpha-training-modal-head h2{margin:0 0 4px;font-size:19px}
@@ -129,7 +135,7 @@
       <p class="alpha-calendar-note" id="alphaCalendarNote">Blue highlights show Alpha's regular workdays. Tap Training or OT to see officers for that date. V = Volunteer OT, R = Required OT. Calendar display does not change the rotation.</p>
     </div>
     <section class="alpha-training-roster" aria-labelledby="alphaOTHeading"><h3 id="alphaOTHeading">OT history · Newest first</h3><div id="alphaOTDates" aria-live="polite"></div><p class="alpha-training-source">Last 12 months and next 2 months · V = Volunteer, R = Required. Canceled or called-off OT is excluded.</p></section>
-    <section class="alpha-training-roster" aria-labelledby="alphaTrainingHeading"><h3 id="alphaTrainingHeading">Training schedule · Newest first</h3><div id="alphaTrainingDates"></div><p class="alpha-training-source">Alpha roster matches only · Supplied Training schedule, Rev-2 (Oct. 1, 2026). Calendar-only annotations; no OT assignment, drop, or attendance record is created.</p></section>`;
+    <section class="alpha-training-roster" aria-labelledby="alphaTrainingHeading"><h3 id="alphaTrainingHeading">Training schedule · Newest first</h3><div id="alphaTrainingDates"></div><p class="alpha-training-source">Calendar Training dates are editable by Admins and Editors. Moving a date does not create an OT list movement.</p></section>`;
   app.appendChild(calendarPanel);
   const detail = document.createElement('dialog');
   detail.id = 'alphaTacticalDialog';
@@ -137,6 +143,48 @@
   detail.innerHTML = '<div class="modal"><div class="alpha-training-modal-head"><div><h2 id="alphaTacticalTitle">Training</h2><p id="alphaTacticalDate"></p></div><button type="button" class="dark" id="alphaTacticalClose">Close</button></div><ul class="alpha-training-names" id="alphaTacticalNames"></ul><p class="alpha-training-source">Calendar-only schedule. No OT assignment, drop, or attendance record is created.</p></div>';
   document.body.appendChild(detail);
   document.getElementById('alphaTacticalClose').addEventListener('click', () => detail.close());
+  const trainingEditDialog=document.createElement('dialog');
+  trainingEditDialog.id='alphaTrainingMoveDialog';
+  trainingEditDialog.setAttribute('aria-labelledby','alphaTrainingMoveTitle');
+  trainingEditDialog.innerHTML='<form method="dialog" class="modal alpha-training-edit-form" id="alphaTrainingMoveForm"><h2 id="alphaTrainingMoveTitle">Move Training date</h2><p class="alpha-training-source" id="alphaTrainingMoveOfficer"></p><label for="alphaTrainingMoveDate">New Training date</label><input type="date" id="alphaTrainingMoveDate" required><p class="alpha-training-source">Changes the calendar schedule only. It does not add or reverse a Training assignment or move anyone on the OT rotation.</p><div class="alpha-training-edit-buttons"><button type="button" class="dark" id="alphaTrainingMoveCancel">Cancel</button><button type="submit" class="blue" id="alphaTrainingMoveSave">Save new date</button></div></form>';
+  document.body.appendChild(trainingEditDialog);
+  document.getElementById('alphaTrainingMoveCancel').addEventListener('click',()=>trainingEditDialog.close());
+  let editingTrainingName=null,trainingSaving=false;
+  const canEditTraining=()=>role==='editor'||role==='admin';
+  function trainingNamesHTML(names){
+    return names.map(name=>`<li>${escapeHTML(name)}${canEditTraining()?` <button type="button" class="alpha-training-move" data-move-training="${escapeHTML(name)}" aria-label="Move Training date for ${escapeHTML(name)}">Move</button>`:''}</li>`).join('');
+  }
+  function beginTrainingMove(name){
+    if(!canEditTraining())return;
+    const current=Object.keys(tactical).find(date=>tactical[date]?.includes(name));
+    if(!current)return toast('Training date not found. Refresh the calendar.');
+    editingTrainingName=name;
+    document.getElementById('alphaTrainingMoveOfficer').textContent=name+' · currently '+fmt(current);
+    document.getElementById('alphaTrainingMoveDate').value=current;
+    if(detail.open)detail.close();
+    trainingEditDialog.showModal();
+  }
+  trainingEditDialog.querySelector('form').addEventListener('submit',async event=>{
+    event.preventDefault();
+    if(trainingSaving||!canEditTraining()||!editingTrainingName)return;
+    const date=document.getElementById('alphaTrainingMoveDate').value;
+    if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date))return toast('Select a Training date');
+    trainingSaving=true;
+    document.getElementById('alphaTrainingMoveSave').disabled=true;
+    try {
+      await api('/rest/v1/rpc/alpha_move_training_calendar',{
+        method:'POST',
+        body:JSON.stringify({p_officer_name:editingTrainingName,p_new_date:date})
+      });
+      trainingEditDialog.close();
+      try {await loadTrainingCalendar();toast('Training calendar updated');}
+      catch(error){toast('Saved. Reopen Calendar/Training to refresh.');}
+    }catch(error){toast(error.message)}
+    finally{
+      trainingSaving=false;
+      document.getElementById('alphaTrainingMoveSave').disabled=false;
+    }
+  });
   const otDetail = document.createElement('dialog');
   otDetail.id = 'alphaOTDialog';
   otDetail.setAttribute('aria-labelledby', 'alphaOTTitle');
@@ -230,10 +278,30 @@
       const dates = grouped[key].sort().reverse();
       const label = monthFormatter.format(monthOf(key + '-01'));
       const open = trainingMonthOpenStates.has(key) ? trainingMonthOpenStates.get(key) : index === 0;
-      return `<details class="alpha-ot-month alpha-training-month" data-training-month="${key}"${open ? ' open' : ''}><summary><span class="alpha-ot-month-label">${escapeHTML(label)} <span class="alpha-ot-month-count">${dates.length} Training days</span></span></summary><div class="alpha-ot-month-content">${dates.map(iso => `<article class="alpha-training-card" data-training-roster="${iso}"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso+'T00:00:00Z')))}</h4><span class="badge">Training · ${tactical[iso].length}</span></div><ul class="alpha-training-names">${namesHTML(tactical[iso])}</ul></article>`).join('')}</div></details>`;
+      return `<details class="alpha-ot-month alpha-training-month" data-training-month="${key}"${open ? ' open' : ''}><summary><span class="alpha-ot-month-label">${escapeHTML(label)} <span class="alpha-ot-month-count">${dates.length} Training days</span></span></summary><div class="alpha-ot-month-content">${dates.map(iso => `<article class="alpha-training-card" data-training-roster="${iso}"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso+'T00:00:00Z')))}</h4><span class="badge">Training · ${tactical[iso].length}</span></div><ul class="alpha-training-names">${trainingNamesHTML(tactical[iso])}</ul></article>`).join('')}</div></details>`;
     }).join('') : '<p class="alpha-training-empty">No Training dates have been added.</p>';
   }
   renderTrainingMonths();
+  async function loadTrainingCalendar(){
+    const rows=await api('/rest/v1/rpc/alpha_training_calendar',{
+      method:'POST',auth:false,body:'{}'
+    });
+    if(!Array.isArray(rows))throw new Error('Invalid Training schedule response');
+    const grouped=Object.create(null);
+    for(const item of rows){
+      if(!item||typeof item.name!=='string'||!/^\\d{4}-\\d{2}-\\d{2}$/.test(item.date))continue;
+      (grouped[item.date]||=([])).push(item.name);
+    }
+    tactical=grouped;
+    renderCalendar();
+    renderTrainingMonths();
+  }
+  const trainingEditClick=event=>{
+    const target=event.target.closest('[data-move-training]');
+    if(target){event.preventDefault();beginTrainingMove(target.dataset.moveTraining);}
+  };
+  trainingDatesContainer.addEventListener('click',trainingEditClick);
+  detail.addEventListener('click',trainingEditClick);
 
   // Keep each month expanded/collapsed as the viewer chooses.
   const otHistoryContainer = document.getElementById('alphaOTDates');
@@ -349,12 +417,17 @@
     const iso = button.dataset.trainingDate, names = tactical[iso];
     if (!names) return;
     document.getElementById('alphaTacticalDate').textContent = dayFormatter.format(new Date(iso + 'T00:00:00Z'));
-    document.getElementById('alphaTacticalNames').innerHTML = namesHTML(names);
+    document.getElementById('alphaTacticalNames').innerHTML = trainingNamesHTML(names);
     detail.showModal();
   });
   function selectTab(index, focus) {
     if ((typeof reorderBusy !== 'undefined' && reorderBusy) || (typeof drag !== 'undefined' && drag)) return;
-    if (index === 1) { loadCalendarOT(); loadOTHistory(); } else otRequest++;
+    if (index === 1) {
+      renderTrainingMonths();
+      loadCalendarOT();
+      loadOTHistory();
+      loadTrainingCalendar().catch(()=>toast('Unable to refresh Training calendar. Try again.'));
+    } else otRequest++;
     tabButtons.forEach((button, i) => {
       button.setAttribute('aria-selected', String(i === index));
       button.tabIndex = i === index ? 0 : -1;
@@ -395,6 +468,10 @@
   // Keep the open calendar current when supervisors record/call off OT.
   setInterval(() => { if (!calendarPanel.hidden && document.visibilityState === 'visible' && !otLoading) loadCalendarOT(); }, 60000);
   setInterval(() => { if (!calendarPanel.hidden && document.visibilityState === 'visible' && !historyLoading) loadOTHistory(); }, 300000);
+  setInterval(() => {
+    if(!calendarPanel.hidden && document.visibilityState==='visible' && !trainingEditDialog.open && !detail.open)
+      loadTrainingCalendar().catch(()=>{});
+  },60000);
 })();
 // Bereavement feature: October 2026
 
