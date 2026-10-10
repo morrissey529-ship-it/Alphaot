@@ -1,38 +1,56 @@
-# Alpha OT Training drop order — implemented October 10, 2026
+# Alpha OT — Training order by the original list position
+**Corrected and verified: October 10, 2026.**
 
-## Rule
-When several officers are assigned Training for **the same work date**, they must
-drop as a group in **their existing relative rotation order**, regardless of
-the order in which their Training assignments are entered. The officer already
-farther down the list must still be farther down after both drop.
+## Rule (plain English)
+When two or more officers are assigned Training **for the same Training date**,
+they move to the end of the rotation **in the relative order they occupied
+immediately before the first Training assignment for that date**.
 
-Example: Luttrell is above Leadingham before assignments for October 14.
-Even if Leadingham is recorded first and Luttrell second, the resulting
-Training group must show Luttrell before Leadingham. The manual correction
-made on October 10 is preserved.
+Entering officers in a different sequence must not change that result.
 
-- A Training assignment still affects rotation immediately when entered.
-- Training is grouped by **Training date**, rather than by operator entry order.
-- On each additional Training assignment for that date, the rotation engine
-  moves the currently valid Training participants together in their existing
-  relative positions. It excludes reversed Training events.
-- Existing admin/manual corrections remain in the rotation history.
-- Volunteer and Required OT retain their separate established block logic:
-  volunteers by workday first, then requireds by workday.
-- Bereavement remains a non-dropping status, unrelated to Training.
-- Older Training history before the October 10, 2026 cutover stays unchanged.
+Example: Engelman was above Kent before October 14 Training was assigned.
+Engelman remains above Kent after both have been recorded, whether Engelman
+or Kent was entered first. Likewise, Luttrell remains above Leadingham.
 
-## Implementation
-Both the Alpha OT and Alpha OT Beta Supabase databases have:
-- `alpha_private.apply_training_group(uuid[], date, timestamptz)`
-- A branch in `alpha_private.replay_segment(uuid[],timestamptz,timestamptz)`
-  for Training actions from **2026-10-10 11:26:00 UTC** onward, delegating
-  to `alpha_private.apply_training_group`.
+## How the application enforces this rule
+- Before the **first Training assignment** for a given work date, the database
+  records a private snapshot of the complete OT list's existing order.
+- On every additional Training assignment for that same date, the database
+  repositions the valid (non-reversed) Training participants according to
+  that unchanged snapshot, rather than by the sequence of entries.
+- Training still drops immediately when assigned.
+- Prior history and **manual Admin corrections are preserved**; no existing
+  events or manually entered corrections were deleted.
+- The Training-date snapshot is preserved even if there were manual list
+  moves between Training entries.
+- The **Volunteer OT then Required OT** block ordering rule is separate
+  and was not modified.
+- This new behavior applies to Training entries at or after
+  **2026-10-10 11:26 UTC**; older Training history retains its prior logic.
 
-Database migrations:
-- `training_order_helper`
-- `training_group_rotation_engine`
+## Deployment, regression test and storage
+The following migrations were installed on **both** Alpha OT and Alpha OT Beta:
+- `training_positions_snapshot_storage`
+- `capture_initial_positions_for_training_assignments`
+- `training_drop_order_uses_pre_group_snapshot`
 
-Important: these two database migrations must be transferred along with the
-application during any company handoff. This is a backend rotation rule;
-no calendar or front-end changes are needed.
+The private schema stores:
+`alpha_private.training_group_positions`
+
+The existing October 14 production Training group was seeded using the list
+position immediately before its first Training entry, rather than today's
+already-dropped positions.
+
+Beta regression test: adding Engelman then Kent **and** adding Kent then
+Engelman both result in Engelman before Kent. A four-officer test adding
+Leadingham, Kent, Luttrell and Engelman in reverse order produces the expected
+pre-Training order. Tests were performed in transactions and rolled back.
+
+On production, the verified October 14 Training group order is:
+1. Engelman
+2. Luttrell
+3. Kent, C
+4. Leadingham
+
+See `database/alpha_training_position_order_20261010.sql` for reproducible
+database migration code. No website or calendar frontend change is necessary.
