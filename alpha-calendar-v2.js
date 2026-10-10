@@ -417,7 +417,7 @@
     return oldApi(path,options);
   };
   const style=document.createElement('style');
-  style.textContent='.badge.bereavement{background:#274350;color:#b9ebf4}.bereavement-dates{font-size:12px;color:var(--muted);margin:6px 0}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}@media(max-width:460px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}';
+  style.textContent='.badge.bereavement{background:#274350;color:#b9ebf4}.bereavement-void-badge{background:#653b20;color:#ffe4b5}.bereavement-void-card{border-left:3px solid #b68b52}.bereavement-dates{font-size:12px;color:var(--muted);margin:6px 0}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}@media(max-width:460px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}';
   document.head.appendChild(style);
   const stats=document.querySelector('.stats');
   if(stats&&!document.getElementById('bc')){
@@ -426,9 +426,54 @@
     stat.innerHTML='<b id="bc">0</b><span>Bereavement</span>';
     stats.appendChild(stat);
   }
+  // Eligibility is evaluated for the next Alpha off-day OT block, not
+  // just today's status. A future Bereavement overlap voids the officer
+  // for that entire block without moving their row in the rotation.
+  const plusDays=(iso,n)=>{
+    const d=new Date(iso+'T12:00:00Z');
+    d.setUTCDate(d.getUTCDate()+n);
+    return d.toISOString().slice(0,10);
+  };
+  const nextOTBlock=()=>{
+    let date=today();
+    for(let i=0;i<15&&alphaWorks(date);i++)date=plusDays(date,1);
+    const start=date;
+    let end=date;
+    for(let i=0;i<7&&!alphaWorks(date);i++){
+      end=date;
+      date=plusDays(date,1);
+    }
+    return {start,end};
+  };
+  const voidForBereavement=(officer,block)=>
+    !!(officer.bereavement_start_date&&officer.bereavement_return_date
+       &&officer.bereavement_start_date<=block.end
+       &&officer.bereavement_return_date>block.start);
   const priorRender=render;
   render=function(){
     priorRender();
+    const upcoming=nextOTBlock();
+    let eligibleNumber=0;
+    for(const officer of officers){
+      const card=document.getElementById('c-'+officer.id);
+      if(!card)continue;
+      const voidLeave=voidForBereavement(officer,upcoming);
+      const canNumber=eligible(officer)&&!voidLeave;
+      if(canNumber)eligibleNumber++;
+      const positionNumber=card.querySelector('.num');
+      if(positionNumber){
+        positionNumber.textContent=canNumber?String(eligibleNumber):'–';
+        positionNumber.classList.toggle('off',!canNumber);
+      }
+      card.classList.toggle('bereavement-void-card',voidLeave);
+      if(voidLeave){
+        const badge=document.createElement('span');
+        badge.className='badge bereavement-void-badge';
+        badge.textContent='VOID · Bereavement';
+        badge.title='Unavailable for the next OT block; original rotation position retained';
+        card.querySelector('.nameRow')?.appendChild(badge);
+      }
+    }
     document.getElementById('oc').textContent=officers.filter(o=>o.status==='Off Shift').length;
     document.getElementById('bc').textContent=officers.filter(o=>o.status==='Bereavement').length;
     for(const o of officers){
