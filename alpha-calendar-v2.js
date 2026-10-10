@@ -449,16 +449,34 @@
     !!(officer.bereavement_start_date&&officer.bereavement_return_date
        &&officer.bereavement_start_date<=block.end
        &&officer.bereavement_return_date>block.start);
+  // Power is eligible only when the next Alpha OT Friday actually arrives.
+  // Do not number Haberkorn during the lead-up to that Friday.
+  const alphaOTFriday=()=>{
+    let cursor=today(), eligibleNow=false, nextFriday='';
+    for(let day=0;day<22;day++){
+      const candidate=plusDays(cursor,day);
+      if(new Date(candidate+'T12:00:00Z').getUTCDay()===5
+         && !alphaWorks(candidate)){
+        eligibleNow=day===0;
+        nextFriday=candidate;
+        break;
+      }
+    }
+    return {available:eligibleNow,label:eligibleNow
+      ? 'Available: OT Friday'
+      : 'Unavailable until OT Friday · '+fmt(nextFriday)};
+  };
   const priorRender=render;
   render=function(){
     priorRender();
     const upcoming=nextOTBlock();
+    const powerDay=alphaOTFriday();
     let eligibleNumber=0;
     for(const officer of officers){
       const card=document.getElementById('c-'+officer.id);
       if(!card)continue;
       const voidLeave=voidForBereavement(officer,upcoming);
-      const canNumber=eligible(officer)&&!voidLeave;
+      const canNumber=eligible(officer)&&!voidLeave&&(officer.crew!=='Power'||powerDay.available);
       if(canNumber)eligibleNumber++;
       const positionNumber=card.querySelector('.num');
       if(positionNumber){
@@ -466,10 +484,15 @@
         positionNumber.classList.toggle('off',!canNumber);
       }
       card.classList.toggle('bereavement-void-card',voidLeave);
+      if(officer.crew==='Power'){
+        const detail=card.querySelector('.main .meta');
+        if(detail)detail.textContent=powerDay.label;
+        card.classList.toggle('power-ineligible',!powerDay.available);
+      }
       if(voidLeave){
         const badge=document.createElement('span');
         badge.className='badge bereavement-void-badge';
-        badge.textContent='VOID · Bereavement';
+        badge.textContent='Bereavement';
         badge.title='Unavailable for the next OT block; original rotation position retained';
         card.querySelector('.nameRow')?.appendChild(badge);
       }
