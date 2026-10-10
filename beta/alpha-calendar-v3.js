@@ -55,6 +55,11 @@
     .alpha-ot-code.required{background:#934452}
     .alpha-ot-card{border-left-color:#477da9}
     .alpha-ot-card .alpha-training-heading .badge{background:#193b57;color:#b6dfff}
+    .alpha-ot-called-off{opacity:.7;background:var(--bg);border-color:var(--line)}
+    .alpha-ot-called-off .alpha-ot-person{text-decoration:line-through;text-decoration-thickness:1.5px}
+    .alpha-ot-called-off-label{display:inline-block;padding:3px 6px;border-radius:4px;background:var(--line);color:var(--text);font-size:11px;font-weight:750;text-decoration:none}
+    .alpha-ot-called-off-note{display:block;margin-top:7px;color:var(--muted);font-size:12px}
+    .alpha-ot-code{flex-shrink:0}
     .alpha-ot-month{margin:0 0 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
     .alpha-ot-month summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:51px;padding:12px 15px;cursor:pointer;color:var(--text);font-weight:750;list-style:none}
     .alpha-ot-month summary::-webkit-details-marker{display:none}
@@ -134,7 +139,7 @@
       </div>
       <p class="alpha-calendar-note" id="alphaCalendarNote">Blue highlights show Alpha's regular workdays. Tap Training or OT to see officers for that date. V = Volunteer OT, R = Required OT. Calendar display does not change the rotation.</p>
     </div>
-    <section class="alpha-training-roster" aria-labelledby="alphaOTHeading"><h3 id="alphaOTHeading">OT history · Newest first</h3><div id="alphaOTDates" aria-live="polite"></div><p class="alpha-training-source">Last 12 months and next 2 months · V = Volunteer, R = Required. Canceled or called-off OT is excluded.</p></section>
+    <section class="alpha-training-roster" aria-labelledby="alphaOTHeading"><h3 id="alphaOTHeading">OT history · Newest first</h3><div id="alphaOTDates" aria-live="polite"></div><p class="alpha-training-source">Last 12 months and next 2 months · V = Volunteer, R = Required. Gray crossed-out names = Called Off; Undo and corrections are excluded. Assignments do not confirm attendance.</p></section>
     <section class="alpha-training-roster" aria-labelledby="alphaTrainingHeading"><h3 id="alphaTrainingHeading">Training schedule · Newest first</h3><div id="alphaTrainingDates"></div><p class="alpha-training-source">Calendar Training dates are editable by Admins and Editors. Moving a date does not create an OT list movement.</p></section>`;
   app.appendChild(calendarPanel);
   const detail = document.createElement('dialog');
@@ -188,7 +193,7 @@
   const otDetail = document.createElement('dialog');
   otDetail.id = 'alphaOTDialog';
   otDetail.setAttribute('aria-labelledby', 'alphaOTTitle');
-  otDetail.innerHTML = '<div class="modal"><div class="alpha-training-modal-head"><div><h2 id="alphaOTTitle">Overtime</h2><p id="alphaOTDate"></p></div><button type="button" class="dark" id="alphaOTClose">Close</button></div><ul class="alpha-training-names" id="alphaOTNames"></ul><p class="alpha-training-source">V = Volunteer OT · R = Required OT. Shows valid recorded assignments; canceled entries are excluded.</p></div>';
+  otDetail.innerHTML = '<div class="modal"><div class="alpha-training-modal-head"><div><h2 id="alphaOTTitle">Overtime</h2><p id="alphaOTDate"></p></div><button type="button" class="dark" id="alphaOTClose">Close</button></div><ul class="alpha-training-names" id="alphaOTNames"></ul><p class="alpha-training-source">V = Volunteer OT · R = Required OT. Gray crossed-out names are recorded call-offs. Other assignments are not proof of attendance. Undo/corrections are excluded.</p></div>';
   document.body.appendChild(otDetail);
   document.getElementById('alphaOTClose').addEventListener('click', () => otDetail.close());
   const tabs = document.createElement('div');
@@ -213,7 +218,11 @@
     return new Date(Date.UTC(year, month - 1, 1));
   }
   function namesHTML(names) { return names.map(name => `<li>${escapeHTML(name)}</li>`).join(''); }
-  function otNamesHTML(entries) { return entries.map(item => `<li>${escapeHTML(item.name)} <span class="alpha-ot-code ${item.code === 'R' ? 'required' : ''}" aria-label="${item.code === 'R' ? 'Required' : 'Volunteer'} OT">${item.code}</span></li>`).join(''); }
+  function otNamesHTML(entries) { return entries.map(item => {
+    const calledOff=item.status==='called_off';
+    return `<li${calledOff?' class="alpha-ot-called-off"':''}><span class="alpha-ot-person">${escapeHTML(item.name)}</span> <span class="alpha-ot-code ${item.code === 'R' ? 'required' : ''}" aria-label="${item.code === 'R' ? 'Required' : 'Volunteer'} OT">${item.code}</span>${calledOff?' <span class="alpha-ot-called-off-label">Called Off</span>':''}</li>`;
+  }).join(''); }
+  const calledOffCount=entries=>entries.filter(item=>item.status==='called_off').length;
   let month = monthOf(centralToday());
   let renderedToday = '';
   let otByDate = Object.create(null);
@@ -246,7 +255,9 @@
       const classes = [workday ? 'alpha-workday' : '', outside ? 'alpha-calendar-outside' : ''].filter(Boolean).join(' ');
       const label = `${dayFormatter.format(date)}: ${workday ? 'Alpha working' : 'Alpha off'}${isToday ? '; Today' : ''}`;
       const trainingHTML = names ? `<button type="button" class="alpha-calendar-training" data-training-date="${iso}" aria-label="Training on ${escapeHTML(dayFormatter.format(date))}, ${names.length} Alpha officers; show names">Training</button>` : '';
-      const otHTML = otEntries.length ? `<button type="button" class="alpha-calendar-ot" data-ot-date="${iso}" aria-label="Overtime on ${escapeHTML(dayFormatter.format(date))}, ${otEntries.length} recorded assignments; show names">OT</button>` : '';
+      const offCount=calledOffCount(otEntries);
+      const activeCount=otEntries.length-offCount;
+      const otHTML = otEntries.length ? `<button type="button" class="alpha-calendar-ot" data-ot-date="${iso}" aria-label="Overtime on ${escapeHTML(dayFormatter.format(date))}, ${activeCount} active assignments${offCount?', '+offCount+' called off':''}; show names">OT${offCount?`<span>${offCount} off</span>`:''}</button>` : '';
       html += `<td class="${classes}" data-date="${iso}" data-workday="${workday}" aria-label="${escapeHTML(label)}"${isToday ? ' aria-current="date"' : ''}><div class="alpha-calendar-day"><span class="alpha-calendar-date">${date.getUTCDate()}</span><span class="alpha-calendar-duty">${workday ? 'Work' : 'Off'}</span>${trainingHTML}${otHTML}</div></td>`;
       if (index % 7 === 6) html += '</tr>';
     }
@@ -323,7 +334,7 @@
       const label = monthFormatter.format(monthOf(key + '-01'));
       const open = monthOpenStates.has(key) ? monthOpenStates.get(key) : index === 0;
       const dates = Object.keys(entries).sort().reverse();
-      return `<details class="alpha-ot-month" data-ot-month="${key}"${open ? ' open' : ''}><summary><span class="alpha-ot-month-label">${escapeHTML(label)} <span class="alpha-ot-month-count">${dates.length} OT days</span></span></summary><div class="alpha-ot-month-content">${dates.map(iso => `<article class="alpha-training-card alpha-ot-card"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso+'T00:00:00Z')))}</h4><span class="badge">OT · ${entries[iso].length}</span></div><ul class="alpha-training-names">${otNamesHTML(entries[iso])}</ul></article>`).join('')}</div></details>`;
+      return `<details class="alpha-ot-month" data-ot-month="${key}"${open ? ' open' : ''}><summary><span class="alpha-ot-month-label">${escapeHTML(label)} <span class="alpha-ot-month-count">${dates.length} OT days</span></span></summary><div class="alpha-ot-month-content">${dates.map(iso => `<article class="alpha-training-card alpha-ot-card"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso+'T00:00:00Z')))}</h4><span class="badge">OT · ${entries[iso].length-calledOffCount(entries[iso])} active${calledOffCount(entries[iso])?` · ${calledOffCount(entries[iso])} called off`:''}</span></div><ul class="alpha-training-names">${otNamesHTML(entries[iso])}</ul></article>`).join('')}</div></details>`;
     }).join('');
   }
   // Read the independent, read-only OT history without changing any assignments.
@@ -354,7 +365,7 @@
           const monthKey = item.date.slice(0,7);
           if (!grouped[monthKey]) grouped[monthKey] = Object.create(null);
           if (!grouped[monthKey][item.date]) grouped[monthKey][item.date] = [];
-          grouped[monthKey][item.date].push({name:item.name,code:item.code});
+          grouped[monthKey][item.date].push({name:item.name,code:item.code,status:item.status==='called_off'?'called_off':'assigned'});
         }
       }
       historyInitialized = true;
@@ -390,7 +401,7 @@
       const grouped = Object.create(null);
       for (const item of records) {
         if (!item || !/^\d{4}-\d{2}-\d{2}$/.test(item.date) || typeof item.name !== 'string' || !['V','R'].includes(item.code)) continue;
-        (grouped[item.date] ||= []).push({name:item.name,code:item.code});
+        (grouped[item.date] ||= []).push({name:item.name,code:item.code,status:item.status==='called_off'?'called_off':'assigned'});
       }
       otByDate = grouped;
       otError = '';
