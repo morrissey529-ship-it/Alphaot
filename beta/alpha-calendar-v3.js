@@ -531,12 +531,24 @@
       end=date;
       date=plusDays(date,1);
     }
-    return {start,end};
+    // The regular work block directly after the OT block determines
+    // eligibility too, even if Bereavement does not fall on the OT days.
+    const followingWorkStart=date;
+    let followingWorkEnd=date;
+    for(let i=0;i<7&&alphaWorks(date);i++){
+      followingWorkEnd=date;
+      date=plusDays(date,1);
+    }
+    return {start,end,followingWorkStart,followingWorkEnd};
   };
-  const voidForBereavement=(officer,block)=>
-    !!(officer.bereavement_start_date&&officer.bereavement_return_date
-       &&officer.bereavement_start_date<=block.end
-       &&officer.bereavement_return_date>block.start);
+  const voidForBereavement=(officer,block)=>{
+    const start=officer.bereavement_start_date;
+    const back=officer.bereavement_return_date;
+    if(!start||!back)return false;
+    const overlaps=(first,last)=>start<=last&&back>first;
+    return overlaps(block.start,block.end)||
+      overlaps(block.followingWorkStart,block.followingWorkEnd);
+  };
   // Power is eligible only when the next Alpha OT Friday actually arrives.
   // Do not number Haberkorn during the lead-up to that Friday.
   const alphaOTFriday=()=>{
