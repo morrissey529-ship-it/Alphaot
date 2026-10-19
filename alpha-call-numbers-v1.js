@@ -28,7 +28,8 @@
     'Luttrell': 50,
     'Urbano': 88,
     'Reigh': 181,
-    'Haberkorn': 62
+    'Haberkorn': 62,
+    'Cruz': 89
   });
 
   const style = document.createElement('style');
@@ -70,7 +71,9 @@
   function displayCallNumbers() {
     if (!Array.isArray(officers)) return;
     for (const officer of officers) {
-      const num = callNumbers[officer.name];
+      const assigned = Number(officer.call_number);
+      const num = Number.isInteger(assigned) && assigned >= 1 && assigned <= 9999
+        ? assigned : callNumbers[officer.name];
       if (!Number.isInteger(num)) continue;
       const card = document.getElementById('c-' + officer.id);
       const main = card && card.querySelector('.main');
