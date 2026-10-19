@@ -1,0 +1,49 @@
+/* Alpha home presentation only. Shared list, permissions and Beta are unchanged. */
+.app > header{position:relative;top:auto;z-index:auto;background:transparent;backdrop-filter:none;border:0;padding-bottom:0}
+.app > header .head{margin-bottom:18px}
+.infoHub{padding:18px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,#192b3e 0%,var(--surface) 65%);box-shadow:0 8px 28px #0002}
+.hubHeading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 14px;margin-bottom:14px}
+.hubEyebrow{color:var(--text);font-size:11px;font-weight:750;letter-spacing:.12em;text-transform:uppercase}
+.hubDate{color:var(--muted);font-size:12px}
+.hubGrid{display:grid;grid-template-columns:1.15fr 1fr;gap:12px}
+.hubTesting,.hubCalloff{min-width:0;padding:15px 16px;border:1px solid var(--line);border-radius:12px;background:#0d141e60}
+.hubTesting{border-color:#3e6383;background:linear-gradient(120deg,#22415c80,#15243380)}
+.hubLabel{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:12px;font-weight:600}
+.hubDot{width:6px;height:6px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 3px #91c9fc15}
+#alphaTestingType{margin:8px 0 6px;color:var(--text);font-size:23px;line-height:1.25;letter-spacing:-.025em;font-weight:750}
+.hubDetail{color:var(--muted);font-size:12px;line-height:1.5}
+.hubCalloff #calloffPhone{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;color:var(--blue);font-size:21px;line-height:1.25;letter-spacing:-.025em;font-weight:750;text-decoration:none;font-variant-numeric:tabular-nums}
+.hubCalloff #calloffPhone:hover{text-decoration:underline;text-underline-offset:4px}
+.hubCalloff #calloffPhone span{font-size:18px;color:var(--muted)}
+.infoHub .stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0 0}
+.infoHub .stat{min-width:0;padding:11px 12px;border-color:var(--line);border-radius:10px;background:#0d141e45;box-shadow:none}
+.infoHub .stat b{font-size:24px;line-height:1.2}
+.infoHub .stat span{margin-top:3px;font-size:11px}
+.infoHub .stat:has(#ac) b{color:var(--green)}
+.infoHub .stat:has(#vc) b{color:var(--amber)}
+.infoHub .stat:has(#bc) b{color:#b9ebf4}
+.hubNotice{margin-top:13px;color:var(--muted);font-size:12px;line-height:1.5}
+.infoHub .tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px;padding-top:13px;border-top:1px solid var(--line)}
+.infoHub .tools button{min-height:44px;padding:9px 12px;font-size:12px}
+.app > header .alpha-tabs{margin-top:12px}
+@media(max-width:540px){
+  .app > header .head{margin-bottom:14px}
+  .infoHub{padding:14px;border-radius:15px}
+  .hubGrid{grid-template-columns:1fr;gap:10px}
+  .hubTesting,.hubCalloff{padding:12px 14px}
+  #alphaTestingType{font-size:24px;margin:6px 0 4px}
+  .hubCalloff{display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px}
+  .hubCalloff #calloffPhone{grid-column:2;grid-row:1 / 3;font-size:19px;gap:10px}
+  .hubCalloff .hubDetail{font-size:11px}
+  .infoHub .stat{padding:10px 6px}
+  .infoHub .stat span{font-size:10px}
+  .infoHub .tools{gap:7px}
+  .infoHub .tools button{flex:1 1 auto}
+}
+@media(max-width:374px){
+  .hubCalloff{display:block}
+  .hubCalloff .hubDetail{display:none}
+  .infoHub .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .infoHub .stat{display:flex;align-items:center;gap:9px;padding:9px 10px}
+  .infoHub .stat span{margin:0}
+}
