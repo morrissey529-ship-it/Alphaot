@@ -139,7 +139,7 @@
       </div>
       <p class="alpha-calendar-note" id="alphaCalendarNote">Blue highlights show Alpha's regular workdays. Tap Training or OT to see officers for that date. V = Volunteer OT, R = Required OT. Calendar display does not change the rotation.</p>
     </div>
-    <section class="alpha-training-roster" aria-labelledby="alphaOTHeading"><h3 id="alphaOTHeading">OT history · Newest first</h3><div id="alphaOTDates" aria-live="polite"></div><p class="alpha-training-source">Last 12 months and next 2 months · V = Volunteer, R = Required. Gray crossed-out names = Called Off; Undo and corrections are excluded. Assignments do not confirm attendance.</p></section>
+    <div class="alpha-ot-two-column"><section class="alpha-training-roster" aria-labelledby="alphaOTHeading"><h3 id="alphaOTHeading">OT history · Newest first</h3><div id="alphaOTDates" aria-live="polite"></div><p class="alpha-training-source">Last 12 months and next 2 months · V = Volunteer, R = Required. Gray crossed-out names = Called Off; Undo and corrections are excluded. Assignments do not confirm attendance.</p></section><section class="alpha-training-roster" aria-labelledby="alphaMonthlySpotsHeading"><h3 id="alphaMonthlySpotsHeading">Monthly OT Spots</h3><label class="alpha-training-source" for="alphaSpotsMonth">Select month</label><select id="alphaSpotsMonth" aria-label="Monthly OT spots month"></select><div id="alphaMonthlySpots" aria-live="polite"></div><p class="alpha-training-source">Volunteer (V) and Required (R) assignments. Called-off and undone assignments do not count. Totals reflect assigned spots, not confirmed attendance.</p></section></div>
     <section class="alpha-training-roster" aria-labelledby="alphaTrainingHeading"><h3 id="alphaTrainingHeading">Training schedule · Newest first</h3><div id="alphaTrainingDates"></div><p class="alpha-training-source">Calendar Training dates are editable by Admins and Editors. Moving a date does not create an OT list movement.</p></section>`;
   app.appendChild(calendarPanel);
   const detail = document.createElement('dialog');
@@ -322,6 +322,31 @@
       monthOpenStates.set(details.dataset.otMonth, details.open);
     }
   }, true);
+  function renderMonthlySpots(grouped){
+    const picker=document.getElementById('alphaSpotsMonth');
+    const target=document.getElementById('alphaMonthlySpots');
+    const months=Object.keys(grouped).sort().reverse();
+    const selected=picker.value;
+    const current=centralToday().slice(0,7);
+    const available=months.includes(current)?months:[current,...months];
+    picker.innerHTML=available.map(m=>`<option value="${m}">${escapeHTML(monthFormatter.format(monthOf(m+'-01')))}</option>`).join('');
+    picker.value=available.includes(selected)?selected:(available.includes(current)?current:available[0]);
+    const show=()=>{
+      const counts=new Map();
+      const dates=grouped[picker.value]||{};
+      for(const entries of Object.values(dates))for(const item of entries){
+        if(item.status==='called_off')continue;
+        const row=counts.get(item.name)||{name:item.name,v:0,r:0};
+        if(item.code==='V')row.v++;else if(item.code==='R')row.r++;
+        counts.set(item.name,row);
+      }
+      const rows=[...counts.values()].sort((a,b)=>(b.v+b.r)-(a.v+a.r)||a.name.localeCompare(b.name));
+      target.innerHTML='<div class="alpha-spots-row alpha-spots-head"><span>Officer</span><span>V</span><span>R</span><span>Total</span></div>'+
+        (rows.length?rows.map(row=>`<div class="alpha-spots-row"><span class="alpha-spots-name">${escapeHTML(row.name)}</span><span>${row.v}</span><span>${row.r}</span><span class="alpha-spots-total">${row.v+row.r}</span></div>`).join(''):'<p class="alpha-training-empty">No active OT assignments for this month.</p>');
+    };
+    picker.onchange=show;
+    show();
+  }
   function renderOTHistory(grouped) {
     const months = Object.keys(grouped).sort().reverse();
     if (!months.length) {
@@ -370,6 +395,7 @@
       }
       historyInitialized = true;
       renderOTHistory(grouped);
+      renderMonthlySpots(grouped);
     } catch(error) {
       if (request === historyRequest && !historyInitialized) {
         otHistoryContainer.innerHTML = '<p class="alpha-training-empty" role="alert">Unable to load OT history. Reopen Calendar/Training to retry.</p>';
@@ -506,6 +532,17 @@
   };
   const style=document.createElement('style');
   style.textContent='.badge.bereavement{background:#274350;color:#b9ebf4}.bereavement-void-badge{background:#653b20;color:#ffe4b5}.bereavement-void-card{border-left:3px solid #b68b52}.bereavement-dates{font-size:12px;color:var(--muted);margin:6px 0}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}@media(max-width:460px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}';
+  style.textContent += `
+    .alpha-ot-two-column{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+    .alpha-ot-two-column .alpha-training-roster{min-width:0}
+    #alphaSpotsMonth{width:100%;min-height:40px;margin:8px 0 12px}
+    .alpha-spots-row{display:grid;grid-template-columns:minmax(0,1fr) 36px 36px 42px;align-items:center;gap:5px;padding:9px 4px;border-bottom:1px solid var(--line);font-size:12px}
+    .alpha-spots-row .alpha-spots-name{overflow-wrap:anywhere}
+    .alpha-spots-row span:not(.alpha-spots-name){text-align:center;font-variant-numeric:tabular-nums}
+    .alpha-spots-head{font-size:11px;font-weight:750;color:var(--muted)}
+    .alpha-spots-total{font-weight:800;color:var(--text)}
+    @media(max-width:650px){.alpha-ot-two-column{grid-template-columns:1fr}}
+  `;
   document.head.appendChild(style);
   const stats=document.querySelector('.stats');
   if(stats&&!document.getElementById('bc')){
