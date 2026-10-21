@@ -15,11 +15,15 @@
     return get('year')+'-'+get('month')+'-'+get('day');
   };
   async function refresh(force=false){
-    const end=chicagoDate();
-    if(loading||(!force&&end===lastDate&&Date.now()-lastUpdated<60000))return;
+    const today=chicagoDate();
+    const monthStart=today.slice(0,7)+'-01';
+    const [year,month]=today.slice(0,7).split('-').map(Number);
+    const monthEnd=new Date(Date.UTC(year,month,0)).toISOString().slice(0,10);
+    if(loading||(!force&&today===lastDate&&Date.now()-lastUpdated<60000))return;
     loading=true;
     try{
-      const start=end.slice(0,7)+'-01';
+      const start=monthStart;
+      const end=monthEnd;
       const rows=await api('/rest/v1/rpc/alpha_calendar_ot',{
         method:'POST',auth:false,body:JSON.stringify({p_from:start,p_through:end})
       });
@@ -35,8 +39,8 @@
       daysEl.textContent=String(days.size);
       spotsEl.textContent=String(spots);
       avgEl.textContent=days.size?(spots/days.size).toFixed(2):'0.00';
-      labelEl.textContent=new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'long',year:'numeric'}).format(new Date(start+'T12:00:00Z'))+' · Through today';
-      lastDate=end;lastUpdated=Date.now();
+      labelEl.textContent=new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'long',year:'numeric'}).format(new Date(start+'T12:00:00Z'))+' · Scheduled this month';
+      lastDate=today;lastUpdated=Date.now();
     }catch(error){
       if(!lastUpdated)labelEl.textContent='Unable to load totals · Try Refresh';
     }finally{loading=false;}
