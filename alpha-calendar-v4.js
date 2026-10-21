@@ -328,7 +328,7 @@
     const cutoff=centralToday();
     for(const [date,entries] of Object.entries(dates)){
       if(monthKey===currentMonth&&date>cutoff)continue;
-      for(const item of entries)if(item.status!=='called_off')total++;
+      for(const item of entries)total++;
     }
     return total;
   }
