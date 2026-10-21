@@ -517,7 +517,7 @@
   };
   const style=document.createElement('style');
   style.textContent='.badge.bereavement{background:#274350;color:#b9ebf4}.bereavement-void-badge{background:#653b20;color:#ffe4b5}.bereavement-void-card{border-left:3px solid #b68b52}.bereavement-dates{font-size:12px;color:var(--muted);margin:6px 0}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}@media(max-width:460px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}';
-  styles.textContent += `
+  style.textContent += `
     .alpha-ot-month-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:6px 0 12px}
     .alpha-ot-month-stats span{padding:10px 5px;border:1px solid var(--line);border-radius:8px;background:var(--raised,#182638);color:var(--muted);font-size:11px;text-align:center}
     .alpha-ot-month-stats strong{display:block;color:var(--text);font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
