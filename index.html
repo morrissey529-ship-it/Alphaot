@@ -17,7 +17,15 @@ dialog{width:min(92vw,560px);max-height:85vh;overflow:auto;padding:0;border:1px 
 
 .reorderTools{display:flex;align-items:center;gap:5px;padding:6px 10px 0;justify-content:flex-end}.reorderTools button{min-height:32px;padding:4px 10px;font-size:13px}.dragHandle{touch-action:none;cursor:grab;min-width:90px}.dragHandle:active{cursor:grabbing}.card.dragging{opacity:.55;box-shadow:0 10px 28px #17324d33}.card.dropBefore{border-top:4px solid var(--blue)}.card.dropAfter{border-bottom:4px solid var(--blue)}.reorderTools button:disabled{opacity:.4;cursor:not-allowed}
 .calloffLine{display:flex;align-items:center;flex-wrap:wrap;column-gap:9px;margin-top:8px;padding-top:6px;border-top:1px solid var(--line)}.calloffLine>a{display:inline-flex;align-items:center;min-height:44px;padding:4px 2px;color:var(--blue);font-size:15px;font-weight:750;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}.calloffLine>a:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:4px}
-</style><link rel="stylesheet" href="alpha-dark-v1.css"><link rel="stylesheet" href="alpha-hub-v1.css?v=20261019-hub-v1"></head><body><div class="app"><header><div class="head"><div class="title"><div class="brand"><h1 class="brandTitle">Alpha OT</h1><div class="sub">Alpha Crew overtime rotation</div></div></div><div id="topMode" class="pill">View only</div></div><section class="infoHub" aria-label="Alpha OT information hub">
+
+/* Centered, restrained title with a balanced right-side status badge. */
+header .head{position:relative;display:flex;justify-content:center;align-items:center;min-height:48px;padding:0 90px}
+header .head .title,header .head .brand{width:100%;min-width:0;text-align:center}
+header .head .brandTitle{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:clamp(21px,3.6vw,29px);line-height:1.15;font-weight:780;letter-spacing:-.035em;color:#e6edf7;text-wrap:balance}
+header .head .sub{font-size:11px;letter-spacing:.055em;text-transform:uppercase;color:#98a9be;margin-top:5px}
+header .head #topMode{position:absolute;right:0;top:50%;transform:translateY(-50%)}
+@media(max-width:560px){header .head{display:flex;flex-direction:column;gap:9px;padding:0}header .head #topMode{position:static;transform:none;align-self:center}header .head .brandTitle{font-size:clamp(20px,5.2vw,25px)}}
+</style><link rel="stylesheet" href="alpha-dark-v1.css"><link rel="stylesheet" href="alpha-hub-v1.css?v=20261019-hub-v1"></head><body><div class="app"><header><div class="head"><div class="title"><div class="brand"><h1 class="brandTitle">Alpha Crew Overtime</h1><div class="sub">Overtime rotation and crew scheduling</div></div></div><div id="topMode" class="pill">View only</div></div><section class="infoHub" aria-label="Alpha OT information hub">
   <div class="hubHeading"><span class="hubEyebrow">Crew overview</span><span id="alphaHubDate" class="hubDate">Today · Central Time</span></div>
   <div class="hubGrid">
     <div class="hubTesting" role="group" aria-label="Today's testing">
