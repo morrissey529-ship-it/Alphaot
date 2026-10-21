@@ -289,7 +289,7 @@
       const dates = grouped[key].sort().reverse();
       const label = monthFormatter.format(monthOf(key + '-01'));
       const open = trainingMonthOpenStates.has(key) ? trainingMonthOpenStates.get(key) : index === 0;
-      return `<details class="alpha-ot-month alpha-training-month" data-training-month="${key}"${open ? ' open' : ''}><summary><span class="alpha-ot-month-label">${escapeHTML(label)} <span class="alpha-ot-month-count">${dates.length} Training days</span></span></summary><div class="alpha-ot-month-content">${dates.map(iso => `<article class="alpha-training-card" data-training-roster="${iso}"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso+'T00:00:00Z')))}</h4><span class="badge">Training · ${tactical[iso].length}</span></div><ul class="alpha-training-names">${trainingNamesHTML(tactical[iso])}</ul></article>`).join('')}</div></details>`;
+      return `<details class="alpha-ot-month alpha-training-month" data-training-month="${key}"${open ? ' open' : ''}><summary><span class="alpha-ot-month-label">${escapeHTML(label)} <span class="alpha-ot-month-count">${dates.length} Training days</span></span></summary><div class="alpha-ot-month-content"><div class="alpha-ot-month-stats"><span><strong>${monthlyOTStats(entries,key).days}</strong> OT days</span><span><strong>${monthlyOTStats(entries,key).spots}</strong> OT spots</span><span><strong>${monthlyOTStats(entries,key).average}</strong> Avg per OT day</span></div>${dates.map(iso => `<article class="alpha-training-card" data-training-roster="${iso}"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso+'T00:00:00Z')))}</h4><span class="badge">Training · ${tactical[iso].length}</span></div><ul class="alpha-training-names">${trainingNamesHTML(tactical[iso])}</ul></article>`).join('')}</div></details>`;
     }).join('') : '<p class="alpha-training-empty">No Training dates have been added.</p>';
   }
   renderTrainingMonths();
@@ -322,15 +322,15 @@
       monthOpenStates.set(details.dataset.otMonth, details.open);
     }
   }, true);
-  function monthlySpotCount(dates,monthKey){
-    let total=0;
-    const currentMonth=centralToday().slice(0,7);
-    const cutoff=centralToday();
-    for(const [date,entries] of Object.entries(dates)){
-      if(monthKey===currentMonth&&date>cutoff)continue;
-      for(const item of entries)total++;
+  function monthlyOTStats(dates,monthKey){
+    let days=0,spots=0;
+    const current=centralToday(),currentMonth=current.slice(0,7);
+    for(const [date,items] of Object.entries(dates)){
+      if(monthKey===currentMonth&&date>current)continue;
+      const count=items.filter(item=>item.status==='assigned'||item.status==='called_off').length;
+      if(count){days++;spots+=count;}
     }
-    return total;
+    return {days,spots,average:days?(spots/days).toFixed(2):'0.00'};
   }
   function renderOTHistory(grouped) {
     const months = Object.keys(grouped).sort().reverse();
@@ -344,7 +344,7 @@
       const label = monthFormatter.format(monthOf(key + '-01'));
       const open = monthOpenStates.has(key) ? monthOpenStates.get(key) : index === 0;
       const dates = Object.keys(entries).sort().reverse();
-      return `<details class="alpha-ot-month" data-ot-month="${key}"${open ? ' open' : ''}><summary><span class="alpha-ot-month-label">${escapeHTML(label)} <span class="alpha-ot-month-count">${dates.length} OT days · ${monthlySpotCount(entries,key)} OT spots scheduled so far</span></span></summary><div class="alpha-ot-month-content">${dates.map(iso => `<article class="alpha-training-card alpha-ot-card"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso+'T00:00:00Z')))}</h4><span class="badge">OT · ${entries[iso].length-calledOffCount(entries[iso])} active${calledOffCount(entries[iso])?` · ${calledOffCount(entries[iso])} called off`:''}</span></div><ul class="alpha-training-names">${otNamesHTML(entries[iso])}</ul></article>`).join('')}</div></details>`;
+      return `<details class="alpha-ot-month" data-ot-month="${key}"${open ? ' open' : ''}><summary><span class="alpha-ot-month-label">${escapeHTML(label)} <span class="alpha-ot-month-count">${monthlyOTStats(entries,key).days} OT days · ${monthlyOTStats(entries,key).spots} OT spots · ${monthlyOTStats(entries,key).average} avg/day</span></span></summary><div class="alpha-ot-month-content">${dates.map(iso => `<article class="alpha-training-card alpha-ot-card"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso+'T00:00:00Z')))}</h4><span class="badge">OT · ${entries[iso].length-calledOffCount(entries[iso])} active${calledOffCount(entries[iso])?` · ${calledOffCount(entries[iso])} called off`:''}</span></div><ul class="alpha-training-names">${otNamesHTML(entries[iso])}</ul></article>`).join('')}</div></details>`;
     }).join('');
   }
   // Read the independent, read-only OT history without changing any assignments.
@@ -517,6 +517,11 @@
   };
   const style=document.createElement('style');
   style.textContent='.badge.bereavement{background:#274350;color:#b9ebf4}.bereavement-void-badge{background:#653b20;color:#ffe4b5}.bereavement-void-card{border-left:3px solid #b68b52}.bereavement-dates{font-size:12px;color:var(--muted);margin:6px 0}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}@media(max-width:460px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}';
+  style.textContent += `
+    .alpha-ot-month-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:6px 0 12px}
+    .alpha-ot-month-stats span{padding:10px 5px;border:1px solid var(--line);border-radius:8px;background:var(--raised,#182638);color:var(--muted);font-size:11px;text-align:center}
+    .alpha-ot-month-stats strong{display:block;color:var(--text);font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+  `;
   document.head.appendChild(style);
   const stats=document.querySelector('.stats');
   if(stats&&!document.getElementById('bc')){
