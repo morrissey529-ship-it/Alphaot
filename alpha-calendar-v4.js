@@ -324,9 +324,7 @@
   }, true);
   function monthlyOTStats(dates,monthKey){
     let days=0,spots=0;
-    const current=centralToday(),currentMonth=current.slice(0,7);
     for(const [date,items] of Object.entries(dates)){
-      if(monthKey===currentMonth&&date>current)continue;
       const count=items.filter(item=>item.status==='assigned'||item.status==='called_off').length;
       if(count){days++;spots+=count;}
     }
