@@ -47,3 +47,11 @@
   .infoHub .stat{display:flex;align-items:center;gap:9px;padding:9px 10px}
   .infoHub .stat span{margin:0}
 }
+
+/* Compact Testing card, visually balanced with the call-off card. */
+.infoHub .hubTesting{display:flex;flex-direction:column;justify-content:center;min-height:104px;padding:13px 16px}
+.infoHub .hubTesting #alphaTestingType{margin:6px 0 0;font-size:clamp(19px,3vw,23px);line-height:1.25;letter-spacing:-.025em;font-weight:760}
+@media(max-width:540px){
+ .infoHub .hubTesting{min-height:82px;padding:12px 14px}
+ .infoHub .hubTesting #alphaTestingType{font-size:22px;margin-top:4px}
+}
