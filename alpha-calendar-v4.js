@@ -444,19 +444,21 @@
   });
   function selectTab(index, focus) {
     if ((typeof reorderBusy !== 'undefined' && reorderBusy) || (typeof drag !== 'undefined' && drag)) return;
-    if (index === 1) {
-      renderTrainingMonths();
-      loadCalendarOT();
-      loadOTHistory();
-      loadTrainingCalendar().catch(()=>toast('Unable to refresh Training calendar. Try again.'));
-    } else otRequest++;
-    tabButtons.forEach((button, i) => {
-      button.setAttribute('aria-selected', String(i === index));
-      button.tabIndex = i === index ? 0 : -1;
+    // Switch views first. Optional data requests must never block navigation.
+    tabButtons.forEach((button,i)=>{
+      button.setAttribute('aria-selected',String(i===index));
+      button.tabIndex=i===index?0:-1;
     });
-    listPanel.hidden = index !== 0;
-    calendarPanel.hidden = index !== 1;
-    if (focus) tabButtons[index].focus();
+    listPanel.hidden=index!==0;
+    calendarPanel.hidden=index!==1;
+    if(focus)tabButtons[index].focus();
+    if(index===1){
+      try{renderCalendar()}catch(error){console.error('Calendar render:',error)}
+      try{renderTrainingMonths()}catch(error){console.error('Training list:',error)}
+      Promise.resolve().then(()=>loadCalendarOT()).catch(error=>console.error('OT calendar:',error));
+      Promise.resolve().then(()=>loadOTHistory()).catch(error=>console.error('OT history:',error));
+      Promise.resolve().then(()=>loadTrainingCalendar()).catch(error=>console.error('Training calendar:',error));
+    }else{otRequest++;}
   }
   tabButtons.forEach((button, index) => button.addEventListener('click', () => selectTab(index, false)));
   tabs.addEventListener('keydown', event => {
