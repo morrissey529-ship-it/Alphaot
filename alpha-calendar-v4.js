@@ -540,19 +540,30 @@
   // Power is eligible only when the next Alpha OT Friday actually arrives.
   // Do not number Haberkorn during the lead-up to that Friday.
   const alphaOTFriday=()=>{
-    let cursor=today(), eligibleNow=false, nextFriday='';
-    for(let day=0;day<22;day++){
-      const candidate=plusDays(cursor,day);
+    // Power Crew is eligible while Alpha fills the upcoming Friday OT
+    // assignment, including before that Friday arrives.
+    const current=today();
+    let friday='';
+    for(let day=0;day<15;day++){
+      const candidate=plusDays(current,day);
       if(new Date(candidate+'T12:00:00Z').getUTCDay()===5
-         && !alphaWorks(candidate)){
-        eligibleNow=day===0;
-        nextFriday=candidate;
-        break;
-      }
+          && !alphaWorks(candidate)){friday=candidate;break;}
     }
-    return {available:eligibleNow,label:eligibleNow
-      ? 'Available: OT Friday'
-      : 'Unavailable until OT Friday · '+fmt(nextFriday)};
+    // Only count Friday within the immediate Alpha work block being filled.
+    // If today's regular block contains Mon–Thu, its Friday is the OT day.
+    let blockStart=current;
+    for(let day=0;day<6&&alphaWorks(plusDays(blockStart,-1));day++)
+      blockStart=plusDays(blockStart,-1);
+    let blockEnd=blockStart;
+    for(let day=0;day<6&&alphaWorks(plusDays(blockEnd,1));day++)
+      blockEnd=plusDays(blockEnd,1);
+    const eligibleFriday=plusDays(blockEnd,1);
+    const available=!!friday&&friday===eligibleFriday&&
+      new Date(friday+'T12:00:00Z').getUTCDay()===5&&
+      current<=friday&&current>=blockStart;
+    return {available,label:available
+      ? 'Available for Friday OT · '+fmt(friday)
+      : 'Unavailable until eligible Friday OT'};
   };
   const priorRender=render;
   render=function(){
