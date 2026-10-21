@@ -15,7 +15,7 @@
 .hubCalloff #calloffPhone{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;color:var(--blue);font-size:21px;line-height:1.25;letter-spacing:-.025em;font-weight:750;text-decoration:none;font-variant-numeric:tabular-nums}
 .hubCalloff #calloffPhone:hover{text-decoration:underline;text-underline-offset:4px}
 .hubCalloff #calloffPhone span{font-size:18px;color:var(--muted)}
-.infoHub .stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0 0}
+.infoHub .stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px auto 0;max-width:620px}.infoHub .stats:has(#bc){grid-template-columns:repeat(4,minmax(0,1fr))}
 .infoHub .stat{min-width:0;padding:11px 12px;border-color:var(--line);border-radius:10px;background:#0d141e45;box-shadow:none}
 .infoHub .stat b{font-size:24px;line-height:1.2}
 .infoHub .stat span{margin-top:3px;font-size:11px}
