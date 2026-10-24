@@ -9,7 +9,7 @@
   const dateTarget=document.getElementById('alphaHubDate');
   const nextTarget=document.getElementById('alphaTestingNext');
   const dateFormatter=new Intl.DateTimeFormat('en-US',{
-    timeZone:'America/Chicago',weekday:'short',month:'short',day:'numeric'
+    timeZone:'America/Chicago',weekday:'long',month:'long',day:'numeric',year:'numeric'
   });
   const formatter=new Intl.DateTimeFormat('en-CA',{
     timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'
@@ -24,7 +24,7 @@
     const index=((dayIndex%5)+5)%5;
     const label='Testing — '+tests[index];
     if(target.textContent!==label)target.textContent=label;
-    if(dateTarget)dateTarget.textContent=dateFormatter.format(now)+' · Central Time';
+    if(dateTarget)dateTarget.textContent=dateFormatter.format(now);
     if(nextTarget)nextTarget.textContent='Next: '+tests[(index+1)%5]+' · Rotates daily';
   }
   update();
