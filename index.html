@@ -38,10 +38,10 @@ header .head #topMode{position:absolute;right:0;top:50%;transform:translateY(-50
 .alpha-monthly-metric span{display:block;margin-top:5px;font-size:10px;line-height:1.3;color:var(--muted)}
 @media(max-width:420px){.alpha-monthly-summary{padding:10px}.alpha-monthly-metrics{gap:7px}.alpha-monthly-metric{padding:9px 3px}}
 </style></head><body><div class="app"><header><div class="head"><div class="title"><div class="brand"><h1 class="brandTitle">Alpha Crew Overtime</h1><div class="sub">Overtime rotation and crew scheduling</div></div></div><div id="topMode" class="pill">View only</div></div><section class="infoHub" aria-label="Alpha OT information hub">
-  <div class="hubHeading"><span class="hubEyebrow">Crew overview</span><span id="alphaHubDate" class="hubDate">Today · Central Time</span></div>
+  <div class="hubHeading"><span id="alphaHubDate" class="hubDate" role="status" aria-live="off">Loading date…</span></div>
   <div class="hubGrid">
     <div class="hubTesting" role="group" aria-label="Today's testing">
-      <div class="hubLabel">Testing</div>
+      
       <div id="alphaTestingType" role="status" aria-live="polite">Testing — Loading…</div>
     </div>
     <div class="hubCalloff">
