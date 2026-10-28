@@ -1,0 +1,68 @@
+/* Alpha OT: standalone IE/AS view, with existing dark design language. */
+.alpha-panel[hidden],.ieas-entry[hidden]{display:none!important}
+.app > header .alpha-tabs [role="tab"]{min-width:0;white-space:normal;overflow-wrap:normal;line-height:1.2;padding:10px 6px}
+.ieas-shell{margin-top:14px;display:grid;gap:12px}
+.ieas-head{padding:17px 19px;background:var(--surface);border:1px solid var(--line);border-radius:13px}
+.ieas-head h2{font-size:23px;line-height:1.25;margin:0 0 7px;color:var(--text)}
+.ieas-head p{color:var(--muted);font-size:13px;line-height:1.55;margin:0 0 14px}
+.ieas-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.ieas-summary span{padding:10px 6px;text-align:center;background:#0d141e60;border:1px solid var(--line);border-radius:10px;font-size:12px;color:var(--muted)}
+.ieas-summary strong{display:block;font-size:22px;font-variant-numeric:tabular-nums;color:var(--text)}
+.ieas-guide{font-size:12px;line-height:1.55;color:var(--muted);border-left:3px solid var(--blue);padding:6px 12px}
+.ieas-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ieas-toolbar h3{font-size:14px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0}
+.ieas-toolbar button{font-size:12px;min-height:39px;padding:8px 13px}
+.ieas-feedback{min-height:16px;font-size:12px;color:var(--muted)}
+.ieas-cards{display:grid;gap:10px}
+.ieas-card{padding:14px 15px;background:var(--surface);border:1px solid var(--line);border-radius:13px;box-shadow:0 1px 2px #0001}
+.ieas-card-main{display:flex;align-items:start;gap:13px}
+.ieas-number{width:47px;height:47px;flex:0 0 47px;background:var(--blue-soft);color:var(--blue);border-radius:10px;display:grid;place-items:center;font-size:21px;font-weight:780;font-variant-numeric:tabular-nums}
+.ieas-number-off{background:#222c38;color:var(--muted)}
+.ieas-person{min-width:0;flex:1}
+.ieas-name-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:31px}
+.ieas-name-line strong{font-size:19px;color:var(--text)}
+.ieas-badge{font-size:11px;border-radius:5px;padding:5px 8px;font-weight:750;white-space:nowrap}
+.ieas-active{background:#163e34;color:#89d9bc}
+.ieas-unavailable{background:#34323a;color:#e2b58e}
+.ieas-last{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.45}
+.ieas-call{margin-top:5px;color:var(--muted);font-size:12px}
+.ieas-card-tools{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
+.ieas-card-tools button{font-size:12px;padding:7px 14px;min-height:37px}
+.ieas-entry{margin-top:12px;border-top:1px solid var(--line);padding-top:13px}
+.ieas-entry-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.ieas-entry-grid label{display:grid;gap:5px;color:var(--muted);font-size:12px;font-weight:650}
+.ieas-entry-grid input,.ieas-entry-grid select{min-width:0;width:100%;min-height:43px;padding:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:8px;font-size:14px}
+.ieas-form-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ieas-form-actions button{flex:1 1 170px;min-height:43px;padding:8px 12px;font-size:13px}
+.ieas-entry .ieas-small{margin:10px 0 0}
+.ieas-small{font-size:12px;line-height:1.5;color:var(--muted)}
+.ieas-history-modal{width:min(620px,calc(100vw - 40px));max-height:80vh;overflow-y:auto}
+.ieas-history-head{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.ieas-history-head h2{font-size:19px;margin:0}
+.ieas-history-head button{min-height:37px;font-size:12px}
+.ieas-history-item{border:1px solid var(--line);background:#0d141e60;border-radius:8px;padding:10px 12px;margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:space-between;color:var(--text);font-size:13px;line-height:1.4}
+.ieas-cancelled{opacity:.65;text-decoration:line-through}
+.ieas-small-btn{font-size:11px;padding:7px 9px;min-height:33px}
+@media(max-width:540px){
+ .app > header .alpha-tabs{gap:4px;padding:4px}
+ .app > header .alpha-tabs [role="tab"]{font-size:11.5px;padding:10px 3px;min-height:51px}
+ .ieas-shell{margin-top:12px;gap:10px}
+ .ieas-head{padding:14px}
+ .ieas-head h2{font-size:20px}
+ .ieas-head p{font-size:12px}
+ .ieas-summary strong{font-size:20px}
+ .ieas-summary span{font-size:11px;padding:9px 4px}
+ .ieas-card{padding:12px}
+ .ieas-card-main{gap:11px}
+ .ieas-number{width:42px;height:42px;flex-basis:42px;font-size:19px}
+ .ieas-name-line strong{font-size:17px}
+ .ieas-entry-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ieas-entry-grid label:last-child{grid-column:1/-1}
+ .ieas-entry-grid input,.ieas-entry-grid select{font-size:16px}
+ .ieas-form-actions{display:grid;grid-template-columns:1fr;gap:8px}
+}
+@media(max-width:350px){
+ .app > header .alpha-tabs [role="tab"]{font-size:10.5px}
+ .ieas-card-main{gap:8px}
+ .ieas-name-line strong{font-size:16px}
+}
