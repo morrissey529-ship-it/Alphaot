@@ -231,6 +231,10 @@
     if(snapshot){renderPodium(snapshot);renderRecorder(snapshot);}
     if(!panel.hidden)void load();
   };
+  const authMode=document.getElementById('topMode');
+  if(authMode&&typeof MutationObserver==='function'){
+    new MutationObserver(()=>window.alphaOTWorkedUpdateAccess()).observe(authMode,{childList:true,subtree:true,characterData:true});
+  }
   setInterval(()=>{
     if(!panel.hidden&&document.visibilityState==='visible'&&!saving)void load();
   },30000);
