@@ -147,6 +147,7 @@
       monthCount.textContent='';
       notice.textContent='';
       monthPicker.innerHTML='';
+      pickerStamp=null;
       return;
     }
     monthOptions(data);
