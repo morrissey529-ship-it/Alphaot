@@ -45,6 +45,7 @@
       if(!lastUpdated)labelEl.textContent='Unable to load totals · Try Refresh';
     }finally{loading=false;}
   }
+  window.alphaOTMonthlyRefresh=()=>refresh(true);
   refresh();
   setInterval(()=>refresh(),60000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh(true)});
