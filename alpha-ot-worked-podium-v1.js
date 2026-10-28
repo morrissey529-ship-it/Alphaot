@@ -28,7 +28,7 @@
     '<div class="otworked-stage" id="alphaWorkedPodium" aria-live="polite">'+
       '<p class="otworked-initial">Loading rankings…</p>'+
     '</div>'+
-    '<details class="otworked-all" id="alphaWorkedAllDetails">'+
+    '<details class="otworked-all" id="alphaWorkedAllDetails" hidden>'+
       '<summary id="alphaWorkedAllSummary">All officer totals</summary>'+
       '<div class="otworked-all-rows" id="alphaWorkedAllRows"></div>'+
     '</details>';
@@ -42,7 +42,7 @@
     '<details class="otworked-record-details" id="alphaWorkedRecordDetails">'+
       '<summary>Record Worked OT</summary>'+
       '<div class="otworked-record-content">'+
-        '<p class="otworked-explainer">Confirm completed shifts to update the year-to-date rankings. Scheduling alone does not count.</p>'+
+        '<p class="otworked-explainer">Previous OT entries were imported as a starting estimate. Correct any shifts not actually worked. For new assignments, tap Mark Worked after the shift is completed.</p>'+
         '<div class="otworked-record-toolbar">'+
           '<label for="alphaWorkedMonth">Month</label>'+
           '<select id="alphaWorkedMonth" aria-label="Choose month for worked OT confirmations"></select>'+
@@ -56,6 +56,7 @@
 
   const podium=board.querySelector('#alphaWorkedPodium');
   const podiumYear=board.querySelector('#alphaWorkedPodiumYear');
+  const allDetails=board.querySelector('#alphaWorkedAllDetails');
   const allSummary=board.querySelector('#alphaWorkedAllSummary');
   const allRows=board.querySelector('#alphaWorkedAllRows');
   const recorder=recordCard.querySelector('#alphaWorkedRecordDetails');
@@ -78,13 +79,13 @@
     const name=person?safeName(person.name):'—';
     const total=person?Number(person.worked):0;
     const accessible=person
-      ?place.number+' place: '+person.name+', '+total+' confirmed OT '+(total===1?'shift':'shifts')+' worked'
+      ?place.number+' place: '+person.name+', '+total+' recorded OT '+(total===1?'day':'days')+' worked'
       :place.number+' place: no confirmed overtime worker yet';
     return '<div class="otworked-place otworked-'+place.place+'" aria-label="'+esc(accessible)+'">'+
       '<div class="otworked-person">'+
         '<span class="otworked-medal" role="img" aria-label="'+place.medalName+'">'+place.medal+'</span>'+
         '<strong class="otworked-name">'+name+'</strong>'+
-        '<span class="otworked-total">'+(person?total+' '+(total===1?'shift':'shifts'):'Not ranked')+'</span>'+
+        '<span class="otworked-total">'+(person?total+' '+(total===1?'OT day':'OT days'):'Not ranked')+'</span>'+
       '</div>'+
       '<div class="otworked-platform"><strong>'+place.number+'</strong><span>'+place.ordinal+'</span></div>'+
     '</div>';
@@ -93,20 +94,29 @@
   function renderPodium(data){
     const all=Array.isArray(data.leaderboard)?data.leaderboard:[];
     const ranked=all.filter(item=>Number(item.worked)>0);
-    podiumYear.textContent=String(data.year)+' year to date · Confirmed OT shifts worked';
+    podiumYear.textContent=String(data.year)+' year to date · Recorded OT days · Resets January 1';
     // CSS displays silver left, gold center, and bronze right; DOM keeps logical 1st / 2nd / 3rd order.
     podium.innerHTML=podiumPlaces.map(place=>podiumSlot(place,ranked[place.number-1])).join('');
     podium.classList.toggle('otworked-no-results',ranked.length===0);
-    allSummary.textContent='View all '+all.length+' officer totals';
-    allRows.innerHTML=all.map((officer,index)=>{
-      const worked=Number(officer.worked)||0;
-      const label=worked>0?String(index+1):'—';
-      return '<div class="otworked-all-row">'+
-        '<span class="otworked-all-rank">'+label+'</span>'+
-        '<span class="otworked-all-name">'+esc(officer.name)+'</span>'+
-        '<strong class="otworked-all-total">'+worked+'</strong>'+
-      '</div>';
-    }).join('')||'<p class="otworked-empty">No officers available.</p>';
+    // Both client and database enforce admin-only access to the complete list.
+    const adminCanSeeAll=typeof role!=='undefined'&&role==='admin'&&data.can_view_all===true;
+    allDetails.hidden=!adminCanSeeAll;
+    if(adminCanSeeAll){
+      allSummary.textContent='View all '+all.length+' officer totals';
+      allRows.innerHTML=all.map((officer,index)=>{
+        const worked=Number(officer.worked)||0;
+        const label=worked>0?String(index+1):'—';
+        return '<div class="otworked-all-row">'+
+          '<span class="otworked-all-rank">'+label+'</span>'+
+          '<span class="otworked-all-name">'+esc(officer.name)+'</span>'+
+          '<strong class="otworked-all-total">'+worked+'</strong>'+
+        '</div>';
+      }).join('')||'<p class="otworked-empty">No officers available.</p>';
+    }else{
+      allDetails.open=false;
+      allRows.textContent='';
+      allSummary.textContent='';
+    }
     recordCard.hidden=!canEdit();
   }
   function monthOptions(data){
@@ -132,13 +142,20 @@
   }
   function renderRecorder(data){
     recordCard.hidden=!canEdit();
-    if(!canEdit())return;
+    if(!canEdit()){
+      eventsList.textContent='';
+      monthCount.textContent='';
+      notice.textContent='';
+      monthPicker.innerHTML='';
+      return;
+    }
     monthOptions(data);
     const candidates=(Array.isArray(data.assignments)?data.assignments:[])
       .filter(entry=>String(entry.date).slice(0,7)===selectedMonth);
-    const confirmed=candidates.filter(entry=>entry.worked).length;
+    const counted=candidates.filter(entry=>entry.worked).length;
+    const imported=candidates.filter(entry=>entry.worked&&entry.source==='historical_ot_record').length;
     monthCount.textContent=candidates.length
-      ?confirmed+' confirmed worked · '+(candidates.length-confirmed)+' awaiting confirmation'
+      ?counted+' recorded worked entries · '+(candidates.length-counted)+' awaiting confirmation'+(imported?' · '+imported+' imported from history':'')
       :'No recorded overtime assignments for '+monthName(selectedMonth)+'.';
     const dayGroups=new Map();
     for(const item of candidates){
@@ -150,12 +167,14 @@
         '<h4>'+esc(dayName(date))+'</h4>'+
         entries.map(item=>{
           const worked=item.worked===true;
+          const fromHistory=worked&&item.source==='historical_ot_record';
+          const statusLabel=fromHistory?'From OT records':worked?'Confirmed worked':'Unconfirmed';
           const code=item.type==='Required OT'?'R':'V';
           return '<div class="otworked-event-row">'+
             '<div class="otworked-event-info">'+
               '<strong>'+esc(item.name)+'</strong>'+
               '<span class="otworked-event-code '+(code==='R'?'otworked-required':'otworked-volunteer')+'" aria-label="'+(code==='R'?'Required OT':'Volunteer OT')+'">'+code+'</span>'+
-              '<span class="otworked-work-status '+(worked?'otworked-confirmed':'')+'">'+(worked?'Worked':'Unconfirmed')+'</span>'+
+              '<span class="otworked-work-status '+(worked?'otworked-confirmed':'')+'">'+statusLabel+'</span>'+
             '</div>'+
             '<button type="button" class="'+(worked?'dark':'blue')+' otworked-toggle" data-event-id="'+esc(item.event_id)+'" data-worked="'+(worked?'true':'false')+'" aria-label="'+(worked?'Undo worked confirmation for ':'Mark overtime worked for ')+esc(item.name)+' on '+esc(dayName(date))+'">'+(worked?'Undo Worked':'Mark Worked')+'</button>'+
           '</div>';
@@ -171,7 +190,7 @@
     const thisRequest=++requestSequence;
     try{
       const data=await api('/rest/v1/rpc/alpha_ot_worked_overview',{
-        method:'POST',auth:false,body:'{}'
+        method:'POST',body:'{}'
       });
       if(thisRequest!==requestSequence)return;
       if(!data||typeof data.year!=='number'||!Array.isArray(data.leaderboard)||!Array.isArray(data.assignments)){
