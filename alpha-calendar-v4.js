@@ -139,9 +139,17 @@
       </div>
       <p class="alpha-calendar-note" id="alphaCalendarNote">Blue highlights show Alpha's regular workdays. Tap Training or OT to see officers for that date. V = Volunteer OT, R = Required OT. Calendar display does not change the rotation.</p>
     </div>
-    <section class="alpha-training-roster" aria-labelledby="alphaOTHeading"><h3 id="alphaOTHeading">OT history · Newest first</h3><div id="alphaOTDates" aria-live="polite"></div><p class="alpha-training-source">Last 12 months and next 2 months · V = Volunteer, R = Required. Gray crossed-out names = Called Off; Undo and corrections are excluded. Assignments do not confirm attendance.</p></section>
     <section class="alpha-training-roster" aria-labelledby="alphaTrainingHeading"><h3 id="alphaTrainingHeading">Training schedule · Newest first</h3><div id="alphaTrainingDates"></div><p class="alpha-training-source">Calendar Training dates are editable by Admins and Editors. Moving a date does not create an OT list movement.</p></section>`;
   app.appendChild(calendarPanel);
+  const statsPanel = document.createElement('section');
+  statsPanel.id = 'alphaStatsPanel';
+  statsPanel.className = 'alpha-panel';
+  statsPanel.setAttribute('role', 'tabpanel');
+  statsPanel.setAttribute('aria-labelledby', 'alphaStatsTab');
+  statsPanel.tabIndex = 0;
+  statsPanel.hidden = true;
+  statsPanel.innerHTML = "<div class=\"otstats-shell\">\n<div class=\"otstats-title-row\"><h2>OT Statistics</h2><button type=\"button\" class=\"dark\" id=\"alphaStatsRefresh\">Refresh</button></div>\n<p class=\"otstats-description\">Scheduled overtime, including recorded call-offs. Undone assignments and corrections are excluded.</p>\n<section class=\"alpha-monthly-summary\" aria-labelledby=\"alphaMonthlyHeading\">\n  <div class=\"alpha-monthly-summary-heading\"><h2 id=\"alphaMonthlyHeading\">Current Month</h2><span id=\"alphaMTDMonth\">Loading…</span></div>\n  <div class=\"alpha-monthly-metrics\">\n    <div class=\"alpha-monthly-metric\"><strong id=\"alphaMTDDays\">—</strong><span>OT days</span></div>\n    <div class=\"alpha-monthly-metric\"><strong id=\"alphaMTDSpots\">—</strong><span>OT spots</span></div>\n    <div class=\"alpha-monthly-metric\"><strong id=\"alphaMTDAverage\">—</strong><span>Average per day</span></div>\n  </div>\n</section>\n<section class=\"otstats-chart-card\" aria-labelledby=\"alphaStatsSpotsHeading\">\n  <h3 id=\"alphaStatsSpotsHeading\">Monthly OT Spots</h3>\n  <p class=\"otstats-chart-desc\">Scheduled spots each month, including recorded call-offs.</p>\n  <div id=\"alphaStatsSpotsChart\" class=\"otstats-chart-scroll\" aria-live=\"polite\"><p class=\"otstats-empty\">Loading monthly chart…</p></div>\n</section>\n<section class=\"otstats-chart-card\" aria-labelledby=\"alphaStatsAverageHeading\">\n  <h3 id=\"alphaStatsAverageHeading\">Average Spots per OT Day</h3>\n  <p class=\"otstats-chart-desc\">Monthly trend calculated as OT spots divided by days with scheduled OT.</p>\n  <div id=\"alphaStatsAverageChart\" class=\"otstats-chart-scroll\" aria-live=\"polite\"><p class=\"otstats-empty\">Loading monthly chart…</p></div>\n  <p id=\"alphaStatsChartsStatus\" class=\"otstats-chart-desc\" role=\"status\" aria-live=\"polite\"></p>\n</section>\n<section class=\"alpha-training-roster otstats-history\" aria-labelledby=\"alphaOTHeading\">\n  <h3 id=\"alphaOTHeading\">OT History · Newest First</h3>\n  <div id=\"alphaOTDates\" aria-live=\"polite\"><p class=\"alpha-training-empty\">Open OT Stats to load the history.</p></div>\n  <p class=\"alpha-training-source\">All recorded months, including empty months in between. V = Volunteer, R = Required. Called-off assignments remain counted; undone assignments are excluded. Scheduling does not confirm attendance.</p>\n</section>\n</div>";
+  app.appendChild(statsPanel);
   const detail = document.createElement('dialog');
   detail.id = 'alphaTacticalDialog';
   detail.setAttribute('aria-labelledby', 'alphaTacticalTitle');
@@ -200,7 +208,7 @@
   tabs.className = 'alpha-tabs';
   tabs.setAttribute('role', 'tablist');
   tabs.setAttribute('aria-label', 'Alpha OT views');
-  tabs.innerHTML = '<button type="button" role="tab" id="alphaListTab" aria-controls="alphaListPanel" aria-selected="true">OT List</button><button type="button" role="tab" id="alphaIEASTab" aria-controls="alphaIEASPanel" aria-selected="false" tabindex="-1">In Early/<wbr>Aftershift</button><button type="button" role="tab" id="alphaCalendarTab" aria-controls="alphaCalendarPanel" aria-selected="false" tabindex="-1">Calendar/Training</button>';
+  tabs.innerHTML = '<button type="button" role="tab" id="alphaListTab" aria-controls="alphaListPanel" aria-selected="true">OT List</button><button type="button" role="tab" id="alphaIEASTab" aria-controls="alphaIEASPanel" aria-selected="false" tabindex="-1">In Early/<wbr>Aftershift</button><button type="button" role="tab" id="alphaCalendarTab" aria-controls="alphaCalendarPanel" aria-selected="false" tabindex="-1">Calendar/Training</button><button type="button" role="tab" id="alphaStatsTab" aria-controls="alphaStatsPanel" aria-selected="false" tabindex="-1">OT Stats</button>';
   header.appendChild(tabs);
   const ieasPanel = document.createElement('section');
   ieasPanel.id = 'alphaIEASPanel';
@@ -350,7 +358,7 @@
       const label = monthFormatter.format(monthOf(key + '-01'));
       const open = monthOpenStates.has(key) ? monthOpenStates.get(key) : index === 0;
       const dates = Object.keys(entries).sort().reverse();
-      return `<details class="alpha-ot-month" data-ot-month="${key}"${open ? ' open' : ''}><summary><span class="alpha-ot-month-label">${escapeHTML(label)} <span class="alpha-ot-month-count">${monthlyOTStats(entries,key).days} OT days · ${monthlyOTStats(entries,key).spots} OT spots · ${monthlyOTStats(entries,key).average} avg/day</span></span></summary><div class="alpha-ot-month-content"><div class="alpha-ot-month-stats"><span><strong>${monthlyOTStats(entries,key).days}</strong> OT days</span><span><strong>${monthlyOTStats(entries,key).spots}</strong> OT spots</span><span><strong>${monthlyOTStats(entries,key).average}</strong> Avg per OT day</span></div>${dates.map(iso => `<article class="alpha-training-card alpha-ot-card"><div class="alpha-training-heading"><h4>${escapeHTML(shortFormatter.format(new Date(iso+'T00:00:00Z')))}</h4><span class="badge">OT · ${entries[iso].length-calledOffCount(entries[iso])} active${calledOffCount(entries[iso])?` · ${calledOffCount(entries[iso])} called off`:''}</span></div><ul class="alpha-training-names">${otNamesHTML(entries[iso])}</ul></article>`).join('')}</div></details>`;
+      return `<details class="alpha-ot-month" data-ot-month="${key}"${open ? ' open' : ''}><summary><span class="alpha-ot-month-label">${escapeHTML(label)} <span class="alpha-ot-month-count">${monthlyOTStats(entries,key).days} OT days · ${monthlyOTStats(entries,key).spots} OT spots · ${monthlyOTStats(entries,key).average} avg/day</span></span></summary><div class="alpha-ot-month-content"><div class="alpha-ot-month-stats"><span><strong>${monthlyOTStats(entries,key).days}</strong> OT days</span><span><strong>${monthlyOTStats(entries,key).spots}</strong> OT spots</span><span><strong>${monthlyOTStats(entries,key).average}</strong> Avg per OT day</span></div>${!dates.length?'<p class="alpha-training-empty">No scheduled OT for this month.</p>':''}${dates.map(iso => `<article class="alpha-training-card alpha-ot-card"><div class="alpha-training-heading"><h4>${escapeHTML(dayFormatter.format(new Date(iso+'T00:00:00Z')))}</h4><span class="badge">OT · ${entries[iso].length-calledOffCount(entries[iso])} active${calledOffCount(entries[iso])?` · ${calledOffCount(entries[iso])} called off`:''}</span></div><ul class="alpha-training-names">${otNamesHTML(entries[iso])}</ul></article>`).join('')}</div></details>`;
     }).join('');
   }
   // Read the independent, read-only OT history without changing any assignments.
@@ -360,20 +368,30 @@
     const request = ++historyRequest;
     historyLoading = true;
     if (!historyInitialized) otHistoryContainer.innerHTML = '<p class="alpha-training-empty">Loading OT history…</p>';
-    const todayMonth = monthOf(centralToday());
-    const start = new Date(Date.UTC(todayMonth.getUTCFullYear(),todayMonth.getUTCMonth()-11,1));
-    const end = new Date(Date.UTC(todayMonth.getUTCFullYear(),todayMonth.getUTCMonth()+3,0));
-    const parts = [];
-    for (let begin = new Date(start); begin <= end; begin.setUTCDate(begin.getUTCDate()+60)) {
-      const last = new Date(Math.min(Date.UTC(begin.getUTCFullYear(),begin.getUTCMonth(),begin.getUTCDate()+59),end.getTime()));
-      parts.push({p_from:begin.toISOString().slice(0,10),p_through:last.toISOString().slice(0,10)});
-    }
     try {
+      const todayMonth = monthOf(centralToday());
+      const bounds = await api('/rest/v1/rpc/alpha_ot_history_bounds', {
+        method:'POST',auth:false,body:'{}'
+      });
+      const isDate = value => typeof value==='string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
+      const firstMonth = isDate(bounds?.first_date) ? monthOf(bounds.first_date) : todayMonth;
+      const finalRecordedMonth = isDate(bounds?.last_date) ? monthOf(bounds.last_date) : todayMonth;
+      const start = new Date(Math.min(todayMonth.getTime(),firstMonth.getTime()));
+      const lastMonth = new Date(Math.max(todayMonth.getTime(),finalRecordedMonth.getTime()));
+      const end = new Date(Date.UTC(lastMonth.getUTCFullYear(),lastMonth.getUTCMonth()+1,0));
+      const grouped = Object.create(null);
+      for (let marker = new Date(start); marker <= end; marker.setUTCMonth(marker.getUTCMonth()+1)) {
+        grouped[marker.toISOString().slice(0,7)] = Object.create(null);
+      }
+      const parts = [];
+      for (let begin = new Date(start); begin <= end; begin.setUTCDate(begin.getUTCDate()+60)) {
+        const last = new Date(Math.min(Date.UTC(begin.getUTCFullYear(),begin.getUTCMonth(),begin.getUTCDate()+59),end.getTime()));
+        parts.push({p_from:begin.toISOString().slice(0,10),p_through:last.toISOString().slice(0,10)});
+      }
       const responses = await Promise.all(parts.map(params => api('/rest/v1/rpc/alpha_calendar_ot', {
         method:'POST', auth:false, body:JSON.stringify(params)
       })));
       if (request !== historyRequest) return;
-      const grouped = Object.create(null);
       for (const response of responses) {
         if (!Array.isArray(response)) throw new Error('Unexpected OT history response');
         for (const item of response) {
@@ -386,10 +404,12 @@
       }
       historyInitialized = true;
       renderOTHistory(grouped);
+      window.alphaOTStatsRender?.(grouped);
 
     } catch(error) {
-      if (request === historyRequest && !historyInitialized) {
-        otHistoryContainer.innerHTML = '<p class="alpha-training-empty" role="alert">Unable to load OT history. Reopen Calendar/Training to retry.</p>';
+      if (request === historyRequest) {
+        if (!historyInitialized) otHistoryContainer.innerHTML = '<p class="alpha-training-empty" role="alert">Unable to load OT history. Reopen OT Stats to retry.</p>';
+        window.alphaOTStatsError?.('Unable to refresh OT statistics. Try Refresh.');
       }
     } finally {
       if (request === historyRequest) historyLoading = false;
@@ -458,6 +478,7 @@
     listPanel.hidden=index!==0;
     ieasPanel.hidden=index!==1;
     calendarPanel.hidden=index!==2;
+    statsPanel.hidden=index!==3;
     if(focus)tabButtons[index].focus();
     if(index===1){
       Promise.resolve().then(()=>window.alphaIEASLoad?.()).catch(error=>console.error('IE/AS view:',error));
@@ -466,19 +487,20 @@
       try{renderCalendar()}catch(error){console.error('Calendar render:',error)}
       try{renderTrainingMonths()}catch(error){console.error('Training list:',error)}
       Promise.resolve().then(()=>loadCalendarOT()).catch(error=>console.error('OT calendar:',error));
-      Promise.resolve().then(()=>loadOTHistory()).catch(error=>console.error('OT history:',error));
       Promise.resolve().then(()=>loadTrainingCalendar()).catch(error=>console.error('Training calendar:',error));
     }else{otRequest++;}
+    if(index===3) Promise.resolve().then(()=>loadOTHistory()).catch(error=>console.error('OT Stats:',error));
   }
+  window.alphaOTStatsRefresh=()=>loadOTHistory();
   tabButtons.forEach((button, index) => button.addEventListener('click', () => selectTab(index, false)));
   tabs.addEventListener('keydown', event => {
     const index = tabButtons.indexOf(document.activeElement);
     if (index < 0) return;
     let next;
-    if (event.key === 'ArrowRight') next = (index + 1) % 3;
-    else if (event.key === 'ArrowLeft') next = (index + 2) % 3;
+    if (event.key === 'ArrowRight') next = (index + 1) % 4;
+    else if (event.key === 'ArrowLeft') next = (index + 3) % 4;
     else if (event.key === 'Home') next = 0;
-    else if (event.key === 'End') next = 2;
+    else if (event.key === 'End') next = 3;
     else return;
     event.preventDefault();
     selectTab(next, true);
@@ -502,7 +524,7 @@
   setInterval(refreshToday, 60000);
   // Keep the open calendar current when supervisors record/call off OT.
   setInterval(() => { if (!calendarPanel.hidden && document.visibilityState === 'visible' && !otLoading) loadCalendarOT(); }, 60000);
-  setInterval(() => { if (!calendarPanel.hidden && document.visibilityState === 'visible' && !historyLoading) loadOTHistory(); }, 300000);
+  setInterval(() => { if (!statsPanel.hidden && document.visibilityState === 'visible' && !historyLoading) loadOTHistory(); }, 60000);
   setInterval(() => {
     if(!calendarPanel.hidden && document.visibilityState==='visible' && !trainingEditDialog.open && !detail.open)
       loadTrainingCalendar().catch(()=>{});
