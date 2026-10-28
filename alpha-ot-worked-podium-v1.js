@@ -97,10 +97,10 @@
     // CSS displays silver left, gold center, and bronze right; DOM keeps logical 1st / 2nd / 3rd order.
     podium.innerHTML=podiumPlaces.map(place=>podiumSlot(place,ranked[place.number-1])).join('');
     podium.classList.toggle('otworked-no-results',ranked.length===0);
-    allSummary.textContent='All officers · '+all.length+' totals';
+    allSummary.textContent='View all '+all.length+' officer totals';
     allRows.innerHTML=all.map((officer,index)=>{
       const worked=Number(officer.worked)||0;
-      const label=index+1;
+      const label=worked>0?String(index+1):'—';
       return '<div class="otworked-all-row">'+
         '<span class="otworked-all-rank">'+label+'</span>'+
         '<span class="otworked-all-name">'+esc(officer.name)+'</span>'+
