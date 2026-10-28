@@ -122,6 +122,7 @@
 }
 .otworked-error{color:#f2aa9e}
 .otworked-all{margin-top:14px;border-top:1px solid var(--line);padding-top:11px}
+.otworked-all[hidden]{display:none!important}
 .otworked-all summary {
   cursor:pointer;
   list-style:revert;
