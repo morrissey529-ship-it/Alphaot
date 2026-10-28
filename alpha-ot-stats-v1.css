@@ -1,0 +1,151 @@
+/* Read-only monthly OT statistics; four-tab responsive navigation. */
+.app > header .alpha-tabs {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:6px;
+  align-items:stretch;
+}
+.app > header .alpha-tabs [role="tab"] {
+  min-width:0;
+  min-height:47px;
+  font-size:13px;
+  font-weight:700;
+  padding:9px 5px;
+  line-height:1.25;
+  overflow-wrap:normal;
+  text-wrap:balance;
+}
+#alphaStatsPanel {min-width:0}
+.otstats-shell {display:grid;gap:15px;margin-top:16px}
+.otstats-title-row {display:flex;justify-content:space-between;align-items:center;gap:12px}
+.otstats-title-row h2 {margin:0;font-size:23px;line-height:1.2;color:var(--text)}
+.otstats-title-row button {min-height:42px;padding:8px 15px;font-size:12px;flex:0 0 auto}
+.otstats-description {margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+#alphaStatsPanel .alpha-monthly-summary {
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding:16px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+}
+#alphaStatsPanel .alpha-monthly-summary-heading h2 {
+  display:block;
+  position:static;
+  width:auto;
+  height:auto;
+  clip:auto;
+  white-space:normal;
+  margin:0;
+  font-size:15px;
+  font-weight:750;
+  letter-spacing:0;
+}
+#alphaStatsPanel #alphaMTDMonth{font-size:13px}
+#alphaStatsPanel .alpha-monthly-metrics{margin-top:14px}
+#alphaStatsPanel .alpha-monthly-metric{padding:13px 5px}
+#alphaStatsPanel .alpha-monthly-metric strong{font-size:clamp(23px,4vw,30px)}
+#alphaStatsPanel .alpha-monthly-metric span{font-size:12px}
+.otstats-chart-card {
+  min-width:0;
+  border:1px solid var(--line);
+  background:var(--surface);
+  border-radius:12px;
+  padding:16px;
+}
+.otstats-chart-card h3 {margin:0 0 5px;color:var(--text);font-size:17px;line-height:1.25}
+.otstats-chart-desc {margin:0 0 12px;color:var(--muted);font-size:12px;line-height:1.5}
+.otstats-chart-scroll {
+  min-width:0;
+  width:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+  border-radius:8px;
+}
+.otstats-bar-grid {
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  width:max-content;
+  min-width:100%;
+  gap:11px;
+  padding:10px 6px 3px;
+  border-bottom:1px solid var(--line);
+}
+.otstats-bar-column {
+  display:flex;
+  align-items:center;
+  flex-direction:column;
+  flex:0 0 93px;
+  gap:6px;
+  color:var(--text);
+  font-variant-numeric:tabular-nums;
+}
+.otstats-bar-value {font-size:13px;font-weight:780;line-height:1}
+.otstats-bar-track {
+  height:142px;
+  width:45px;
+  display:flex;
+  align-items:flex-end;
+  border-bottom:1px solid #47607b;
+}
+.otstats-bar-fill {
+  width:100%;
+  border-radius:6px 6px 0 0;
+  background:linear-gradient(180deg,#91c9f6 0%,#426e9c 100%);
+}
+.otstats-bar-current .otstats-bar-fill {
+  background:linear-gradient(180deg,#9ce5ce 0%,#438d78 100%);
+}
+.otstats-chart-month {
+  min-height:34px;
+  width:100%;
+  display:block;
+  text-align:center;
+  font-size:11px;
+  line-height:1.35;
+  font-weight:650;
+  color:var(--muted);
+}
+.otstats-chart-month small {display:block;font-size:10px;color:var(--muted)}
+.otstats-line-svg {display:block;height:234px}
+.otstats-line-svg text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.otstats-empty {padding:18px 12px;text-align:center;color:var(--muted);font-size:13px}
+.otstats-history {margin-top:4px}
+.otstats-history > h3 {font-size:17px!important;margin:0 0 12px!important}
+#alphaStatsPanel .alpha-ot-month-label{flex-wrap:wrap;line-height:1.3;gap:5px 9px}
+#alphaStatsPanel .alpha-ot-month-count{font-size:11px;line-height:1.4;flex-basis:auto}
+#alphaStatsPanel .alpha-ot-month-content{padding:0 12px 6px}
+#alphaStatsPanel .alpha-ot-month-stats {margin-bottom:12px}
+#alphaStatsPanel .alpha-ot-card .alpha-training-heading {align-items:center}
+#alphaStatsPanel .alpha-ot-card .alpha-training-heading h4{font-size:13px;line-height:1.35}
+#alphaStatsPanel .alpha-ot-card .alpha-training-heading .badge {white-space:nowrap}
+#alphaStatsPanel .alpha-training-source{margin-top:11px}
+@media(max-width:540px){
+  .app > header .alpha-tabs {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:5px;
+    padding:5px;
+  }
+  .app > header .alpha-tabs [role="tab"]{
+    min-height:48px;
+    font-size:12px;
+    padding:9px 6px;
+    line-height:1.25;
+  }
+  .otstats-shell{margin-top:13px;gap:12px}
+  .otstats-title-row h2{font-size:21px}
+  .otstats-chart-card{padding:12px}
+  .otstats-chart-card h3{font-size:16px}
+  #alphaStatsPanel .alpha-monthly-summary {padding:13px}
+  #alphaStatsPanel .alpha-monthly-metric{padding:10px 3px}
+  #alphaStatsPanel .alpha-monthly-metric span{font-size:10px}
+  #alphaStatsPanel .alpha-ot-month summary{padding:11px}
+  #alphaStatsPanel .alpha-ot-month-stats span{font-size:10px}
+  #alphaStatsPanel .alpha-ot-month-stats strong{font-size:20px}
+  #alphaStatsPanel .alpha-ot-card{padding:12px}
+  #alphaStatsPanel .alpha-ot-card .alpha-training-heading {align-items:start;flex-wrap:wrap}
+}
