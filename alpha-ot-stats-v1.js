@@ -93,8 +93,8 @@
   }
   window.alphaOTStatsRender=render;
   window.alphaOTStatsError=message=>{
-    if(!bars.firstElementChild)bars.innerHTML='<p class="otstats-empty">'+esc(message)+'</p>';
-    if(!line.firstElementChild)line.innerHTML='<p class="otstats-empty">'+esc(message)+'</p>';
+    if(!bars.querySelector('.otstats-bar-grid'))bars.innerHTML='<p class="otstats-empty">'+esc(message)+'</p>';
+    if(!line.querySelector('.otstats-line-svg'))line.innerHTML='<p class="otstats-empty">'+esc(message)+'</p>';
     status.textContent=message;
   };
   refresh?.addEventListener('click',()=>{
