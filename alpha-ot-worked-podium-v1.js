@@ -65,7 +65,7 @@
   const notice=recordCard.querySelector('#alphaWorkedNotice');
   let snapshot=null;
   let selectedMonth=thisMonth();
-  let pickerYear=null;
+  let pickerStamp=null;
   let requestSequence=0;
   let saving=false;
 
@@ -80,7 +80,7 @@
     const accessible=person
       ?place.number+' place: '+person.name+', '+total+' confirmed OT '+(total===1?'shift':'shifts')+' worked'
       :place.number+' place: no confirmed overtime worker yet';
-    return '<div class="otworked-place otworked-'+place.place+'" style="order:'+place.number+';" aria-label="'+esc(accessible)+'">'+
+    return '<div class="otworked-place otworked-'+place.place+'" aria-label="'+esc(accessible)+'">'+
       '<div class="otworked-person">'+
         '<span class="otworked-medal" role="img" aria-label="'+place.medalName+'">'+place.medal+'</span>'+
         '<strong class="otworked-name">'+name+'</strong>'+
@@ -113,7 +113,7 @@
     const asOf=String(data.as_of||'');
     const maxMonth=Number(asOf.slice(5,7))||12;
     const year=Number(data.year);
-    if(pickerYear!==year){
+    if(pickerStamp!==asOf.slice(0,7)){
       monthPicker.innerHTML='';
       for(let month=maxMonth;month>=1;month--){
         const key=String(year)+'-'+String(month).padStart(2,'0');
@@ -122,7 +122,7 @@
         option.textContent=monthName(key);
         monthPicker.appendChild(option);
       }
-      pickerYear=year;
+      pickerStamp=asOf.slice(0,7);
       selectedMonth=asOf.slice(0,7)||thisMonth();
     }
     if(!Array.from(monthPicker.options).some(o=>o.value===selectedMonth)){
