@@ -1,0 +1,249 @@
+/* Alpha OT Stats: YTD confirmed-worked podium, medals, and authorized attendance recorder. */
+.otworked-podium-card {
+  position:relative;
+  isolation:isolate;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:linear-gradient(155deg,#1b2c40 0%,#142231 60%,#101b2a 100%);
+  padding:18px 18px 14px;
+  min-width:0;
+  overflow:hidden;
+}
+.otworked-podium-header {display:flex;align-items:start;justify-content:space-between;gap:10px}
+.otworked-podium-header h3 {
+  margin:0;
+  color:var(--text);
+  font-size:19px;
+  font-weight:780;
+  letter-spacing:-.015em;
+}
+.otworked-podium-header p {
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.4;
+}
+.otworked-stage {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+  width:100%;
+  align-items:end;
+  margin:15px auto 0;
+  max-width:760px;
+}
+.otworked-place {
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:end;
+  min-width:0;
+  text-align:center;
+}
+.otworked-gold {order:2}
+.otworked-silver {order:1}
+.otworked-bronze {order:3}
+.otworked-person {
+  min-width:0;
+  min-height:131px;
+  display:flex;
+  align-items:center;
+  justify-content:end;
+  flex-direction:column;
+  gap:5px;
+  padding:7px 2px 10px;
+}
+.otworked-medal {
+  display:block;
+  font-size:37px;
+  line-height:1.1;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI Emoji","Apple Color Emoji",sans-serif;
+  filter:drop-shadow(0 4px 4px #050d1985);
+}
+.otworked-gold .otworked-medal {font-size:44px}
+.otworked-name {
+  display:block;
+  max-width:100%;
+  color:var(--text);
+  font-size:clamp(11px,2.6vw,16px);
+  font-weight:780;
+  line-height:1.2;
+  overflow-wrap:anywhere;
+  text-wrap:balance;
+}
+.otworked-total {
+  display:block;
+  font-size:clamp(10px,2.2vw,13px);
+  color:var(--muted);
+  line-height:1.2;
+  font-weight:650;
+}
+.otworked-platform {
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:4px;
+  border-radius:9px 9px 2px 2px;
+  color:#122235;
+  border:1px solid #ffffff33;
+  box-shadow:inset 0 10px 18px #fff3,inset 0 -14px 25px #10182725,0 6px 13px #0004;
+}
+.otworked-platform strong{
+  font-size:clamp(30px,6vw,49px);
+  font-weight:850;
+  line-height:1;
+  text-shadow:0 1px 0 #ffffff55;
+  font-variant-numeric:tabular-nums;
+}
+.otworked-platform span{font-size:10px;font-weight:850;letter-spacing:.11em}
+.otworked-gold .otworked-platform {
+  height:126px;
+  background:linear-gradient(125deg,#d5a445 2%,#ffe49c 49%,#c88d24 100%);
+  border-color:#ffe5a1;
+}
+.otworked-silver .otworked-platform {
+  height:97px;
+  background:linear-gradient(125deg,#8899af 0%,#e4ebf3 50%,#a2b0c2 100%);
+  border-color:#d9e3ee;
+}
+.otworked-bronze .otworked-platform {
+  height:76px;
+  background:linear-gradient(125deg,#a76b42 0%,#e1ae83 50%,#9a5f38 100%);
+  border-color:#d7a581;
+}
+.otworked-no-results .otworked-name,.otworked-no-results .otworked-total{color:#a5b6c9}
+.otworked-initial,.otworked-error{
+  grid-column:1/-1;
+  margin:20px 0 30px;
+  color:var(--muted);
+  text-align:center;
+  font-size:13px;
+}
+.otworked-error{color:#f2aa9e}
+.otworked-all{margin-top:14px;border-top:1px solid var(--line);padding-top:11px}
+.otworked-all summary {
+  cursor:pointer;
+  list-style:revert;
+  color:var(--blue);
+  font-size:13px;
+  font-weight:700;
+  padding:5px 2px;
+}
+.otworked-all-rows{
+  margin-top:8px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  overflow:hidden;
+}
+.otworked-all-row {
+  display:grid;
+  grid-template-columns:32px minmax(0,1fr) 43px;
+  gap:8px;
+  align-items:center;
+  padding:9px 12px;
+  background:#0d1926a6;
+  border-bottom:1px solid var(--line);
+  font-size:13px;
+  color:var(--text);
+}
+.otworked-all-row:last-child{border-bottom:0}
+.otworked-all-rank{color:var(--muted);font-weight:750;font-variant-numeric:tabular-nums}
+.otworked-all-name{min-width:0;overflow-wrap:anywhere}
+.otworked-all-total{font-variant-numeric:tabular-nums;text-align:right;color:#c1d7ed}
+.otworked-empty{margin:12px;color:var(--muted);font-size:13px}
+.otworked-record-card {
+  min-width:0;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--surface);
+  overflow:hidden;
+}
+.otworked-record-card[hidden] {display:none!important}
+.otworked-record-details>summary {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:13px 16px;
+  cursor:pointer;
+  list-style:none;
+  color:var(--text);
+  font-size:14px;
+  font-weight:750;
+}
+.otworked-record-details>summary::-webkit-details-marker{display:none}
+.otworked-record-details>summary:after{content:'▾';color:var(--muted);font-size:17px}
+.otworked-record-details:not([open])>summary:after{transform:rotate(-90deg)}
+.otworked-record-content{border-top:1px solid var(--line);padding:14px 16px 16px}
+.otworked-explainer{margin:0 0 12px;font-size:12px;line-height:1.5;color:var(--muted)}
+.otworked-record-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.otworked-record-toolbar label{font-size:12px;font-weight:700;color:var(--muted)}
+.otworked-record-toolbar select {
+  flex:1 1 150px;
+  min-width:0;
+  min-height:42px;
+  border-radius:8px;
+  padding:7px 11px;
+  background:var(--bg);
+  border:1px solid var(--line);
+  font-size:15px;
+  color:var(--text);
+}
+.otworked-record-count{font-size:12px;color:var(--muted);margin:11px 0;line-height:1.4}
+.otworked-day-group{border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-top:10px;background:#0e1a29}
+.otworked-day-group h4{
+  font-size:13px;
+  font-weight:750;
+  color:var(--text);
+  margin:0;
+  padding:10px 11px;
+  background:#1c2d3f;
+}
+.otworked-event-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:9px 11px;
+  border-top:1px solid var(--line);
+}
+.otworked-event-info{min-width:0;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.otworked-event-info strong{font-size:13px;color:var(--text);overflow-wrap:anywhere}
+.otworked-event-code{
+  padding:2px 5px;border-radius:4px;font-size:10px;font-weight:850;color:#fff;line-height:1.4;
+}
+.otworked-volunteer{background:#3b6e9b}
+.otworked-required{background:#934452}
+.otworked-work-status{font-size:11px;color:var(--muted);white-space:nowrap}
+.otworked-confirmed{color:#90d9bc;font-weight:750}
+.otworked-toggle{flex:0 0 auto;min-height:35px;padding:6px 10px;font-size:12px;font-weight:700;white-space:nowrap}
+.otworked-toggle:disabled{opacity:.5;cursor:not-allowed}
+.otworked-notice{margin-top:11px;font-size:12px;color:var(--muted);line-height:1.45}
+.otworked-notice:empty{display:none}
+@media(max-width:540px){
+  .otworked-podium-card{padding:14px 10px 12px}
+  .otworked-podium-header{padding:0 4px}
+  .otworked-podium-header h3{font-size:17px}
+  .otworked-stage{gap:5px;margin-top:12px}
+  .otworked-person{min-height:125px;padding:7px 1px 8px;gap:5px}
+  .otworked-medal{font-size:34px}
+  .otworked-gold .otworked-medal{font-size:39px}
+  .otworked-gold .otworked-platform{height:115px}
+  .otworked-silver .otworked-platform{height:89px}
+  .otworked-bronze .otworked-platform{height:70px}
+  .otworked-platform strong{font-size:32px}
+  .otworked-all{margin:12px 4px 0}
+  .otworked-record-content{padding:12px 11px 13px}
+  .otworked-record-details>summary{padding:13px}
+  .otworked-event-row{flex-direction:column;align-items:stretch;gap:9px}
+  .otworked-event-info{gap:6px}
+  .otworked-toggle{width:100%;min-height:38px}
+}
+@media(max-width:365px){
+  .otworked-podium-card{padding:12px 7px 10px}
+  .otworked-stage{gap:4px}
+  .otworked-person{min-height:133px}
+  .otworked-name{font-size:11px}
+  .otworked-total{font-size:10px}
+  .otworked-platform strong{font-size:28px}
+}
