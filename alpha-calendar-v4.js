@@ -489,9 +489,15 @@
       Promise.resolve().then(()=>loadCalendarOT()).catch(error=>console.error('OT calendar:',error));
       Promise.resolve().then(()=>loadTrainingCalendar()).catch(error=>console.error('Training calendar:',error));
     }else{otRequest++;}
-    if(index===3) Promise.resolve().then(()=>loadOTHistory()).catch(error=>console.error('OT Stats:',error));
+    if(index===3){
+      window.alphaOTMonthlyRefresh?.();
+      Promise.resolve().then(()=>loadOTHistory()).catch(error=>console.error('OT Stats:',error));
+    }
   }
-  window.alphaOTStatsRefresh=()=>loadOTHistory();
+  window.alphaOTStatsRefresh=()=>{
+    window.alphaOTMonthlyRefresh?.();
+    return loadOTHistory();
+  };
   tabButtons.forEach((button, index) => button.addEventListener('click', () => selectTab(index, false)));
   tabs.addEventListener('keydown', event => {
     const index = tabButtons.indexOf(document.activeElement);
