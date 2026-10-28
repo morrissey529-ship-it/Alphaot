@@ -16,7 +16,7 @@
   const titleCase=s=>s==='worked'?'Worked':s==='cancelled'?'Cancelled':'Scheduled';
   const notify=message=>{
     const node=document.getElementById('ieasFeedback');
-    if(node)node.textContent=message;
+    if(node){node.textContent=message;node.hidden=!message;}
     if(typeof toast==='function')toast(message);
   };
   function baselineLabel(raw){
@@ -39,9 +39,8 @@
         '<p>Independent Alpha Crew rotation. Scheduling does not change a position. An officer drops only when the work is recorded as completed.</p>',
         '<div class="ieas-summary" id="ieasSummary"></div>',
       '</section>',
-      '<div class="ieas-guide">Off Shift, Vacation, Bereavement and other unavailability follow the main OT list. Unavailable officers appear at the bottom temporarily, then return to their rotation position when available.</div>',
       '<div class="ieas-toolbar"><h3>Current IE/AS List</h3><button type="button" class="dark" data-ieas-action="refresh">Refresh</button></div>',
-      '<div class="ieas-feedback" id="ieasFeedback" role="status" aria-live="polite"></div>',
+      '<div class="ieas-feedback" id="ieasFeedback" role="status" aria-live="polite" hidden></div>',
       '<div class="ieas-cards" id="ieasCards" aria-live="polite">Loading In Early / Aftershift list…</div>',
     '</div>'
   ].join('');
@@ -118,7 +117,6 @@
         '</article>'
       ].join('');
     }).join('')||'<p>No Alpha Crew officers were returned.</p>';
-    document.getElementById('ieasFeedback').textContent='Excel starting order preserved · '+roster.length+' Alpha officers · Last checked '+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/Chicago'})+' Central Time';
   }
   async function load(force){
     if(busy)return;
