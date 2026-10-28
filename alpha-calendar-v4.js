@@ -200,8 +200,16 @@
   tabs.className = 'alpha-tabs';
   tabs.setAttribute('role', 'tablist');
   tabs.setAttribute('aria-label', 'Alpha OT views');
-  tabs.innerHTML = '<button type="button" role="tab" id="alphaListTab" aria-controls="alphaListPanel" aria-selected="true">OT List</button><button type="button" role="tab" id="alphaCalendarTab" aria-controls="alphaCalendarPanel" aria-selected="false" tabindex="-1">Calendar/Training</button>';
+  tabs.innerHTML = '<button type="button" role="tab" id="alphaListTab" aria-controls="alphaListPanel" aria-selected="true">OT List</button><button type="button" role="tab" id="alphaIEASTab" aria-controls="alphaIEASPanel" aria-selected="false" tabindex="-1">In Early/<wbr>Aftershift</button><button type="button" role="tab" id="alphaCalendarTab" aria-controls="alphaCalendarPanel" aria-selected="false" tabindex="-1">Calendar/Training</button>';
   header.appendChild(tabs);
+  const ieasPanel = document.createElement('section');
+  ieasPanel.id = 'alphaIEASPanel';
+  ieasPanel.className = 'alpha-panel';
+  ieasPanel.setAttribute('role', 'tabpanel');
+  ieasPanel.setAttribute('aria-labelledby', 'alphaIEASTab');
+  ieasPanel.tabIndex = 0;
+  ieasPanel.hidden = true;
+  app.insertBefore(ieasPanel, calendarPanel);
   const tabButtons = Array.from(tabs.querySelectorAll('[role="tab"]'));
   const calendarDays = document.getElementById('alphaCalendarDays');
   const calendarMonth = document.getElementById('alphaCalendarMonth');
@@ -448,9 +456,13 @@
       button.tabIndex=i===index?0:-1;
     });
     listPanel.hidden=index!==0;
-    calendarPanel.hidden=index!==1;
+    ieasPanel.hidden=index!==1;
+    calendarPanel.hidden=index!==2;
     if(focus)tabButtons[index].focus();
     if(index===1){
+      Promise.resolve().then(()=>window.alphaIEASLoad?.()).catch(error=>console.error('IE/AS view:',error));
+    }
+    if(index===2){
       try{renderCalendar()}catch(error){console.error('Calendar render:',error)}
       try{renderTrainingMonths()}catch(error){console.error('Training list:',error)}
       Promise.resolve().then(()=>loadCalendarOT()).catch(error=>console.error('OT calendar:',error));
@@ -463,9 +475,10 @@
     const index = tabButtons.indexOf(document.activeElement);
     if (index < 0) return;
     let next;
-    if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') next = (index + 1) % 2;
+    if (event.key === 'ArrowRight') next = (index + 1) % 3;
+    else if (event.key === 'ArrowLeft') next = (index + 2) % 3;
     else if (event.key === 'Home') next = 0;
-    else if (event.key === 'End') next = 1;
+    else if (event.key === 'End') next = 2;
     else return;
     event.preventDefault();
     selectTab(next, true);
