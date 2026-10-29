@@ -563,6 +563,15 @@
     .alpha-ot-month-stats span{padding:10px 5px;border:1px solid var(--line);border-radius:8px;background:var(--raised,#182638);color:var(--muted);font-size:11px;text-align:center}
     .alpha-ot-month-stats strong{display:block;color:var(--text);font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
   `;
+  style.textContent += `
+    .badge.military{background:#263e50;color:#b8dbf4}
+    .badge.juryduty{background:#353449;color:#dcd0f4}
+    .infoHub .stats:has(#jc){grid-template-columns:repeat(3,minmax(0,1fr));max-width:none}
+    .infoHub .stats:has(#jc) .stat{padding:10px 7px}
+    .infoHub .stats:has(#jc) .stat span{overflow-wrap:anywhere}
+    @media(min-width:720px){.infoHub .stats:has(#jc){grid-template-columns:repeat(6,minmax(0,1fr))}}
+    @media(max-width:350px){.infoHub .stats:has(#jc){grid-template-columns:repeat(2,minmax(0,1fr))}}
+  `;
   document.head.appendChild(style);
   const stats=document.querySelector('.stats');
   if(stats&&!document.getElementById('bc')){
@@ -570,6 +579,15 @@
     stat.className='stat';
     stat.innerHTML='<b id="bc">0</b><span>Bereavement</span>';
     stats.appendChild(stat);
+  }
+  if(stats){
+    for(const [id,label] of [['mc','Military'],['jc','Jury Duty']]){
+      if(document.getElementById(id))continue;
+      const stat=document.createElement('div');
+      stat.className='stat';
+      stat.innerHTML='<b id="'+id+'">0</b><span>'+label+'</span>';
+      stats.appendChild(stat);
+    }
   }
   // Eligibility is evaluated for the next Alpha off-day OT block, not
   // just today's status. A future Bereavement overlap voids the officer
@@ -655,12 +673,21 @@
     }
     document.getElementById('oc').textContent=officers.filter(o=>o.status==='Off Shift').length;
     document.getElementById('bc').textContent=officers.filter(o=>(o.status==='Active'||o.status==='Bereavement')&&voidForBereavement(o,upcoming)).length;
+    document.getElementById('mc').textContent=officers.filter(o=>o.status==='Military').length;
+    document.getElementById('jc').textContent=officers.filter(o=>o.status==='Jury Duty').length;
     for(const o of officers){
       const card=document.getElementById('c-'+o.id);
       if(!card)continue;
       if(o.status==='Bereavement'){
         const badge=card.querySelector('.nameRow .offshift');
         if(badge){badge.classList.replace('offshift','bereavement');badge.textContent='Bereavement'}
+      }
+      if(o.status==='Military'||o.status==='Jury Duty'){
+        const badge=card.querySelector('.nameRow .offshift');
+        if(badge){
+          badge.classList.replace('offshift',o.status==='Military'?'military':'juryduty');
+          badge.textContent=o.status;
+        }
       }
       if(o.bereavement_start_date&&o.bereavement_return_date){
         const text=document.createElement('div');
@@ -671,7 +698,7 @@
       const actions=document.getElementById('a-'+o.id);
       if(actions&&!Array.from(actions.options).some(x=>x.value==='Bereavement')){
         const option=new Option('Bereavement','Bereavement');
-        const index=Array.from(actions.options).findIndex(x=>x.value==='Unavailable Today');
+        const index=Array.from(actions.options).findIndex(x=>x.value==='Military');
         actions.add(option,index<0?undefined:index);
       }
     }
