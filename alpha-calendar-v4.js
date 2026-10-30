@@ -564,15 +564,21 @@
     .alpha-ot-month-stats strong{display:block;color:var(--text);font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
   `;
   style.textContent += `
-    .badge.military{background:#263e50;color:#b8dbf4}
-    .badge.juryduty{background:#353449;color:#dcd0f4}
-    .badge.bonding{background:#23443f;color:#a8e3ca}
+    /* Keep existing Active, Vacation and Off Shift colors unchanged. */
+    .badge.military{background:#263a5a;color:#aecbff}
+    .badge.juryduty{background:#473127;color:#ffc3a2}
+    .badge.bonding{background:#3b2b51;color:#d8b9ff}
+    .badge.unavailbadge{background:#4b2936;color:#ffb3c2}
+    .infoHub .stat:has(#mc) b{color:#9fbfff}
+    .infoHub .stat:has(#bnc) b{color:#d2b0ff}
+    .infoHub .stat:has(#jc) b{color:#ffbc9c}
+    .infoHub .stat:has(#uc) b{color:#ff9fae}
     .infoHub .stats:has(#jc){grid-template-columns:repeat(3,minmax(0,1fr));max-width:none}
     .infoHub .stats:has(#jc) .stat{padding:10px 7px}
     .infoHub .stats:has(#jc) .stat span{overflow-wrap:anywhere}
     @media(min-width:720px){.infoHub .stats:has(#bnc){grid-template-columns:repeat(4,minmax(0,1fr))}}
-    @media(min-width:351px) and (max-width:719px){.infoHub .stats:has(#bnc) .stat:last-child{grid-column:2}}
-    @media(max-width:350px){.infoHub .stats:has(#bnc) .stat:last-child{grid-column:1/-1;justify-self:center;width:50%}}
+    @media(min-width:351px) and (max-width:719px){.infoHub .stats:has(#uc) .stat:last-child{grid-column:2}}
+    @media(max-width:350px){.infoHub .stats:has(#uc) .stat:last-child{grid-column:auto;justify-self:stretch;width:auto}}
     @media(max-width:350px){.infoHub .stats:has(#jc){grid-template-columns:repeat(2,minmax(0,1fr))}}
   `;
   document.head.appendChild(style);
@@ -584,7 +590,7 @@
     stats.appendChild(stat);
   }
   if(stats){
-    for(const [id,label] of [['mc','Military'],['bnc','Bonding'],['jc','Jury Duty']]){
+    for(const [id,label] of [['mc','Military'],['bnc','Bonding'],['jc','Jury Duty'],['uc','Unavailable']]){
       if(document.getElementById(id))continue;
       const stat=document.createElement('div');
       stat.className='stat';
@@ -679,6 +685,8 @@
     document.getElementById('mc').textContent=officers.filter(o=>o.status==='Military').length;
     document.getElementById('bnc').textContent=officers.filter(o=>o.status==='Bonding').length;
     document.getElementById('jc').textContent=officers.filter(o=>o.status==='Jury Duty').length;
+    // Unavailable Today is a dated flag, not an additional long-term leave.
+    document.getElementById('uc').textContent=officers.filter(o=>o.temporarily_unavailable&&o.temporarily_unavailable_date===today()).length;
     for(const o of officers){
       const card=document.getElementById('c-'+o.id);
       if(!card)continue;
