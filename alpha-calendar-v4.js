@@ -566,6 +566,7 @@
   style.textContent += `
     .badge.military{background:#263e50;color:#b8dbf4}
     .badge.juryduty{background:#353449;color:#dcd0f4}
+    .badge.bonding{background:#23443f;color:#a8e3ca}
     .infoHub .stats:has(#jc){grid-template-columns:repeat(3,minmax(0,1fr));max-width:none}
     .infoHub .stats:has(#jc) .stat{padding:10px 7px}
     .infoHub .stats:has(#jc) .stat span{overflow-wrap:anywhere}
@@ -581,7 +582,7 @@
     stats.appendChild(stat);
   }
   if(stats){
-    for(const [id,label] of [['mc','Military'],['jc','Jury Duty']]){
+    for(const [id,label] of [['mc','Military'],['bnc','Bonding'],['jc','Jury Duty']]){
       if(document.getElementById(id))continue;
       const stat=document.createElement('div');
       stat.className='stat';
@@ -674,6 +675,7 @@
     document.getElementById('oc').textContent=officers.filter(o=>o.status==='Off Shift').length;
     document.getElementById('bc').textContent=officers.filter(o=>(o.status==='Active'||o.status==='Bereavement')&&voidForBereavement(o,upcoming)).length;
     document.getElementById('mc').textContent=officers.filter(o=>o.status==='Military').length;
+    document.getElementById('bnc').textContent=officers.filter(o=>o.status==='Bonding').length;
     document.getElementById('jc').textContent=officers.filter(o=>o.status==='Jury Duty').length;
     for(const o of officers){
       const card=document.getElementById('c-'+o.id);
@@ -682,10 +684,10 @@
         const badge=card.querySelector('.nameRow .offshift');
         if(badge){badge.classList.replace('offshift','bereavement');badge.textContent='Bereavement'}
       }
-      if(o.status==='Military'||o.status==='Jury Duty'){
+      if(o.status==='Military'||o.status==='Bonding'||o.status==='Jury Duty'){
         const badge=card.querySelector('.nameRow .offshift');
         if(badge){
-          badge.classList.replace('offshift',o.status==='Military'?'military':'juryduty');
+          badge.classList.replace('offshift',o.status==='Military'?'military':o.status==='Bonding'?'bonding':'juryduty');
           badge.textContent=o.status;
         }
       }
