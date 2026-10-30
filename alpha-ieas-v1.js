@@ -55,6 +55,7 @@
     if(o.status==='Vacation')return 'Vacation';
     if(o.status==='Off Shift')return 'Off Shift';
     if(o.status==='Military')return 'Military';
+    if(o.status==='Bonding')return 'Bonding';
     if(o.status==='Jury Duty')return 'Jury Duty';
     if(o.status==='Bereavement'||(o.bereavement_start_date&&o.bereavement_return_date&&today()>=o.bereavement_start_date&&today()<o.bereavement_return_date))return 'Bereavement';
     if(!available(o))return 'Unavailable Today';
