@@ -570,7 +570,9 @@
     .infoHub .stats:has(#jc){grid-template-columns:repeat(3,minmax(0,1fr));max-width:none}
     .infoHub .stats:has(#jc) .stat{padding:10px 7px}
     .infoHub .stats:has(#jc) .stat span{overflow-wrap:anywhere}
-    @media(min-width:720px){.infoHub .stats:has(#jc){grid-template-columns:repeat(6,minmax(0,1fr))}}
+    @media(min-width:720px){.infoHub .stats:has(#bnc){grid-template-columns:repeat(4,minmax(0,1fr))}}
+    @media(min-width:351px) and (max-width:719px){.infoHub .stats:has(#bnc) .stat:last-child{grid-column:2}}
+    @media(max-width:350px){.infoHub .stats:has(#bnc) .stat:last-child{grid-column:1/-1;justify-self:center;width:50%}}
     @media(max-width:350px){.infoHub .stats:has(#jc){grid-template-columns:repeat(2,minmax(0,1fr))}}
   `;
   document.head.appendChild(style);
