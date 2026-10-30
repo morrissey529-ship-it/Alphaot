@@ -89,7 +89,8 @@
       const rank=isAvailable?++count:'–';
       const currentStatus=statusText(o);
       const editable=canEdit()&&isAvailable;
-      const badge='<span class="ieas-badge '+(isAvailable?'ieas-active':'ieas-unavailable')+'">'+safe(currentStatus)+'</span>';
+      const statusClass=currentStatus.toLowerCase().replace(/[^a-z]+/g,'-').replace(/^-|-$/g,'');
+      const badge='<span class="ieas-badge '+(isAvailable?'ieas-active':'ieas-unavailable')+' ieas-status-'+statusClass+'">'+safe(currentStatus)+'</span>';
       const note=o.status==='Vacation'&&o.vacation_return_date?' · Returns '+prettyDate(o.vacation_return_date):'';
       const last=recentSummary(o);
       const history='<button type="button" class="dark ieas-utility" data-ieas-action="history" data-officer-id="'+safe(o.id)+'">History</button>';
