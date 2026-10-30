@@ -66,3 +66,11 @@
  .ieas-card-main{gap:8px}
  .ieas-name-line strong{font-size:16px}
 }
+
+/* Unified status palette shared with Alpha OT; existing Active and Off Shift stay as-is. */
+.ieas-badge.ieas-status-vacation{background:var(--amber-soft);color:var(--amber)}
+.ieas-badge.ieas-status-bereavement{background:#274350;color:#b9ebf4}
+.ieas-badge.ieas-status-military{background:#263a5a;color:#aecbff}
+.ieas-badge.ieas-status-bonding{background:#3b2b51;color:#d8b9ff}
+.ieas-badge.ieas-status-jury-duty{background:#473127;color:#ffc3a2}
+.ieas-badge.ieas-status-unavailable-today{background:#4b2936;color:#ffb3c2}
