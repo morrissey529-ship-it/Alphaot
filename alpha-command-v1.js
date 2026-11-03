@@ -66,6 +66,11 @@
   function lineIcon(pathsHTML){
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+pathsHTML+'</svg>';
   }
+  const phoneMark=document.querySelector('#calloffPhone span');
+  if(phoneMark){
+    phoneMark.classList.add('alpha-command-phone-icon');
+    phoneMark.innerHTML=lineIcon('<path d="M8 3H5a2 2 0 0 0-2 2c0 9 7 16 16 16a2 2 0 0 0 2-2v-3l-5-2-2 3c-3-1-6-4-7-7l3-2-2-5Z"/>');
+  }
   function decorateStatusCards(){
     for(const id of Object.keys(paths)){
       const value=document.getElementById(id);
