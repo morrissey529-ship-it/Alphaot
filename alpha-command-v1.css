@@ -1676,3 +1676,27 @@ dialog .modal{background:linear-gradient(150deg,#14263a,#0a1420)!important}
   #alphaCalendarPanel .alpha-calendar-date{width:23px;height:23px;font-size:12px!important}
   #alphaCalendarPanel .alpha-calendar-training,#alphaCalendarPanel .alpha-calendar-ot{font-size:9px!important}
 }
+
+/* Fit large IE/AS call numbers to their own reserved blue watermark area. */
+#alphaIEASPanel .ieas-call.alpha-command-ieas-digits-3{
+  font-size:clamp(32px,6.8vw,71px)!important;
+}
+#alphaIEASPanel .ieas-call.alpha-command-ieas-digits-4{
+  font-size:clamp(27px,5.5vw,54px)!important;
+}
+@media(max-width:540px){
+  #alphaIEASPanel .ieas-call.alpha-command-ieas-digits-3{
+    font-size:clamp(26px,7.4vw,39px)!important;
+  }
+  #alphaIEASPanel .ieas-call.alpha-command-ieas-digits-4{
+    font-size:clamp(20px,5.9vw,31px)!important;
+  }
+}
+@media(max-width:355px){
+  #alphaIEASPanel .ieas-call.alpha-command-ieas-digits-3{
+    font-size:24px!important;
+  }
+  #alphaIEASPanel .ieas-call.alpha-command-ieas-digits-4{
+    font-size:20px!important;
+  }
+}
