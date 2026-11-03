@@ -841,3 +841,838 @@ dialog .modal{background:linear-gradient(150deg,#14263a,#0a1420)!important}
     }
   }
 }
+
+/* ALPHA COMMAND / COMPLETE TAB VISUAL SYSTEM v2
+   Styles only: the existing OT/IEAS rotations, calendar handlers, dialogs,
+   attendance counting, user permissions and database operations are unchanged. */
+
+/* Shared industrial surfaces and controls across all three secondary tabs. */
+#alphaIEASPanel,#alphaCalendarPanel,#alphaStatsPanel{
+  min-width:0;color:#eaf5ff;
+  --ac-secondary-line:#3b6888;
+  --ac-secondary-glow:rgba(57,186,245,.23);
+}
+#alphaIEASPanel button,
+#alphaCalendarPanel button,
+#alphaStatsPanel button{
+  touch-action:manipulation;
+}
+#alphaIEASPanel .dark,#alphaIEASPanel .blue,
+#alphaCalendarPanel .dark,#alphaCalendarPanel .blue,
+#alphaStatsPanel .dark,#alphaStatsPanel .blue,
+#ieasHistoryDialog .dark,#ieasHistoryDialog .blue{
+  border:1px solid #4b7897!important;
+  border-radius:6px!important;
+  background:linear-gradient(180deg,#243d55 0%,#142b42 42%,#0b1d31 100%)!important;
+  color:#e1f4ff!important;
+  box-shadow:inset 0 1px 0 #a8dfff35,0 2px 6px #0006!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif!important;
+  font-weight:730!important;letter-spacing:.045em;text-transform:uppercase;
+}
+#alphaIEASPanel button:hover,#alphaCalendarPanel button:hover,
+#alphaStatsPanel button:hover,#ieasHistoryDialog button:hover{
+  border-color:#70d4fa!important;
+  box-shadow:inset 0 0 12px #67d7ff26,0 0 10px #41b8ea2a!important;
+}
+#alphaIEASPanel .blue,#alphaCalendarPanel .blue,#alphaStatsPanel .blue{
+  background:linear-gradient(180deg,#138ec5,#075787 65%,#07375c)!important;
+  border-color:#54cdfa!important;color:#f7fdff!important;
+}
+#alphaIEASPanel input,#alphaIEASPanel select,
+#alphaCalendarPanel input,#alphaCalendarPanel select,
+#ieasHistoryDialog input,#ieasHistoryDialog select{
+  max-width:100%;min-width:0;
+  border:1px solid #446784!important;
+  background:#071725!important;color:#e7f5ff!important;
+  border-radius:7px!important;
+  box-shadow:inset 0 1px 3px #0007;
+}
+#alphaIEASPanel input:focus-visible,#alphaIEASPanel select:focus-visible,
+#alphaCalendarPanel input:focus-visible,#alphaCalendarPanel select:focus-visible,
+#ieasHistoryDialog input:focus-visible,#ieasHistoryDialog select:focus-visible{
+  outline:2px solid #79deff!important;outline-offset:2px;
+}
+
+/* IN EARLY / AFTERSHIFT — tactical header, summary instruments, personnel cards. */
+#alphaIEASPanel .ieas-shell{gap:12px!important;margin-top:17px!important}
+#alphaIEASPanel .ieas-head{
+  position:relative;isolation:isolate;overflow:hidden;
+  padding:18px 21px!important;
+  border:1px solid #4383a4!important;
+  border-top:3px solid #4ecbfa!important;
+  border-radius:11px!important;
+  background:
+    linear-gradient(105deg,#081828 10%,rgba(9,34,53,.95) 57%,rgba(6,16,26,.87)),
+    url("assets/alpha-command-watermark.svg") right center/52% auto no-repeat!important;
+  box-shadow:inset 0 1px 0 #aeebff56,inset 0 0 22px #31b9fa13,0 7px 21px #0009!important;
+}
+#alphaIEASPanel .ieas-head::before,
+#alphaStatsPanel .otstats-title-row::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:6px;
+  background:linear-gradient(180deg,#91eeff,#0a79b9 65%,#044061);
+  box-shadow:0 0 12px #43c9fa7c;pointer-events:none;
+}
+#alphaIEASPanel .ieas-head h2{
+  font-family:Impact,"Arial Narrow",Arial,sans-serif!important;
+  font-size:clamp(22px,3vw,32px)!important;
+  font-style:italic;font-weight:850!important;letter-spacing:.065em!important;
+  text-transform:uppercase;line-height:1.12!important;
+  color:#f0faff!important;text-shadow:0 3px 5px #000b,0 0 14px #51b8e54a;
+  margin:0 0 8px!important;
+}
+#alphaIEASPanel .ieas-head>p{
+  max-width:75ch;color:#b6d0e0!important;
+  line-height:1.45!important;font-size:12px!important;
+  margin:0 0 15px!important;
+}
+#alphaIEASPanel .ieas-summary{
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:9px!important;
+}
+#alphaIEASPanel .ieas-summary span{
+  --ac-ieas-stat:#83c9f8;
+  min-width:0;min-height:83px;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:9px 6px!important;
+  background:linear-gradient(175deg,#22465c50,#07111d 53%)!important;
+  border:1px solid #4b748d!important;
+  border-top:3px solid var(--ac-ieas-stat)!important;
+  border-radius:7px!important;
+  color:#acc9de!important;
+  box-shadow:inset 0 1px 0 #d4efff30,0 0 10px #2a96ce2a;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:12px!important;letter-spacing:.07em;text-transform:uppercase;
+}
+#alphaIEASPanel .ieas-summary span:first-child{--ac-ieas-stat:#66e6a9}
+#alphaIEASPanel .ieas-summary span:nth-child(2){--ac-ieas-stat:#ff7aa7}
+#alphaIEASPanel .ieas-summary span:nth-child(3){--ac-ieas-stat:#ffd46a}
+#alphaIEASPanel .ieas-summary strong{
+  display:block;color:var(--ac-ieas-stat)!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif!important;
+  font-size:clamp(27px,4vw,40px)!important;
+  font-style:italic;font-weight:850!important;
+  line-height:1!important;margin-bottom:6px;
+  text-shadow:0 2px 3px #000b,0 0 12px #408fbb55;
+}
+#alphaIEASPanel .ieas-toolbar{
+  min-width:0;display:flex!important;gap:10px!important;
+  align-items:center;justify-content:space-between;
+  margin:4px 0 0;padding:0 2px 6px;
+  border-bottom:1px solid #29465c;
+}
+#alphaIEASPanel .ieas-toolbar h3{
+  margin:0!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif!important;
+  font-size:clamp(15px,2vw,19px)!important;
+  font-weight:800!important;letter-spacing:.09em!important;
+  color:#b4daf3!important;text-transform:uppercase;
+}
+#alphaIEASPanel .ieas-toolbar button{flex:0 0 auto;min-width:90px;min-height:40px!important}
+#alphaIEASPanel .ieas-cards{gap:10px!important}
+#alphaIEASPanel .ieas-card{
+  --ac-leave-color:#64e5a0;--ac-leave-glow:#45e9a34b;
+  position:relative;isolation:isolate;
+  border:1px solid #386685!important;
+  border-radius:12px!important;
+  border-left:1px solid #386685!important;
+  padding:14px 15px 11px 23px!important;
+  background:
+    linear-gradient(98deg,rgba(5,17,29,.98),rgba(7,23,38,.96) 68%,rgba(8,28,42,.86)),
+    url("assets/alpha-command-watermark.svg") 67% center/65% auto no-repeat!important;
+  box-shadow:inset 0 1px 0 #93b8d338,0 5px 13px #0009!important;
+  overflow:hidden;
+}
+#alphaIEASPanel .ieas-card::before{
+  content:"";position:absolute;z-index:0;
+  left:7px;top:8px;bottom:8px;width:7px;
+  border-radius:5px;
+  background:linear-gradient(90deg,var(--ac-leave-color),#f7ffffa0,var(--ac-leave-color));
+  box-shadow:0 0 10px var(--ac-leave-color),0 0 18px var(--ac-leave-glow);
+  pointer-events:none;
+}
+#alphaIEASPanel .ieas-card::after{
+  content:"";position:absolute;z-index:0;
+  inset:0 0 0 45%;
+  pointer-events:none;
+  background:linear-gradient(145deg,transparent 32%,var(--ac-leave-glow) 52%,transparent 54%)!important;
+  opacity:.65;
+}
+#alphaIEASPanel .ieas-card:has(.ieas-status-active){--ac-leave-color:#5cf28e;--ac-leave-glow:#2dff7c45}
+#alphaIEASPanel .ieas-card:has(.ieas-status-vacation){--ac-leave-color:#ffda58;--ac-leave-glow:#ffcf3d45}
+#alphaIEASPanel .ieas-card:has(.ieas-status-off-shift){--ac-leave-color:#b5c1cc;--ac-leave-glow:#a9b9d244}
+#alphaIEASPanel .ieas-card:has(.ieas-status-bereavement){--ac-leave-color:#58e2f5;--ac-leave-glow:#43dbf945}
+#alphaIEASPanel .ieas-card:has(.ieas-status-military){--ac-leave-color:#52b2ff;--ac-leave-glow:#358dff45}
+#alphaIEASPanel .ieas-card:has(.ieas-status-bonding){--ac-leave-color:#d09cff;--ac-leave-glow:#a779fc45}
+#alphaIEASPanel .ieas-card:has(.ieas-status-jury-duty){--ac-leave-color:#ffb971;--ac-leave-glow:#ffa54a45}
+#alphaIEASPanel .ieas-card:has(.ieas-status-unavailable-today){--ac-leave-color:#ff8caf;--ac-leave-glow:#fb649044}
+#alphaIEASPanel .ieas-card-main{
+  position:relative;z-index:1;
+  display:flex;align-items:center!important;gap:13px!important;
+  min-width:0;min-height:89px;
+  padding-right:clamp(68px,19%,154px);
+}
+#alphaIEASPanel .ieas-number{
+  position:relative;z-index:1;
+  flex:0 0 57px!important;width:57px!important;height:62px!important;
+  border:1px solid #c5eaff!important;border-radius:10px!important;
+  background:linear-gradient(145deg,#10304a,#061423 63%,#0b263f)!important;
+  color:#effbff!important;
+  display:grid;place-items:center;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif!important;
+  font-size:32px!important;font-weight:850!important;font-style:italic;
+  text-shadow:0 2px 3px #000,0 0 6px #7ec4ed7a;
+  box-shadow:inset 0 2px 0 #e5f7ff8a,inset 0 -3px 6px #0008,0 0 8px #4a9bc84d;
+}
+#alphaIEASPanel .ieas-number-off{color:#a6bbd0!important;border-color:#71869b!important}
+#alphaIEASPanel .ieas-person{
+  flex:1 1 auto;min-width:0;position:static;
+}
+#alphaIEASPanel .ieas-name-line{
+  align-items:center!important;gap:5px 9px!important;
+  min-height:0!important;
+}
+#alphaIEASPanel .ieas-name-line strong{
+  flex:1 1 100%;
+  display:block;font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:clamp(19px,2.25vw,26px)!important;
+  font-weight:800!important;line-height:1.13;
+  letter-spacing:.02em;color:#f3faff!important;
+  overflow-wrap:anywhere;
+}
+#alphaIEASPanel .ieas-badge{
+  width:max-content;max-width:100%;
+  padding:2px 3px 2px 0!important;
+  border-radius:0!important;border:0!important;
+  background:transparent!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:12px!important;font-weight:800!important;
+  letter-spacing:.055em!important;text-transform:uppercase;
+  color:var(--ac-leave-color)!important;
+  white-space:normal!important;overflow-wrap:anywhere;
+  text-shadow:0 0 8px var(--ac-leave-glow);
+}
+#alphaIEASPanel .ieas-badge::before{
+  content:"";display:inline-block;vertical-align:2px;
+  width:8px;height:8px;margin-right:6px;border-radius:50%;
+  background:var(--ac-leave-color);
+  box-shadow:0 0 9px var(--ac-leave-color);
+}
+#alphaIEASPanel .ieas-last{
+  min-width:0;margin-top:7px!important;
+  font-size:12px!important;line-height:1.4!important;
+  color:#b9cede!important;overflow-wrap:anywhere;
+}
+#alphaIEASPanel .ieas-call{
+  position:absolute;right:0;top:0;bottom:0;
+  display:flex!important;align-items:center;justify-content:center;
+  pointer-events:none;
+  width:clamp(58px,20%,154px);max-width:24%;
+  min-width:0;overflow:visible;
+  padding:0 .08em;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif!important;
+  font-size:clamp(50px,8.2vw,102px)!important;
+  font-style:italic;font-weight:900!important;
+  letter-spacing:-.035em!important;
+  line-height:1;text-align:center;white-space:nowrap;
+  color:transparent!important;
+  background:linear-gradient(148deg,#eafaff,#91d8ff 28%,#427da6 58%,#7acbff 85%,#d8f3ff)!important;
+  -webkit-background-clip:text!important;background-clip:text!important;
+  -webkit-text-stroke:.6px #a4dbff73;
+  text-shadow:2px 3px 4px #0007;
+  filter:drop-shadow(0 0 7px #47baff55);
+}
+#alphaIEASPanel .ieas-card-tools{
+  position:relative;z-index:2;
+  display:flex!important;justify-content:flex-end;flex-wrap:wrap;
+  gap:7px!important;margin-top:10px!important;
+  padding-top:9px;border-top:1px solid #2b4962;
+}
+#alphaIEASPanel .ieas-card-tools button{
+  min-height:39px!important;
+  padding:7px 14px!important;
+}
+#alphaIEASPanel .ieas-entry{
+  position:relative;z-index:2;
+  padding-top:12px!important;border-top:1px solid #3e6178!important;
+}
+#alphaIEASPanel .ieas-entry-grid label{
+  min-width:0;color:#b4cde0!important;font-size:12px!important;
+  margin:0!important;
+}
+#alphaIEASPanel .ieas-form-actions{
+  margin-top:13px!important;
+  display:flex;gap:8px!important;flex-wrap:wrap;
+}
+#alphaIEASPanel .ieas-form-actions button{flex:1 1 165px;min-height:44px!important}
+#alphaIEASPanel .ieas-small{color:#abc5d7!important}
+#alphaIEASPanel .ieas-feedback{color:#a9c9e0!important}
+#ieasHistoryDialog{
+  border:1px solid #5a94b2!important;
+  border-radius:11px!important;
+  background:#0a1724!important;
+}
+#ieasHistoryDialog .modal{
+  background:linear-gradient(140deg,#132a3e,#091321)!important;
+  color:#eaf7ff!important;
+}
+#ieasHistoryDialog .ieas-history-head{
+  position:relative;gap:9px;
+}
+#ieasHistoryDialog h2{
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:clamp(17px,3vw,23px)!important;
+  color:#e7f6ff!important;letter-spacing:.04em;text-transform:uppercase;
+  overflow-wrap:anywhere;
+}
+#ieasHistoryDialog .ieas-history-item{
+  min-width:0;border:1px solid #3c657f!important;
+  border-left:3px solid #6cbce8!important;
+  border-radius:7px!important;
+  padding:11px 10px!important;
+  background:linear-gradient(120deg,#142c40,#091523)!important;
+  color:#e1f1ff!important;
+  overflow-wrap:anywhere;
+}
+#ieasHistoryDialog .ieas-history-item.ieas-cancelled{border-left-color:#c08b99!important}
+#ieasHistoryDialog button[data-ieas-action="close-history"]{
+  flex:0 0 auto!important;min-width:65px!important;
+  position:relative;z-index:3;
+  min-height:39px!important;
+}
+
+/* CALENDAR / TRAINING — sharpened month, metallic grid and luminous OT/TR indicators. */
+#alphaCalendarPanel .alpha-calendar{
+  position:relative;isolation:isolate;overflow:hidden;
+  margin-top:17px!important;
+  padding:20px!important;
+  border:1px solid #3f718f!important;border-top:3px solid #49c9f8!important;
+  border-radius:12px!important;
+  background:
+    linear-gradient(160deg,rgba(8,25,40,.97),rgba(6,16,27,.98)),
+    url("assets/alpha-command-watermark.svg") right top/60% auto no-repeat!important;
+  box-shadow:inset 0 1px 0 #96dbff55,0 7px 22px #0009!important;
+}
+#alphaCalendarPanel .alpha-calendar-kicker{
+  margin:0 0 14px!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  letter-spacing:.1em!important;font-size:13px!important;font-weight:800;
+  text-transform:uppercase;color:#8bcafa!important;
+}
+#alphaCalendarPanel .alpha-calendar-nav{
+  align-items:center!important;gap:11px!important;
+  grid-template-columns:48px minmax(0,1fr) 48px!important;
+}
+#alphaCalendarPanel .alpha-calendar-nav h2{
+  min-width:0;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif!important;
+  font-style:italic;font-size:clamp(23px,3.6vw,36px)!important;
+  font-weight:800!important;letter-spacing:.07em;
+  text-transform:uppercase;color:#e3f4ff!important;
+  text-shadow:0 2px 4px #000,0 0 10px #52c5f944;
+}
+#alphaCalendarPanel .alpha-calendar-nav button{
+  min-width:48px!important;min-height:48px!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:27px!important;
+  box-shadow:inset 0 1px 0 #c2ecff55,0 3px 6px #0008;
+}
+#alphaCalendarPanel .alpha-calendar-tools{
+  margin:13px 0 14px!important;gap:8px!important;
+  color:#a5c2d5;
+}
+#alphaCalendarPanel .alpha-calendar-tools p{
+  font-size:11px!important;letter-spacing:.05em;
+  text-transform:uppercase;color:#99bbd2!important;
+}
+#alphaCalendarPanel .alpha-calendar-tools button{min-height:42px!important}
+#alphaCalendarPanel .alpha-calendar-table{
+  width:100%;table-layout:fixed;
+  border-spacing:3px!important;border-collapse:separate!important;
+  background:none!important;
+}
+#alphaCalendarPanel .alpha-calendar-table th{
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:clamp(10px,1.5vw,13px)!important;
+  letter-spacing:.06em;text-transform:uppercase;
+  color:#92bad6!important;
+  padding:5px 0 8px!important;
+}
+#alphaCalendarPanel .alpha-calendar-table td{
+  min-width:0;border:1px solid #294b64!important;
+  border-radius:6px!important;
+  background:linear-gradient(170deg,#102336,#091622)!important;
+  box-shadow:inset 0 1px 0 #7bafd015;
+  overflow:hidden;
+}
+#alphaCalendarPanel .alpha-calendar-table td.alpha-workday{
+  border-color:#39759c!important;
+  background:linear-gradient(165deg,#173e5b,#10263e)!important;
+}
+#alphaCalendarPanel .alpha-calendar-table td[aria-current="date"]{
+  border-color:#82e2ff!important;
+  box-shadow:inset 0 0 0 1px #55cdffbb,0 0 9px #23baff77!important;
+}
+#alphaCalendarPanel .alpha-calendar-table td[aria-current="date"] .alpha-calendar-date{
+  background:#0a3655;color:#c8f3ff!important;
+  border-color:#6ce2ff!important;
+}
+#alphaCalendarPanel .alpha-calendar-day{
+  min-width:0;min-height:99px;
+  padding:7px 2px!important;gap:5px!important;
+}
+#alphaCalendarPanel .alpha-calendar-date{
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:clamp(14px,1.8vw,20px)!important;
+  font-weight:800!important;color:#e3f2ff!important;
+  font-variant-numeric:tabular-nums;
+}
+#alphaCalendarPanel .alpha-calendar-duty{color:#a0bcd1!important}
+#alphaCalendarPanel .alpha-workday .alpha-calendar-duty{
+  color:#8bd7ff!important;font-weight:770;
+}
+#alphaCalendarPanel .alpha-calendar-training,
+#alphaCalendarPanel .alpha-calendar-ot{
+  min-width:0;width:calc(100% - 4px)!important;
+  border-radius:4px!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:clamp(10px,1.2vw,13px)!important;
+  letter-spacing:.025em;font-weight:800!important;
+  text-shadow:0 1px 1px #0009;
+  padding:5px 2px!important;
+  box-shadow:inset 0 1px 0 #ffffff32,0 0 8px #0008;
+}
+#alphaCalendarPanel .alpha-calendar-training{
+  background:linear-gradient(150deg,#7a5b1a,#35280e)!important;
+  border-color:#ddb55f!important;
+  color:#ffe8a0!important;
+}
+#alphaCalendarPanel .alpha-calendar-ot{
+  background:linear-gradient(145deg,#0d709c,#0a3556)!important;
+  border-color:#5bcafa!important;color:#e0f6ff!important;
+}
+#alphaCalendarPanel .alpha-calendar-ot span,
+#alphaCalendarPanel .alpha-calendar-training span{
+  color:inherit!important;opacity:.93;
+}
+#alphaCalendarPanel .alpha-calendar-legend{
+  display:flex!important;flex-wrap:wrap;align-items:center;
+  gap:10px 15px!important;
+  margin-top:18px!important;
+  padding:13px 0 4px;border-top:1px solid #31566f;
+  color:#abc7da!important;
+}
+#alphaCalendarPanel .alpha-calendar-swatch.work{
+  background:linear-gradient(150deg,#1c567d,#143951)!important;border-color:#559bcc!important;
+}
+#alphaCalendarPanel .alpha-calendar-swatch.training{
+  background:#67511f!important;border-color:#ffd67b!important;
+}
+#alphaCalendarPanel .alpha-calendar-swatch.ot{
+  background:#075b8a!important;border-color:#69cfff!important;
+}
+#alphaCalendarPanel .alpha-calendar-note{
+  color:#a6c4d6!important;border-top-color:#2a4b65!important;
+}
+#alphaCalendarPanel .alpha-training-roster{
+  margin-top:18px!important;min-width:0;
+}
+#alphaCalendarPanel .alpha-training-roster>h3{
+  margin:0 0 12px!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:clamp(18px,2.2vw,23px)!important;
+  font-weight:800!important;letter-spacing:.06em;
+  text-transform:uppercase;color:#bfe5ff!important;
+}
+#alphaCalendarPanel .alpha-ot-month{
+  min-width:0;
+  border:1px solid #416988!important;
+  border-radius:9px!important;
+  background:linear-gradient(145deg,#142b40,#081724)!important;
+  box-shadow:inset 0 1px 0 #b2ddf525,0 4px 11px #0007;
+}
+#alphaCalendarPanel .alpha-ot-month>summary{
+  min-height:48px!important;
+  color:#e4f5ff!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:clamp(15px,2vw,19px)!important;
+  letter-spacing:.045em!important;text-transform:uppercase;
+  padding:10px 13px!important;
+}
+#alphaCalendarPanel .alpha-ot-month-count{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:11px!important;color:#86c9f4!important;font-weight:650;
+  text-transform:none;letter-spacing:0;
+}
+#alphaCalendarPanel .alpha-training-card{
+  min-width:0;
+  padding:12px 14px!important;
+  margin-bottom:8px!important;
+  border:1px solid #4f667c!important;
+  border-left:4px solid #e7b957!important;
+  border-radius:8px!important;
+  background:linear-gradient(145deg,#172639,#0b1828)!important;
+  box-shadow:inset 0 1px 0 #ffffff1a!important;
+}
+#alphaCalendarPanel .alpha-training-heading{
+  align-items:center!important;gap:9px!important;flex-wrap:wrap;
+}
+#alphaCalendarPanel .alpha-training-heading h4{
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:clamp(14px,2vw,18px)!important;
+  letter-spacing:.035em;color:#f1f7ff!important;
+}
+#alphaCalendarPanel .alpha-training-heading .badge{
+  color:#ffe6a2!important;background:#5b491f!important;
+  border:1px solid #8b6c39;border-radius:4px;
+}
+#alphaCalendarPanel .alpha-training-names li{
+  min-width:0;
+  border:1px solid #375670!important;
+  border-radius:5px!important;
+  background:linear-gradient(180deg,#1d374b,#0d2337)!important;
+  color:#d9efff!important;
+  overflow-wrap:anywhere;
+}
+#alphaCalendarPanel .alpha-training-source{
+  color:#a4c2d6!important;
+}
+#alphaCalendarPanel .alpha-training-move{
+  background:linear-gradient(180deg,#185681,#10344d)!important;
+  color:#d6f0ff!important;border-color:#4eafe6!important;
+}
+
+/* OT STATS — metal KPI instruments, glowing charts, championship podium. */
+#alphaStatsPanel .otstats-shell{gap:15px!important;margin-top:17px!important}
+#alphaStatsPanel .otstats-title-row{
+  position:relative;isolation:isolate;
+  min-width:0;
+  padding:16px 16px 16px 22px!important;
+  background:linear-gradient(110deg,#0a263e,#081725 76%)!important;
+  border:1px solid #4c90b5!important;
+  border-radius:10px!important;
+  box-shadow:inset 0 1px 0 #afe6ff3c,0 6px 19px #0009;
+}
+#alphaStatsPanel .otstats-title-row h2{
+  margin:0!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif!important;
+  font-size:clamp(22px,3vw,32px)!important;
+  font-weight:850!important;font-style:italic;
+  letter-spacing:.07em!important;text-transform:uppercase;
+  color:#f3faff!important;
+  text-shadow:0 2px 4px #000b,0 0 12px #58ceff55;
+}
+#alphaStatsPanel .otstats-title-row button{
+  min-height:42px!important;min-width:92px;
+}
+#alphaStatsPanel .otstats-description,
+#alphaStatsPanel .otstats-chart-desc{
+  color:#adc8dc!important;
+  line-height:1.5!important;font-size:12px!important;
+}
+#alphaStatsPanel .alpha-monthly-summary{
+  position:relative;isolation:isolate;overflow:hidden;
+  padding:17px!important;
+  border:1px solid #4a89a7!important;border-top:3px solid #68d2ff!important;
+  border-radius:11px!important;
+  background:
+    linear-gradient(130deg,#122e45,#081827 72%),
+    url("assets/alpha-command-watermark.svg") right center/52% auto no-repeat!important;
+  box-shadow:inset 0 1px 0 #bfe9ff55,0 6px 16px #0008!important;
+}
+#alphaStatsPanel .alpha-monthly-summary-heading h2{
+  color:#e9f8ff!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif!important;
+  font-size:clamp(17px,2.1vw,23px)!important;
+  font-style:italic;font-weight:850;letter-spacing:.06em;
+  text-transform:uppercase;
+}
+#alphaStatsPanel #alphaMTDMonth{
+  color:#94c3e3!important;letter-spacing:.03em;
+}
+#alphaStatsPanel .alpha-monthly-metrics{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:10px!important;
+  margin-top:15px!important;
+}
+#alphaStatsPanel .alpha-monthly-metric{
+  --ac-kpi:#73cfff;
+  position:relative;overflow:hidden;
+  min-width:0;min-height:99px;
+  padding:13px 6px!important;
+  border:1px solid #3f7594!important;
+  border-top:3px solid var(--ac-kpi)!important;
+  border-radius:7px!important;
+  background:linear-gradient(180deg,#234661aa 0%,#0b192b 62%,#081320 100%)!important;
+  box-shadow:inset 0 1px 0 #c4f5ff22,0 0 11px #2caffb19;
+}
+#alphaStatsPanel .alpha-monthly-metric:nth-child(2){--ac-kpi:#a5dfff}
+#alphaStatsPanel .alpha-monthly-metric:nth-child(3){--ac-kpi:#78e7c1}
+#alphaStatsPanel .alpha-monthly-metric strong{
+  font-family:Impact,"Arial Narrow",Arial,sans-serif!important;
+  font-style:italic;font-size:clamp(29px,5vw,49px)!important;
+  line-height:1!important;font-weight:850!important;
+  color:var(--ac-kpi)!important;
+  text-shadow:0 2px 3px #0009,0 0 12px #5bc9ff44;
+  font-variant-numeric:tabular-nums;
+}
+#alphaStatsPanel .alpha-monthly-metric span{
+  margin-top:7px!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  text-transform:uppercase;letter-spacing:.055em;
+  color:#c4dceb!important;
+  font-size:clamp(10px,1.5vw,13px)!important;
+}
+#alphaStatsPanel .otstats-chart-card{
+  position:relative;overflow:hidden;
+  padding:19px!important;
+  border:1px solid #3d7698!important;border-radius:11px!important;
+  border-top:2px solid #3b9dce!important;
+  background:
+    linear-gradient(165deg,#0e263b,#071624 78%)!important;
+  box-shadow:inset 0 1px 0 #b9e5fb33,0 6px 16px #0008!important;
+}
+#alphaStatsPanel .otstats-chart-card h3,
+#alphaStatsPanel .otworked-podium-header h3,
+#alphaStatsPanel .otstats-history>h3{
+  font-family:Impact,"Arial Narrow",Arial,sans-serif!important;
+  font-size:clamp(18px,2.3vw,25px)!important;
+  font-style:italic;font-weight:850!important;
+  letter-spacing:.055em!important;text-transform:uppercase;
+  color:#e7f6ff!important;
+}
+#alphaStatsPanel .otstats-bar-grid{
+  border-bottom-color:#5380a3!important;
+  gap:12px!important;
+}
+#alphaStatsPanel .otstats-bar-fill{
+  background:linear-gradient(180deg,#b9ecff 0%,#47b9f5 32%,#1766a5 100%)!important;
+  border:1px solid #a6e5ff7d;
+  border-bottom:0;
+  box-shadow:0 0 9px #3ac9fc44;
+}
+#alphaStatsPanel .otstats-bar-current .otstats-bar-fill{
+  background:linear-gradient(180deg,#a8f2dd,#36b3af 65%,#127d8f)!important;
+}
+#alphaStatsPanel .otstats-bar-value{
+  color:#e3f5ff!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:16px!important;
+}
+#alphaStatsPanel .otstats-chart-month{
+  color:#c1d8e6!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:12px!important;letter-spacing:.04em;
+  text-transform:uppercase;
+}
+#alphaStatsPanel .otstats-line-svg path[stroke="#8fd8c2"]{stroke:#83d9ff}
+#alphaStatsPanel .otstats-line-svg circle[fill="#8fd8c2"]{fill:#83d9ff;stroke:#0c253b}
+#alphaStatsPanel .otstats-line-svg text[fill="#daeee8"]{fill:#d6f4ff}
+#alphaStatsPanel .otworked-podium-card{
+  padding:19px!important;
+  border:1px solid #457b9e!important;border-top:3px solid #75d7f7!important;
+  border-radius:11px!important;
+  background:
+    radial-gradient(ellipse 58% 55% at 50% 72%,#1d547333,transparent),
+    linear-gradient(145deg,#132c41,#091726 68%)!important;
+  box-shadow:inset 0 1px 0 #d3f3ff37,0 7px 21px #000a!important;
+}
+#alphaStatsPanel .otworked-podium-header p{
+  color:#a4c9de!important;
+  text-transform:uppercase;letter-spacing:.04em;
+}
+#alphaStatsPanel .otworked-medal{
+  filter:drop-shadow(0 4px 4px #000c) drop-shadow(0 0 7px #c5dffd35)!important;
+}
+#alphaStatsPanel .otworked-person{
+  background:linear-gradient(180deg,transparent 15%,#12324729 100%);
+  border-radius:8px 8px 0 0;
+}
+#alphaStatsPanel .otworked-name{
+  color:#f0faff!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  letter-spacing:.02em;
+  overflow-wrap:anywhere;
+}
+#alphaStatsPanel .otworked-total{
+  color:#b4d9ea!important;font-weight:750;
+}
+#alphaStatsPanel .otworked-platform{
+  border-width:2px!important;
+  box-shadow:inset 0 3px 0 #fff7,inset 0 -12px 24px #0003,0 4px 17px #000a!important;
+}
+#alphaStatsPanel .otworked-gold .otworked-platform{
+  background:linear-gradient(125deg,#94701b,#ffe7a1 34%,#efbf51 57%,#a6731c)!important;
+  border-color:#ffe3a1!important;
+}
+#alphaStatsPanel .otworked-silver .otworked-platform{
+  background:linear-gradient(125deg,#7e98ac,#eef7ff 38%,#b5c6d5 64%,#70869a)!important;
+  border-color:#e6efff!important;
+}
+#alphaStatsPanel .otworked-bronze .otworked-platform{
+  background:linear-gradient(125deg,#946044,#f3c29a 39%,#bd7a54 65%,#875137)!important;
+  border-color:#e5b48e!important;
+}
+#alphaStatsPanel .otworked-platform strong{
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-style:italic;font-size:clamp(29px,5vw,51px)!important;
+  text-shadow:0 1px 1px #fff7;
+}
+#alphaStatsPanel .otworked-all summary{
+  color:#91d8ff!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  text-transform:uppercase;letter-spacing:.045em;
+}
+#alphaStatsPanel .otworked-all-rows{
+  border-color:#41647f!important;
+  background:#091624;
+}
+#alphaStatsPanel .otworked-all-row{
+  background:linear-gradient(180deg,#10253a,#0a1928)!important;
+  border-bottom-color:#2b506a!important;
+  color:#e3f3ff!important;
+}
+#alphaStatsPanel .otworked-all-total{
+  color:#9ad9ff!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:17px!important;
+}
+#alphaStatsPanel .otstats-history{
+  min-width:0;
+  margin-top:6px!important;
+}
+#alphaStatsPanel .alpha-ot-month{
+  min-width:0;
+  border:1px solid #416d8c!important;
+  border-radius:10px!important;
+  background:linear-gradient(150deg,#122a40,#081623)!important;
+  box-shadow:inset 0 1px 0 #a6dbff29,0 4px 12px #0008!important;
+}
+#alphaStatsPanel .alpha-ot-month>summary{
+  min-width:0;min-height:56px!important;
+  display:flex;align-items:center;gap:10px;
+  border-bottom-color:#2a506f!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:clamp(15px,1.9vw,20px)!important;
+  color:#e9f8ff!important;
+  text-transform:uppercase;letter-spacing:.035em;
+}
+#alphaStatsPanel .alpha-ot-month-label{flex-wrap:wrap!important;min-width:0}
+#alphaStatsPanel .alpha-ot-month-count{
+  color:#9bcdeb!important;
+  text-transform:none;letter-spacing:0!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+#alphaStatsPanel .alpha-ot-month-stats span{
+  background:#0b2133!important;
+  border-color:#3c6686!important;
+  color:#b1cee1!important;
+}
+#alphaStatsPanel .alpha-ot-month-stats strong{
+  color:#92d3ff!important;
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:clamp(23px,3.5vw,35px)!important;
+}
+#alphaStatsPanel .alpha-ot-card{
+  background:linear-gradient(160deg,#10283c,#091928)!important;
+  border-color:#365d76!important;border-left:4px solid #5bbfee!important;
+}
+#alphaStatsPanel .alpha-ot-card .alpha-training-heading .badge{
+  background:#154d72!important;color:#caf0ff!important;
+  border:1px solid #3d91c2!important;
+}
+#alphaStatsPanel .alpha-ot-person{
+  color:#eaf6ff!important;
+}
+#alphaStatsPanel .alpha-ot-code{
+  background:#2c719d!important;color:#fff!important;
+}
+#alphaStatsPanel .alpha-ot-code.required{background:#a64d66!important}
+
+/* Keep every status, date, number and Admin action readable on small phones. */
+@media(max-width:760px){
+  #alphaIEASPanel .ieas-head{padding:15px 15px!important}
+  #alphaIEASPanel .ieas-card{padding:12px 12px 11px 21px!important}
+  #alphaIEASPanel .ieas-card-main{min-height:81px;gap:10px!important;padding-right:clamp(62px,20%,120px)}
+  #alphaIEASPanel .ieas-number{flex-basis:48px!important;width:48px!important;height:55px!important;font-size:28px!important}
+  #alphaIEASPanel .ieas-call{width:clamp(58px,21%,110px);font-size:clamp(39px,10.5vw,70px)!important}
+  #alphaIEASPanel .ieas-name-line strong{font-size:clamp(17px,3vw,21px)!important}
+  #alphaCalendarPanel .alpha-calendar{padding:13px!important}
+  #alphaCalendarPanel .alpha-calendar-day{min-height:88px}
+  #alphaStatsPanel .otstats-chart-card{padding:15px!important}
+  #alphaStatsPanel .alpha-monthly-metric{min-height:92px}
+}
+@media(max-width:540px){
+  #alphaIEASPanel .ieas-shell{margin-top:11px!important;gap:9px!important}
+  #alphaIEASPanel .ieas-head{padding:13px 13px!important}
+  #alphaIEASPanel .ieas-head h2{font-size:22px!important}
+  #alphaIEASPanel .ieas-head>p{font-size:11px!important;margin-bottom:12px!important}
+  #alphaIEASPanel .ieas-summary{gap:6px!important}
+  #alphaIEASPanel .ieas-summary span{min-height:69px;padding:7px 2px!important;font-size:10px!important;letter-spacing:.02em}
+  #alphaIEASPanel .ieas-summary strong{font-size:25px!important}
+  #alphaIEASPanel .ieas-toolbar h3{font-size:15px!important}
+  #alphaIEASPanel .ieas-toolbar button{min-width:75px!important;font-size:11px!important}
+  #alphaIEASPanel .ieas-card{padding:10px 9px 10px 20px!important}
+  #alphaIEASPanel .ieas-card-main{
+    gap:8px!important;
+    min-height:73px;
+    padding-right:clamp(58px,24%,85px)!important;
+  }
+  #alphaIEASPanel .ieas-number{flex-basis:40px!important;width:40px!important;height:47px!important;font-size:23px!important}
+  #alphaIEASPanel .ieas-name-line strong{font-size:clamp(15px,4.1vw,19px)!important}
+  #alphaIEASPanel .ieas-badge{font-size:11px!important}
+  #alphaIEASPanel .ieas-last{font-size:11px!important;margin-top:4px!important}
+  #alphaIEASPanel .ieas-call{
+    right:0;width:clamp(54px,23%,79px)!important;
+    font-size:clamp(34px,11.2vw,52px)!important;
+    letter-spacing:-.06em!important;
+  }
+  #alphaIEASPanel .ieas-card-tools{margin-top:8px!important;padding-top:8px!important}
+  #alphaIEASPanel .ieas-card-tools button{min-height:37px!important;font-size:11px!important;padding:6px 10px!important}
+  #alphaIEASPanel .ieas-entry-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #alphaIEASPanel .ieas-entry-grid label:last-child{grid-column:1/-1}
+  #alphaIEASPanel .ieas-form-actions{display:grid!important;grid-template-columns:minmax(0,1fr);gap:7px!important}
+  #alphaIEASPanel .ieas-form-actions button{width:100%!important;min-height:42px!important}
+  #alphaCalendarPanel .alpha-calendar{padding:9px!important;margin-top:12px!important}
+  #alphaCalendarPanel .alpha-calendar-nav{grid-template-columns:41px minmax(0,1fr) 41px!important;gap:6px!important}
+  #alphaCalendarPanel .alpha-calendar-nav h2{font-size:20px!important;letter-spacing:.04em}
+  #alphaCalendarPanel .alpha-calendar-nav button{min-width:41px!important;min-height:43px!important;font-size:23px!important}
+  #alphaCalendarPanel .alpha-calendar-tools p{font-size:10px!important}
+  #alphaCalendarPanel .alpha-calendar-table{border-spacing:2px!important}
+  #alphaCalendarPanel .alpha-calendar-table th{font-size:10px!important;padding:5px 0!important}
+  #alphaCalendarPanel .alpha-calendar-day{min-height:77px!important;gap:3px!important;padding:5px 1px!important}
+  #alphaCalendarPanel .alpha-calendar-date{width:24px;height:24px;font-size:13px!important}
+  #alphaCalendarPanel .alpha-calendar-duty{font-size:9px!important}
+  #alphaCalendarPanel .alpha-calendar-training,
+  #alphaCalendarPanel .alpha-calendar-ot{font-size:9px!important;min-height:36px!important;padding:4px 1px!important}
+  #alphaCalendarPanel .alpha-calendar-ot span,
+  #alphaCalendarPanel .alpha-calendar-training span{font-size:9px!important}
+  #alphaCalendarPanel .alpha-calendar-legend{gap:9px!important;font-size:11px!important}
+  #alphaCalendarPanel .alpha-training-card{padding:10px!important}
+  #alphaStatsPanel .otstats-shell{gap:11px!important;margin-top:11px!important}
+  #alphaStatsPanel .otstats-title-row{padding:12px 11px 12px 18px!important}
+  #alphaStatsPanel .otstats-title-row h2{font-size:21px!important}
+  #alphaStatsPanel .otstats-title-row button{min-width:74px!important;font-size:11px!important}
+  #alphaStatsPanel .alpha-monthly-summary{padding:12px!important}
+  #alphaStatsPanel .alpha-monthly-metrics{gap:6px!important;margin-top:11px!important}
+  #alphaStatsPanel .alpha-monthly-metric{min-height:78px!important;padding:9px 2px!important}
+  #alphaStatsPanel .alpha-monthly-metric strong{font-size:clamp(23px,5.8vw,30px)!important}
+  #alphaStatsPanel .alpha-monthly-metric span{font-size:10px!important;letter-spacing:0}
+  #alphaStatsPanel .otstats-chart-card{padding:11px!important}
+  #alphaStatsPanel .otstats-chart-card h3{font-size:17px!important}
+  #alphaStatsPanel .otworked-podium-card{padding:12px 9px!important}
+  #alphaStatsPanel .otworked-name{font-size:clamp(11px,2.7vw,14px)!important}
+  #alphaStatsPanel .otworked-platform strong{font-size:29px!important}
+  #alphaStatsPanel .alpha-ot-month>summary{min-height:48px!important;padding:10px!important}
+  #alphaStatsPanel .alpha-ot-month-label{font-size:15px!important}
+  #alphaStatsPanel .alpha-ot-month-stats strong{font-size:22px!important}
+}
+@media(max-width:355px){
+  #alphaIEASPanel .ieas-card-main{padding-right:54px!important}
+  #alphaIEASPanel .ieas-call{width:52px!important;font-size:33px!important}
+  #alphaIEASPanel .ieas-number{flex-basis:38px!important;width:38px!important;font-size:21px!important}
+  #alphaIEASPanel .ieas-last{font-size:10px!important}
+  #alphaCalendarPanel .alpha-calendar-day{min-height:71px!important}
+  #alphaCalendarPanel .alpha-calendar-date{width:23px;height:23px;font-size:12px!important}
+  #alphaCalendarPanel .alpha-calendar-training,#alphaCalendarPanel .alpha-calendar-ot{font-size:9px!important}
+}
