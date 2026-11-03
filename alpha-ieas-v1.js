@@ -47,9 +47,17 @@
   const cards=document.getElementById('ieasCards');
   const dialog=document.createElement('dialog');
   dialog.id='ieasHistoryDialog';
-  dialog.innerHTML='<div class="modal ieas-history-modal"><div class="ieas-history-head"><h2 id="ieasHistoryTitle">IE/AS history</h2><button type="button" class="dark" data-ieas-action="close-history">Close</button></div><p class="ieas-small" id="ieasHistoryRange"></p><div id="ieasHistoryRows"></div></div>';
+  dialog.innerHTML='<div class="modal ieas-history-modal">'+
+    '<div class="ieas-history-head"><h2 id="ieasHistoryTitle">IE/AS history</h2><button type="button" class="dark ieas-history-close" data-ieas-action="close-history">Close</button></div>'+
+    '<p class="ieas-small" id="ieasHistoryRange"></p>'+
+    '<div class="ieas-history-filters">'+
+      '<label for="ieasHistoryStatus">Status<select id="ieasHistoryStatus"><option value="all">All activity</option><option value="scheduled">Scheduled</option><option value="worked">Worked</option><option value="cancelled">Cancelled</option></select></label>'+
+      '<label for="ieasHistoryShift">Shift<select id="ieasHistoryShift"><option value="all">Both</option><option value="IE">In Early</option><option value="AS">After Shift</option></select></label>'+
+      '<label for="ieasHistoryDays">Date range<select id="ieasHistoryDays"><option value="2">Last 2 days</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="60">Last 60 days</option></select></label>'+
+    '</div>'+
+    '<div id="ieasHistoryRows" class="ieas-history-scroll" role="status" aria-live="polite"></div></div>';
   document.body.appendChild(dialog);
-  let roster=[],busy=false,historyOfficerId=null,lastRole=null;
+  let roster=[],busy=false,historyOfficerId=null,lastRole=null,historyItems=[];let ieasLastLoaded=null;
   function available(o){return o.available===true;}
   function statusText(o){
     if(o.status==='Vacation')return 'Vacation';
@@ -129,11 +137,18 @@
     try{
       // This is the same existing availability/vacation return refresh used by OT List.
       if(typeof loadAll==='function')await loadAll();
-      const data=await api('/rest/v1/rpc/ieas_list_summary',{method:'POST',auth:false,body:'{}'});
+      const data=await api('/rest/v1/rpc/ieas_list_summary',{method:'POST',body:'{}'});
       if(!Array.isArray(data))throw Error('Invalid IE/AS list response');
       roster=data;
+      ieasLastLoaded=new Date();
+      const feedback=document.getElementById('ieasFeedback');
+      if(feedback){feedback.hidden=false;feedback.dataset.error='false';feedback.textContent='Updated '+ieasLastLoaded.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
       render();
-    }catch(error){notify('Unable to load IE/AS list: '+error.message)}
+    }catch(error){
+      const feedback=document.getElementById('ieasFeedback');
+      if(feedback)feedback.dataset.error='true';
+      notify('IE/AS connection error'+(ieasLastLoaded?' · Last updated '+ieasLastLoaded.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}):' · No data loaded')+': '+error.message);
+    }
     finally{busy=false}
   }
   async function save(officerId,mode,button){
@@ -171,22 +186,56 @@
     }catch(error){notify(error.message)}
     finally{button.disabled=false}
   }
+  function renderHistoryFiltered(){
+    const status=document.getElementById('ieasHistoryStatus')?.value||'all';
+    const shift=document.getElementById('ieasHistoryShift')?.value||'all';
+    const allowedDays=canEdit()?60:2;
+    const chosen=Number(document.getElementById('ieasHistoryDays')?.value||allowedDays);
+    const days=Math.min(allowedDays,Number.isFinite(chosen)&&chosen>=1?chosen:allowedDays);
+    const threshold=new Date(today()+'T12:00:00Z');
+    threshold.setUTCDate(threshold.getUTCDate()-days);
+    const from=threshold.toISOString().slice(0,10);
+    const filtered=historyItems.filter(entry=>
+      (status==='all'||entry.status===status)
+      &&(shift==='all'||entry.shift_type===shift)
+      &&entry.date>=from);
+    document.getElementById('ieasHistoryRows').innerHTML=filtered.length
+      ?filtered.map(entry=>activityHTML(entry,historyOfficerId)).join('')
+      :'<p class="ieas-small">No IE/AS entries match these filters within your permitted history range.</p>';
+  }
+  function setHistoryAccess(){
+    const select=document.getElementById('ieasHistoryDays');
+    const permitted=canEdit()?60:2;
+    Array.from(select.options).forEach(option=>option.hidden=Number(option.value)>permitted);
+    if(Number(select.value)>permitted||!select.value)select.value=String(permitted);
+  }
   async function showHistory(officerId){
+    const isNew=historyOfficerId!==officerId;
     historyOfficerId=officerId;
     const officer=roster.find(o=>o.id===officerId);
     if(!officer)return;
+    if(isNew){
+      document.getElementById('ieasHistoryStatus').value='all';
+      document.getElementById('ieasHistoryShift').value='all';
+      document.getElementById('ieasHistoryDays').value=canEdit()?'60':'2';
+    }
+    setHistoryAccess();
     document.getElementById('ieasHistoryTitle').textContent=officer.name+' · IE/AS history';
-    document.getElementById('ieasHistoryRange').textContent=(canEdit()?'Last 60 days':'Last 2 days')+' · Excel starting reference: '+baselineLabel(officer.baseline_activity).replace('Excel starting reference: ','');
+    document.getElementById('ieasHistoryRange').textContent=(canEdit()?'Up to 60 days':'Up to 2 days')+' available · Excel starting reference: '+baselineLabel(officer.baseline_activity).replace('Excel starting reference: ','');
     document.getElementById('ieasHistoryRows').textContent='Loading history…';
     if(!dialog.open)dialog.showModal();
     try{
       const rows=await api('/rest/v1/rpc/ieas_officer_history',{method:'POST',body:JSON.stringify({p_officer_id:officerId})});
       if(historyOfficerId!==officerId)return;
-      document.getElementById('ieasHistoryRows').innerHTML=Array.isArray(rows)&&rows.length
-        ? rows.map(a=>activityHTML(a,officerId)).join('')
-        : '<p class="ieas-small">No new IE/AS assignments recorded in this period. The Excel starting position is preserved.</p>';
-    }catch(error){document.getElementById('ieasHistoryRows').textContent='Unable to load history: '+error.message}
+      if(!Array.isArray(rows))throw Error('Unexpected history response');
+      historyItems=rows;
+      renderHistoryFiltered();
+    }catch(error){document.getElementById('ieasHistoryRows').textContent='Unable to load history: '+error.message;}
   }
+  ['ieasHistoryStatus','ieasHistoryShift','ieasHistoryDays'].forEach(id=>{
+    document.getElementById(id)?.addEventListener('change',renderHistoryFiltered);
+  });
+  dialog.addEventListener('close',()=>{historyOfficerId=null;historyItems=[];});
   function onClick(event){
     const button=event.target.closest('button[data-ieas-action]');
     if(!button)return;
