@@ -1738,3 +1738,40 @@ dialog .modal{background:linear-gradient(150deg,#14263a,#0a1420)!important}
   #alphaIEASPanel .ieas-card .ieas-call.alpha-command-ieas-digits-3{font-size:24px!important}
   #alphaIEASPanel .ieas-card .ieas-call.alpha-command-ieas-digits-4{font-size:20px!important}
 }
+
+/* Guard modal controls against clipping in narrow iPhone viewports. */
+#ieasHistoryDialog{
+  box-sizing:border-box!important;
+  width:min(94vw,620px)!important;
+  max-width:620px!important;
+  max-height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important;
+  overflow:hidden!important;
+  padding:0!important;
+}
+#ieasHistoryDialog .ieas-history-modal{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:100%!important;
+  max-height:calc(100dvh - 30px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important;
+  min-width:0!important;
+  padding:clamp(11px,3vw,20px)!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+}
+#ieasHistoryDialog .ieas-history-head{
+  display:flex!important;
+  justify-content:space-between!important;
+  flex-wrap:nowrap!important;
+  min-width:0!important;
+  align-items:start!important;
+  gap:8px!important;
+}
+#ieasHistoryDialog .ieas-history-head h2{
+  min-width:0!important;
+  flex:1 1 auto!important;
+  overflow-wrap:anywhere!important;
+}
+#ieasHistoryDialog .ieas-history-head button[data-ieas-action="close-history"]{
+  min-width:62px!important;min-height:39px!important;
+  flex:0 0 auto!important;
+}
