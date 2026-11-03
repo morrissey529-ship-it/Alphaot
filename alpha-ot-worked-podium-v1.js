@@ -20,6 +20,7 @@
     '<div class="otworked-stage" id="alphaWorkedPodium" aria-live="polite">'+
       '<p class="otworked-initial">Loading rankings…</p>'+
     '</div>'+
+    '<p class="otworked-basis">Presumed worked: an OT assignment whose date has arrived, excluding call-offs and undone entries. Attendance is not independently verified. One day per officer per date. Ties are ordered alphabetically by displayed name.</p>'+
     '<details class="otworked-all" id="alphaWorkedAllDetails" hidden>'+
       '<summary id="alphaWorkedAllSummary">All officer totals</summary>'+
       '<div class="otworked-all-rows" id="alphaWorkedAllRows"></div>'+
@@ -65,7 +66,7 @@
     snapshot=data;
     const officers=Array.isArray(data.leaderboard)?data.leaderboard:[];
     const ranked=officers.filter(officer=>Number(officer.worked)>0);
-    yearLabel.textContent=data.year+' year to date · From OT List · Resets January 1';
+    yearLabel.textContent=data.year+' year to date · Presumed worked OT days · Resets January 1';
     // DOM order is ranking order; CSS places silver left, gold center, bronze right.
     podium.innerHTML=places.map(place=>slot(place,ranked[place.number-1])).join('');
     podium.classList.toggle('otworked-no-results',ranked.length===0);
