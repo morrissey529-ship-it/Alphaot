@@ -148,7 +148,7 @@
   statsPanel.setAttribute('aria-labelledby', 'alphaStatsTab');
   statsPanel.tabIndex = 0;
   statsPanel.hidden = true;
-  statsPanel.innerHTML = "<div class=\"otstats-shell\">\n<div class=\"otstats-title-row\"><h2>OT Statistics</h2><button type=\"button\" class=\"dark\" id=\"alphaStatsRefresh\">Refresh</button></div>\n<p class=\"otstats-description\"><strong>Scheduled OT</strong> counts assigned spots, including call-offs and future dates. <strong>Presumed worked OT days</strong> are dated assignments not called off or undone; actual attendance is not independently verified.</p>\n<section class=\"alpha-monthly-summary\" aria-labelledby=\"alphaMonthlyHeading\">\n  <div class=\"alpha-monthly-summary-heading\"><h2 id=\"alphaMonthlyHeading\">Current Month</h2><span id=\"alphaMTDMonth\">Loading…</span></div>\n  <div class=\"alpha-monthly-metrics\">\n    <div class=\"alpha-monthly-metric\"><strong id=\"alphaMTDDays\">—</strong><span>OT days</span></div>\n    <div class=\"alpha-monthly-metric\"><strong id=\"alphaMTDSpots\">—</strong><span>OT spots</span></div>\n    <div class=\"alpha-monthly-metric\"><strong id=\"alphaMTDAverage\">—</strong><span>Average per day</span></div>\n  </div>\n</section>\n<section class=\"otstats-chart-card\" aria-labelledby=\"alphaStatsSpotsHeading\">\n  <h3 id=\"alphaStatsSpotsHeading\">Monthly OT Spots</h3>\n  <p class=\"otstats-chart-desc\">Scheduled assignment spots, including call-offs; not a measure of shifts actually worked.</p>\n  <div id=\"alphaStatsSpotsChart\" class=\"otstats-chart-scroll\" aria-live=\"polite\"><p class=\"otstats-empty\">Loading monthly chart…</p></div>\n</section>\n<section class=\"otstats-chart-card\" aria-labelledby=\"alphaStatsAverageHeading\">\n  <h3 id=\"alphaStatsAverageHeading\">Average Spots per OT Day</h3>\n  <p class=\"otstats-chart-desc\">Monthly trend calculated as OT spots divided by days with scheduled OT.</p>\n  <div id=\"alphaStatsAverageChart\" class=\"otstats-chart-scroll\" aria-live=\"polite\"><p class=\"otstats-empty\">Loading monthly chart…</p></div>\n  <p id=\"alphaStatsChartsStatus\" class=\"otstats-chart-desc\" role=\"status\" aria-live=\"polite\"></p>\n</section>\n<section class=\"alpha-training-roster otstats-history\" aria-labelledby=\"alphaOTHeading\">\n  <h3 id=\"alphaOTHeading\">OT History · Newest First</h3>\n  <div id=\"alphaOTDates\" aria-live=\"polite\"><p class=\"alpha-training-empty\">Open OT Stats to load the history.</p></div>\n  <p class=\"alpha-training-source\">All recorded months, including empty months in between. V = Volunteer, R = Required. Called-off assignments remain counted; undone assignments are excluded. Scheduling does not confirm attendance.</p>\n</section>\n</div>";
+  statsPanel.innerHTML = "<div class=\"otstats-shell\">\n<div class=\"otstats-title-row\"><h2>OT Statistics</h2><button type=\"button\" class=\"dark\" id=\"alphaStatsRefresh\">Refresh</button></div>\n<p class=\"otstats-description\">Scheduled overtime, including recorded call-offs. Undone assignments and corrections are excluded.</p>\n<section class=\"alpha-monthly-summary\" aria-labelledby=\"alphaMonthlyHeading\">\n  <div class=\"alpha-monthly-summary-heading\"><h2 id=\"alphaMonthlyHeading\">Current Month</h2><span id=\"alphaMTDMonth\">Loading…</span></div>\n  <div class=\"alpha-monthly-metrics\">\n    <div class=\"alpha-monthly-metric\"><strong id=\"alphaMTDDays\">—</strong><span>OT days</span></div>\n    <div class=\"alpha-monthly-metric\"><strong id=\"alphaMTDSpots\">—</strong><span>OT spots</span></div>\n    <div class=\"alpha-monthly-metric\"><strong id=\"alphaMTDAverage\">—</strong><span>Average per day</span></div>\n  </div>\n</section>\n<section class=\"otstats-chart-card\" aria-labelledby=\"alphaStatsSpotsHeading\">\n  <h3 id=\"alphaStatsSpotsHeading\">Monthly OT Spots</h3>\n  <p class=\"otstats-chart-desc\">Scheduled spots each month, including recorded call-offs.</p>\n  <div id=\"alphaStatsSpotsChart\" class=\"otstats-chart-scroll\" aria-live=\"polite\"><p class=\"otstats-empty\">Loading monthly chart…</p></div>\n</section>\n<section class=\"otstats-chart-card\" aria-labelledby=\"alphaStatsAverageHeading\">\n  <h3 id=\"alphaStatsAverageHeading\">Average Spots per OT Day</h3>\n  <p class=\"otstats-chart-desc\">Monthly trend calculated as OT spots divided by days with scheduled OT.</p>\n  <div id=\"alphaStatsAverageChart\" class=\"otstats-chart-scroll\" aria-live=\"polite\"><p class=\"otstats-empty\">Loading monthly chart…</p></div>\n  <p id=\"alphaStatsChartsStatus\" class=\"otstats-chart-desc\" role=\"status\" aria-live=\"polite\"></p>\n</section>\n<section class=\"alpha-training-roster otstats-history\" aria-labelledby=\"alphaOTHeading\">\n  <h3 id=\"alphaOTHeading\">OT History · Newest First</h3>\n  <div id=\"alphaOTDates\" aria-live=\"polite\"><p class=\"alpha-training-empty\">Open OT Stats to load the history.</p></div>\n  <p class=\"alpha-training-source\">All recorded months, including empty months in between. V = Volunteer, R = Required. Called-off assignments remain counted; undone assignments are excluded. Scheduling does not confirm attendance.</p>\n</section>\n</div>";
   app.appendChild(statsPanel);
   const detail = document.createElement('dialog');
   detail.id = 'alphaTacticalDialog';
@@ -309,38 +309,19 @@
     }).join('') : '<p class="alpha-training-empty">No Training dates have been added.</p>';
   }
   renderTrainingMonths();
-  const trainingLoadStatus=document.createElement('p');
-  trainingLoadStatus.id='alphaTrainingSync';
-  trainingLoadStatus.className='alpha-calendar-sync';
-  trainingLoadStatus.setAttribute('role','status');
-  trainingLoadStatus.setAttribute('aria-live','polite');
-  trainingLoadStatus.textContent='Training data not yet refreshed';
-  trainingDatesContainer.insertAdjacentElement('beforebegin',trainingLoadStatus);
-  let trainingLastUpdated=null;
   async function loadTrainingCalendar(){
-    trainingLoadStatus.textContent='Loading Training schedule…';
-    try{
-      const rows=await api('/rest/v1/rpc/alpha_training_calendar',{
-        method:'POST',auth:false,body:'{}'
-      });
-      if(!Array.isArray(rows))throw new Error('Invalid Training schedule response');
-      const grouped=Object.create(null);
-      for(const item of rows){
-        if(!item||typeof item.name!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(item.date))continue;
-        (grouped[item.date]||=[]).push(item.name);
-      }
-      tactical=grouped;
-      trainingLastUpdated=new Date();
-      trainingLoadStatus.dataset.error='false';
-      trainingLoadStatus.textContent='Training updated '+trainingLastUpdated.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-      renderCalendar();
-      renderTrainingMonths();
-    }catch(error){
-      trainingLoadStatus.dataset.error='true';
-      trainingLoadStatus.textContent='Training connection error'+
-        (trainingLastUpdated?' · Last updated '+trainingLastUpdated.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}):' · No schedule loaded');
-      throw error;
+    const rows=await api('/rest/v1/rpc/alpha_training_calendar',{
+      method:'POST',auth:false,body:'{}'
+    });
+    if(!Array.isArray(rows))throw new Error('Invalid Training schedule response');
+    const grouped=Object.create(null);
+    for(const item of rows){
+      if(!item||typeof item.name!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(item.date))continue;
+      (grouped[item.date]||=([])).push(item.name);
     }
+    tactical=grouped;
+    renderCalendar();
+    renderTrainingMonths();
   }
   const trainingEditClick=event=>{
     const target=event.target.closest('[data-move-training]');
@@ -351,14 +332,6 @@
 
   // Keep each month expanded/collapsed as the viewer chooses.
   const otHistoryContainer = document.getElementById('alphaOTDates');
-  const historySync=document.createElement('p');
-  historySync.className='alpha-calendar-sync';
-  historySync.id='alphaHistorySync';
-  historySync.setAttribute('role','status');
-  historySync.setAttribute('aria-live','polite');
-  historySync.textContent='OT history not yet refreshed';
-  otHistoryContainer.insertAdjacentElement('beforebegin',historySync);
-  let historyLastUpdated=null;
   otHistoryContainer.addEventListener('toggle', event => {
     const details = event.target;
     if (details.tagName === 'DETAILS' && details.dataset.otMonth) {
@@ -430,17 +403,12 @@
         }
       }
       historyInitialized = true;
-      historyLastUpdated=new Date();
-      historySync.dataset.error='false';
-      historySync.textContent='History updated '+historyLastUpdated.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
       renderOTHistory(grouped);
       window.alphaOTStatsRender?.(grouped);
 
     } catch(error) {
       if (request === historyRequest) {
         if (!historyInitialized) otHistoryContainer.innerHTML = '<p class="alpha-training-empty" role="alert">Unable to load OT history. Reopen OT Stats to retry.</p>';
-        historySync.dataset.error='true';
-        historySync.textContent='History connection error'+(historyLastUpdated?' · Last updated '+historyLastUpdated.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}):' · No history loaded');
         window.alphaOTStatsError?.('Unable to refresh OT statistics. Try Refresh.');
       }
     } finally {
@@ -448,53 +416,38 @@
     }
   }
   // Read-only monthly OT lookup. This never inserts/edits events or touches rotation.
-  const otSync=document.createElement('p');
-  otSync.id='alphaCalendarSync';
-  otSync.className='alpha-calendar-sync';
-  otSync.setAttribute('role','status');
-  otSync.setAttribute('aria-live','polite');
-  otSync.textContent='OT calendar not yet refreshed';
-  calendarDays.closest('.alpha-calendar-table')?.insertAdjacentElement('beforebegin',otSync);
-  let otLastUpdated=null;
-  async function loadCalendarOT(){
-    const request=++otRequest;
-    const year=month.getUTCFullYear(),mi=month.getUTCMonth();
-    const offset=month.getUTCDay();
-    const dayCount=new Date(Date.UTC(year,mi+1,0)).getUTCDate();
-    const cellCount=Math.ceil((offset+dayCount)/7)*7;
-    const from=new Date(Date.UTC(year,mi,1-offset)).toISOString().slice(0,10);
-    const through=new Date(Date.UTC(year,mi,cellCount-offset)).toISOString().slice(0,10);
-    // Preserve the last successful calendar on failures; never display empty OT as a failed fetch.
-    otLoading=true;
-    otSync.textContent=otLastUpdated?'Refreshing OT calendar…':'Loading OT calendar…';
-    try{
-      const records=await api('/rest/v1/rpc/alpha_calendar_ot',{
-        method:'POST',auth:false,
-        body:JSON.stringify({p_from:from,p_through:through})
+  async function loadCalendarOT() {
+    const request = ++otRequest;
+    const year = month.getUTCFullYear(), mi = month.getUTCMonth();
+    const offset = month.getUTCDay();
+    const dayCount = new Date(Date.UTC(year, mi+1, 0)).getUTCDate();
+    const cellCount = Math.ceil((offset + dayCount) / 7) * 7;
+    const from = new Date(Date.UTC(year, mi, 1-offset)).toISOString().slice(0,10);
+    const through = new Date(Date.UTC(year, mi, cellCount-offset)).toISOString().slice(0,10);
+    otByDate = Object.create(null);
+    otLoading = true;
+    otError = '';
+    renderCalendar();
+    try {
+      const records = await api('/rest/v1/rpc/alpha_calendar_ot', {
+        method: 'POST', auth: false,
+        body: JSON.stringify({p_from:from, p_through:through})
       });
-      if(request!==otRequest||calendarPanel.hidden)return;
-      if(!Array.isArray(records))throw Error('Invalid calendar response');
-      const grouped=Object.create(null);
-      for(const item of records){
-        if(!item||!/^\d{4}-\d{2}-\d{2}$/.test(item.date)||typeof item.name!=='string'||!['V','R'].includes(item.code))continue;
-        (grouped[item.date]||=[]).push({name:item.name,code:item.code,
-          status:item.status==='called_off'?'called_off':'assigned'});
+      if (request !== otRequest || calendarPanel.hidden) return;
+      if (!Array.isArray(records)) throw new Error('Invalid calendar response');
+      const grouped = Object.create(null);
+      for (const item of records) {
+        if (!item || !/^\d{4}-\d{2}-\d{2}$/.test(item.date) || typeof item.name !== 'string' || !['V','R'].includes(item.code)) continue;
+        (grouped[item.date] ||= []).push({name:item.name,code:item.code,status:item.status==='called_off'?'called_off':'assigned'});
       }
-      otByDate=grouped;
-      otLastUpdated=new Date();
-      otSync.dataset.error='false';
-      otSync.textContent='OT updated '+otLastUpdated.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-      otError='';
-      renderCalendar();
-    }catch(error){
-      if(request!==otRequest)return;
-      otError='Unable to refresh OT assignments';
-      otSync.dataset.error='true';
-      otSync.textContent='OT calendar connection error'+
-        (otLastUpdated?' · Last updated '+otLastUpdated.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}):' · No OT data loaded');
-    }finally{
-      if(request===otRequest)otLoading=false;
+      otByDate = grouped;
+      otError = '';
+    } catch (error) {
+      if (request !== otRequest || calendarPanel.hidden) return;
+      otError = 'Unable to load OT assignments. Select Calendar/Training again to retry.';
     }
+    otLoading = false;
+    renderCalendar();
   }
   calendarDays.addEventListener('click', event => {
     const otButton = event.target.closest('[data-ot-date]');
@@ -633,7 +586,7 @@
   if(stats&&!document.getElementById('bc')){
     const stat=document.createElement('div');
     stat.className='stat';
-    stat.innerHTML='<b id="bc">—</b><span>Bereavement</span>';
+    stat.innerHTML='<b id="bc">0</b><span>Bereavement</span>';
     stats.appendChild(stat);
   }
   if(stats){
@@ -641,7 +594,7 @@
       if(document.getElementById(id))continue;
       const stat=document.createElement('div');
       stat.className='stat';
-      stat.innerHTML='<b id="'+id+'">—</b><span>'+label+'</span>';
+      stat.innerHTML='<b id="'+id+'">0</b><span>'+label+'</span>';
       stats.appendChild(stat);
     }
   }
@@ -705,7 +658,7 @@
     for(const officer of officers){
       const card=document.getElementById('c-'+officer.id);
       if(!card)continue;
-      const voidLeave=officer.blocked_next_ot===true||voidForBereavement(officer,upcoming);
+      const voidLeave=voidForBereavement(officer,upcoming);
       const canNumber=eligible(officer)&&!voidLeave&&(officer.crew!=='Power'||powerDay.available);
       if(canNumber)eligibleNumber++;
       const positionNumber=card.querySelector('.num');
@@ -721,8 +674,8 @@
       }
       if(voidLeave){
         const badge=document.createElement('span');
-        badge.className=role==='admin'||role==='editor'?'badge bereavement-void-badge':'badge unavailbadge';
-        badge.textContent=role==='admin'||role==='editor'?'Bereavement':'Unavailable for next OT';
+        badge.className='badge bereavement-void-badge';
+        badge.textContent='Bereavement';
         badge.title='Unavailable for the next OT block; original rotation position retained';
         card.querySelector('.nameRow')?.appendChild(badge);
       }

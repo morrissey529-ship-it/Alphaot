@@ -20,8 +20,6 @@
     '<div class="otworked-stage" id="alphaWorkedPodium" aria-live="polite">'+
       '<p class="otworked-initial">Loading rankings…</p>'+
     '</div>'+
-    '<p class="otworked-basis">Presumed worked: an OT assignment whose date has arrived, excluding call-offs and undone entries. Attendance is not independently verified. One day per officer per date. Ties are ordered alphabetically by displayed name.</p>'+
-    '<p id="alphaWorkedSync" class="otworked-sync" role="status" aria-live="polite">Loading year-to-date OT days…</p>'+
     '<details class="otworked-all" id="alphaWorkedAllDetails" hidden>'+
       '<summary id="alphaWorkedAllSummary">All officer totals</summary>'+
       '<div class="otworked-all-rows" id="alphaWorkedAllRows"></div>'+
@@ -31,7 +29,6 @@
   const podium=board.querySelector('#alphaWorkedPodium');
   const yearLabel=board.querySelector('#alphaWorkedPodiumYear');
   const allDetails=board.querySelector('#alphaWorkedAllDetails');
-  const sync=board.querySelector('#alphaWorkedSync');
   const allSummary=board.querySelector('#alphaWorkedAllSummary');
   const allRows=board.querySelector('#alphaWorkedAllRows');
   const places=[
@@ -41,7 +38,6 @@
   ];
   let requestSequence=0;
   let snapshot=null;
-  let lastUpdated=null;
 
   function slot(position,officer){
     const count=officer?Number(officer.worked)||0:0;
@@ -69,7 +65,7 @@
     snapshot=data;
     const officers=Array.isArray(data.leaderboard)?data.leaderboard:[];
     const ranked=officers.filter(officer=>Number(officer.worked)>0);
-    yearLabel.textContent=data.year+' year to date · Presumed worked OT days · Resets January 1';
+    yearLabel.textContent=data.year+' year to date · From OT List · Resets January 1';
     // DOM order is ranking order; CSS places silver left, gold center, bronze right.
     podium.innerHTML=places.map(place=>slot(place,ranked[place.number-1])).join('');
     podium.classList.toggle('otworked-no-results',ranked.length===0);
@@ -102,16 +98,11 @@
         throw Error('Unexpected OT statistics response');
       }
       render(data);
-      lastUpdated=new Date();
-      sync.dataset.error='false';
-      sync.textContent='Updated '+lastUpdated.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
     }catch(error){
       if(request!==requestSequence)return;
       if(!snapshot){
         podium.innerHTML='<p class="otworked-error">Unable to load OT rankings. Tap Refresh to retry.</p>';
       }
-      sync.dataset.error='true';
-      sync.textContent='Connection error'+(lastUpdated?' · Last updated '+lastUpdated.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}):' · No rankings loaded');
       console.error('OT YTD statistics:',error);
     }
   }

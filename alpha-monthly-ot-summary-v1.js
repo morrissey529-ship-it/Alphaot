@@ -42,9 +42,7 @@
       labelEl.textContent=new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'long',year:'numeric'}).format(new Date(start+'T12:00:00Z'))+' · Scheduled this month';
       lastDate=today;lastUpdated=Date.now();
     }catch(error){
-      labelEl.textContent=lastUpdated
-        ?'Monthly totals connection error · Last updated '+new Date(lastUpdated).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})
-        :'Unable to load monthly OT totals · Try Refresh';
+      if(!lastUpdated)labelEl.textContent='Unable to load totals · Try Refresh';
     }finally{loading=false;}
   }
   window.alphaOTMonthlyRefresh=()=>refresh(true);
