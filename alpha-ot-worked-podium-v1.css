@@ -250,3 +250,6 @@
 }
 
 .otworked-basis{font-size:11px;line-height:1.5;color:var(--muted);margin:13px 2px 4px}
+
+.otworked-sync{font-size:11px;line-height:1.4;color:var(--muted);margin:7px 1px 2px}
+.otworked-sync[data-error="true"]{color:#ffb0ba;font-weight:740}
