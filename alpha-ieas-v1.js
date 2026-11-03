@@ -257,6 +257,25 @@
   dialog.addEventListener('click',onClick);
   window.alphaIEASLoad=()=>load(true);
   window.alphaIEASRefreshAccess=()=>{if(!panel.hidden&&roster.length)render()};
+  window.alphaIEASClearPrivateView=()=>{
+    roster=[];
+    historyItems=[];
+    if(dialog.open)dialog.close();
+    cards.textContent='Refreshing public availability…';
+    const overview=document.getElementById('ieasSummary');
+    if(overview)overview.textContent='';
+    if(!panel.hidden)void load(true);
+  };
+  const modeNode=document.getElementById('topMode');
+  if(modeNode&&typeof MutationObserver==='function'){
+    new MutationObserver(()=>{
+      if(typeof role==='undefined')return;
+      if(lastRole!==role){
+        if(role==='viewer')window.alphaIEASClearPrivateView();
+        else if(!panel.hidden)void load(true);
+      }
+    }).observe(modeNode,{childList:true,characterData:true,subtree:true});
+  }
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!panel.hidden)load(false)});
   setInterval(()=>{
     if(!panel.hidden&&document.visibilityState==='visible'){
