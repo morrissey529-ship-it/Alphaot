@@ -676,3 +676,168 @@ dialog .modal{background:linear-gradient(150deg,#14263a,#0a1420)!important}
 .app>header .infoHub #calloffPhone .alpha-command-phone-icon svg{
   width:21px;height:21px;display:block
 }
+
+/* Alpha Command mobile fitting: keep badges and numbers entirely visible. */
+/* All changes here are presentation-only; no rotation or status calculations. */
+.app>header .infoHub .stats>.stat{
+  grid-column:auto!important;
+  grid-row:auto!important;
+  min-width:0!important;
+  width:auto!important;
+  justify-self:stretch!important;
+}
+#alphaListPanel .card .alpha-call-number{
+  right:clamp(13px,2.3vw,28px)!important;
+  width:clamp(92px,31%,260px)!important;
+  justify-content:center!important;
+  overflow:visible!important;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 100%)!important;
+  mask-image:linear-gradient(90deg,transparent,#000 18%,#000 100%)!important;
+}
+#alphaListPanel .card .alpha-call-number strong{
+  box-sizing:border-box!important;
+  display:block!important;
+  max-width:100%!important;
+  min-width:0!important;
+  padding:0 .09em .07em!important;
+  margin:0!important;
+  white-space:nowrap!important;
+  transform:none!important;
+  letter-spacing:-.045em!important;
+  text-align:center!important;
+}
+@media(max-width:760px){
+  .app>header .head{
+    padding-top:calc(15px + env(safe-area-inset-top,0px))!important;
+    min-height:calc(118px + env(safe-area-inset-top,0px))!important;
+  }
+  .app>header .head .brandTitle{
+    background:none!important;
+    -webkit-background-clip:initial!important;
+    background-clip:initial!important;
+    -webkit-text-fill-color:#edf8ff!important;
+    color:#edf8ff!important;
+    -webkit-text-stroke:0!important;
+    text-shadow:0 2px 2px #000d,0 0 8px #7dd7ff55!important;
+    filter:none!important;
+  }
+  .app>header .head .sub{
+    color:#e0edf7!important;
+    text-shadow:0 1px 2px #000c!important;
+  }
+  .app>header .head .hubDate{
+    color:#ebf9ff!important;
+    text-shadow:0 1px 2px #000c!important;
+  }
+  .app>header .infoHub .stats{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    grid-auto-flow:row!important;
+  }
+}
+@media(max-width:540px){
+  .app>header .head{
+    grid-template-columns:minmax(0,1fr) 111px!important;
+    padding:calc(13px + env(safe-area-inset-top,0px)) 11px 13px!important;
+    min-height:calc(117px + env(safe-area-inset-top,0px))!important;
+  }
+  .app>header .head .brandTitle{
+    font-size:clamp(25px,6.1vw,34px)!important;
+    letter-spacing:.025em!important;
+    white-space:normal!important;
+  }
+  .app>header .head .hubHeading{min-height:55px!important}
+  .app>header .infoHub .stats{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:6px!important;
+  }
+  .app>header .infoHub .stats>.stat{
+    position:relative!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:38px auto!important;
+    min-height:88px!important;
+    gap:3px!important;
+    padding:9px 5px 8px!important;
+    align-content:center!important;
+  }
+  .app>header .infoHub .stat .alpha-command-stat-icon{
+    position:absolute!important;
+    left:8px!important;
+    top:23px!important;
+    width:17px!important;
+    height:21px!important;
+    grid-column:auto!important;
+    grid-row:auto!important;
+  }
+  .app>header .infoHub .stat b{
+    grid-column:1!important;
+    grid-row:1!important;
+    padding:0 4px 0 19px!important;
+    margin:0!important;
+    width:100%!important;
+    font-size:clamp(21px,5.8vw,30px)!important;
+    line-height:1!important;
+    text-align:right!important;
+    overflow:visible!important;
+  }
+  .app>header .infoHub .stat span:not(.alpha-command-stat-icon){
+    grid-column:1!important;
+    grid-row:2!important;
+    font-size:clamp(9px,2.1vw,11px)!important;
+    text-align:center!important;
+    margin:3px 0 0!important;
+    letter-spacing:0!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+  }
+  #alphaListPanel .card .main{
+    padding-right:35%!important;
+  }
+  #alphaListPanel .card .alpha-call-number{
+    right:11px!important;
+    width:32%!important;
+    max-width:32%!important;
+    padding:0 2px!important;
+  }
+  #alphaListPanel .card .alpha-call-number strong{
+    font-size:clamp(48px,13.5vw,69px)!important;
+  }
+  #alphaListPanel .card .alpha-call-number.alpha-command-digits-3 strong{
+    font-size:clamp(35px,10.6vw,52px)!important;
+  }
+  #alphaListPanel .card .alpha-call-number.alpha-command-digits-4 strong{
+    font-size:clamp(27px,8.5vw,43px)!important;
+  }
+  #alphaListPanel .card .nameRow .name{
+    overflow-wrap:anywhere!important;
+    max-width:100%!important;
+  }
+}
+@media(max-width:355px){
+  .app>header .head{
+    grid-template-columns:minmax(0,1fr) 103px!important;
+  }
+  .app>header .infoHub .stat b{
+    font-size:21px!important;
+  }
+  #alphaListPanel .card .alpha-call-number{
+    right:8px!important;
+    width:32%!important;
+  }
+  #alphaListPanel .card .alpha-call-number strong{
+    font-size:clamp(43px,13.4vw,51px)!important;
+  }
+  #alphaListPanel .card .alpha-call-number.alpha-command-digits-3 strong{
+    font-size:clamp(31px,10.2vw,37px)!important;
+  }
+  #alphaListPanel .card .alpha-call-number.alpha-command-digits-4 strong{
+    font-size:clamp(25px,8.2vw,30px)!important;
+  }
+}
+/* Standalone iOS uses a translucent status bar; start content below its safe zone. */
+@supports (-webkit-touch-callout:none){
+  @media(max-width:760px) and (display-mode:standalone){
+    .app>header .head{
+      padding-top:max(54px,calc(env(safe-area-inset-top,0px) + 12px))!important;
+    }
+  }
+}
