@@ -423,7 +423,7 @@ body{
   padding:0!important;margin:0!important;
   border:0!important;border-radius:0!important;
   background:none!important;
-  color:var(--ac-accent)!important;
+  color:#91c9fc!important;
   pointer-events:none!important;
   white-space:nowrap!important;
   -webkit-mask-image:linear-gradient(90deg,transparent 0%,#0009 28%,#000 86%);
@@ -439,11 +439,11 @@ body{
   font-weight:900!important;font-style:italic!important;
   letter-spacing:-.075em!important;
   color:transparent!important;
-  background:linear-gradient(150deg,#e9fcff 0%,var(--ac-accent) 27%,#457c8a 58%,var(--ac-accent) 85%,#cbf3ff 100%)!important;
+  background:linear-gradient(150deg,#eafaff 0%,#91d8ff 27%,#427da6 58%,#7acbff 85%,#d8f3ff 100%)!important;
   -webkit-background-clip:text!important;background-clip:text!important;
-  -webkit-text-stroke:1px #b4daed65!important;
+  -webkit-text-stroke:1px #a4dbff72!important;
   text-shadow:3px 4px 4px #0005;
-  filter:drop-shadow(0 0 7px var(--ac-glow));
+  filter:drop-shadow(0 0 7px #47baff55);
   transform:skewX(-4deg);
   font-variant-numeric:tabular-nums;
 }
