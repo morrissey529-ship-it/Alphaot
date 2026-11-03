@@ -32,6 +32,9 @@
     'Cruz': 89
   });
 
+  // Share the same authoritative display-only fallback numbers with IE/AS.
+  window.alphaOTCallNumbers = callNumbers;
+
   const style = document.createElement('style');
   style.id = 'alphaCallNumberStyles';
   style.textContent = `
