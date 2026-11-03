@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="290" viewBox="0 0 900 290" aria-hidden="true">
+<defs>
+<pattern id="mesh" width="24" height="21" patternUnits="userSpaceOnUse"><path d="M12 0L24 7V14L12 21L0 14V7Z" fill="none" stroke="#9dc4df" stroke-opacity=".22" stroke-width=".7"/></pattern>
+<radialGradient id="a"><stop stop-color="#a9b5c0" stop-opacity=".1"/><stop offset=".7" stop-color="#58718b" stop-opacity=".05"/><stop offset="1" stop-color="#1a2935" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="900" height="290" fill="url(#mesh)" opacity=".42"/>
+<circle cx="460" cy="150" r="178" fill="url(#a)" stroke="#7aa9cd" stroke-opacity=".08" stroke-width="3"/>
+<circle cx="460" cy="150" r="146" fill="none" stroke="#90c5e0" stroke-opacity=".12" stroke-width="2"/>
+<circle cx="460" cy="150" r="100" fill="none" stroke="#abc9db" stroke-opacity=".11" stroke-width="1"/>
+<g fill="#88b4cf" fill-opacity=".14" stroke="#9ac6da" stroke-opacity=".11" stroke-width="1">
+<path d="M438 120L370 21A144 144 0 0 1 550 21L482 120A33 33 0 0 0 438 120Z"/>
+<path d="M490 168L606 191A145 145 0 0 1 518 277L474 175A33 33 0 0 0 490 168Z"/>
+<path d="M448 179L405 277A146 146 0 0 1 315 190L431 167A33 33 0 0 0 448 179Z"/>
+</g>
+<circle cx="460" cy="150" r="29" fill="#7897ac" fill-opacity=".16" stroke="#a0ccdc" stroke-opacity=".13" stroke-width="3"/>
+<path d="M0 276L900 0" stroke="#b0dff8" stroke-opacity=".08" stroke-width="2"/>
+<path d="M0 290L900 15" stroke="#b0dff8" stroke-opacity=".05" stroke-width="10"/>
+</svg>
