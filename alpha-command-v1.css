@@ -644,3 +644,24 @@ dialog .modal{background:linear-gradient(150deg,#14263a,#0a1420)!important}
   text-shadow:0 0 7px #3ba9e366;
   font-variant-numeric:tabular-nums
 }
+
+/* The concept's sequence: hero -> eight status instruments -> neon tabs.
+   Crew testing, call-off phone, disclaimer and Admin actions remain below
+   the tabs, all accessible with no information or controls removed. */
+.app>header{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important
+}
+.app>header .infoHub{
+  display:contents!important
+}
+.app>header .head{order:0}
+.app>header .infoHub .stats{
+  order:0;
+  margin-top:17px!important
+}
+.app>header .alpha-tabs{order:0}
+.app>header .infoHub .hubGrid{order:1}
+.app>header .infoHub .hubNotice{order:2}
+.app>header .infoHub .tools{order:3}
