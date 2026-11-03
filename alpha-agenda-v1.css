@@ -88,3 +88,10 @@
   .alpha-agenda-event{align-items:start}
   .alpha-agenda-kind{max-width:100%}
 }
+
+.alpha-calendar-sync{
+  display:block;margin:6px 0 10px;color:var(--muted);
+  font-size:11px;line-height:1.4;
+}
+.alpha-calendar-sync[data-error="true"]{color:#ffb0ba;font-weight:720}
+.alpha-calendar-agenda-mode .alpha-calendar-sync{display:none}
