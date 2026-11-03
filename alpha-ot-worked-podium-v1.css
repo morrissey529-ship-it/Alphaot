@@ -248,3 +248,5 @@
   .otworked-total{font-size:10px}
   .otworked-platform strong{font-size:28px}
 }
+
+.otworked-basis{font-size:11px;line-height:1.5;color:var(--muted);margin:13px 2px 4px}
