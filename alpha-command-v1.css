@@ -665,3 +665,14 @@ dialog .modal{background:linear-gradient(150deg,#14263a,#0a1420)!important}
 .app>header .infoHub .hubGrid{order:1}
 .app>header .infoHub .hubNotice{order:2}
 .app>header .infoHub .tools{order:3}
+
+/* Crisp vector phone symbol instead of platform-dependent arrow glyph. */
+.app>header .infoHub #calloffPhone .alpha-command-phone-icon{
+  display:inline-grid!important;
+  place-items:center!important;
+  width:24px;height:24px;flex:0 0 24px;
+  color:#8fdfff!important;filter:drop-shadow(0 0 6px #43bbf888)
+}
+.app>header .infoHub #calloffPhone .alpha-command-phone-icon svg{
+  width:21px;height:21px;display:block
+}
