@@ -621,3 +621,26 @@ dialog .modal{background:linear-gradient(150deg,#14263a,#0a1420)!important}
   .app>header .infoHub .stat,
   .app>header .alpha-tabs [role="tab"]{animation:none!important;transition:none!important}
 }
+
+/* Keep every past activity item available without making each card oversized. */
+#alphaListPanel .alpha-command-old-activity{margin:2px 0 4px;max-width:100%}
+#alphaListPanel .alpha-command-old-activity>summary{
+  cursor:pointer;display:inline-flex;align-items:center;gap:4px;
+  padding:3px 2px 3px 0;color:#83d7ff!important;
+  font-size:10px!important;font-weight:750;line-height:1.3;
+  list-style:none;letter-spacing:.04em;text-transform:uppercase
+}
+#alphaListPanel .alpha-command-old-activity>summary::-webkit-details-marker{display:none}
+#alphaListPanel .alpha-command-old-activity>summary::before{content:"▸";font-size:12px;color:#65d4ff}
+#alphaListPanel .alpha-command-old-activity[open]>summary::before{content:"▾"}
+#alphaListPanel .alpha-command-old-activity-rows{padding:5px 0 1px;border-top:1px solid #2b4658}
+#alphaListPanel .card .noActivity{margin-top:2px}
+#alphaIEASPanel .ieas-card .ieas-call{
+  font-family:Impact,"Arial Narrow",Arial,sans-serif;
+  font-size:clamp(18px,2.3vw,30px)!important;
+  font-style:italic;
+  letter-spacing:.04em!important;
+  color:#78bedf!important;
+  text-shadow:0 0 7px #3ba9e366;
+  font-variant-numeric:tabular-nums
+}
