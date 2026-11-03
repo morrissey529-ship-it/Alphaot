@@ -12,10 +12,13 @@
   if(document.documentElement.dataset.alphaCommand==='on')return;
   document.documentElement.dataset.alphaCommand='on';
 
-  // Move existing dynamic date into the industrial title/banner.
-  // The same date element (and its live update listeners) is preserved.
+  // Keep the live date and its existing ID intact, centered immediately
+  // beneath the ALPHA OT header rather than squeezed into the upper corner.
   const date=head.querySelector('.hubHeading')||header.querySelector('.infoHub .hubHeading');
-  if(date&&!head.contains(date))head.appendChild(date);
+  if(date){
+    date.classList.add('alpha-command-centered-date');
+    head.insertAdjacentElement('afterend',date);
+  }
 
   const title=brand.querySelector('.brandTitle');
   const sub=brand.querySelector('.sub');
@@ -155,13 +158,31 @@
   const ieas=document.getElementById('alphaIEASPanel');
   function decorateIEAS(){
     if(!ieas)return;
-    ieas.querySelectorAll('.ieas-call:not([data-alpha-command-done])').forEach(el=>{
-      const match=el.textContent.trim().match(/(\d{1,4})\s*$/);
-      if(!match)return;
-      el.dataset.alphaCommandDone='true';
-      el.setAttribute('aria-label','Call number '+match[1]);
-      el.classList.add('alpha-command-ieas-digits-'+Math.min(match[1].length,4));
-      el.textContent=match[1];
+    // The server roster does not always include call_number. Reuse the same
+    // fallback officer-to-number mapping already used on the regular OT list.
+    const fallback=window.alphaOTCallNumbers||{};
+    ieas.querySelectorAll('.ieas-card').forEach(card=>{
+      const officerName=card.querySelector('.ieas-name-line strong')?.textContent?.trim()||'';
+      if(!officerName)return;
+      let element=card.querySelector('.ieas-call');
+      let digits=element?.textContent?.trim().match(/(\d{1,4})\s*$/)?.[1]||'';
+      if(!digits){
+        const mapped=Number(fallback[officerName]);
+        if(Number.isInteger(mapped)&&mapped>0&&mapped<=9999)digits=String(mapped);
+      }
+      if(!digits)return;
+      if(!element){
+        const container=card.querySelector('.ieas-person');
+        if(!container)return;
+        element=document.createElement('div');
+        element.className='ieas-call';
+        container.appendChild(element);
+      }
+      if(element.dataset.alphaCommandDone==='true'&&element.textContent===digits)return;
+      element.dataset.alphaCommandDone='true';
+      element.setAttribute('aria-label','Call number '+digits);
+      element.classList.add('alpha-command-ieas-digits-'+Math.min(digits.length,4));
+      element.textContent=digits;
     });
   }
   if(ieas&&typeof MutationObserver!=='undefined'){
