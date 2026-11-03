@@ -160,6 +160,7 @@
       if(!match)return;
       el.dataset.alphaCommandDone='true';
       el.setAttribute('aria-label','Call number '+match[1]);
+      el.classList.add('alpha-command-ieas-digits-'+Math.min(match[1].length,4));
       el.textContent=match[1];
     });
   }
