@@ -807,3 +807,15 @@ button:focus-visible,a:focus-visible,summary:focus-visible,
   #alphaListPanel .card,#alphaIEASPanel .ieas-card,
   .app>header .alpha-tabs [role="tab"]{transition:none!important;animation:none!important}
 }
+
+/* Factual roster count alongside the existing section heading. */
+#alphaListPanel .section{display:flex!important;justify-content:space-between!important;align-items:center!important;gap:10px!important}
+#alphaListPanel .section .exec-roster-count{
+  flex:0 0 auto;display:block;
+  color:#c0d5e4!important;font-size:12px!important;
+  font-weight:570!important;letter-spacing:0!important;
+  text-transform:none!important;
+}
+@media(max-width:540px){
+  #alphaListPanel .section .exec-roster-count{font-size:11px!important}
+}
