@@ -819,3 +819,341 @@ button:focus-visible,a:focus-visible,summary:focus-visible,
 @media(max-width:540px){
   #alphaListPanel .section .exec-roster-count{font-size:11px!important}
 }
+
+/* Alpha OT compact command layout - 2026-11-04
+   Visual-only overrides. Existing records, officer status labels, dates, button
+   handlers, tabs and rotation numbers are never changed. */
+.app>header .head{
+  min-height:86px!important;
+  padding:12px 15px 10px!important;
+}
+.app>header .head .alpha-command-mark{width:45px!important;height:45px!important}
+.app>header .head .brand{gap:10px!important}
+.app>header .head .brandTitle{font-size:clamp(29px,4vw,43px)!important}
+.app>header .head .sub{font-size:clamp(10px,1.15vw,13px)!important;margin-top:2px!important}
+.app>header .head .alpha-command-descriptor{display:none!important}
+.app>header>.hubHeading.alpha-command-centered-date{
+  min-height:35px!important;
+  padding:7px 12px!important;
+  margin-top:6px!important;
+}
+.app>header>.hubHeading.alpha-command-centered-date .hubDate{
+  font-size:clamp(14px,1.9vw,18px)!important;
+}
+
+/* Eight status indicators: labels and real counts in a tight 4 x 2 grid. */
+.app>header .infoHub .stats{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:6px!important;
+  margin-top:9px!important;
+}
+.app>header .infoHub .stats>.stat{
+  min-height:61px!important;
+  padding:7px 7px 6px!important;
+  grid-template-columns:18px minmax(0,1fr)!important;
+  grid-template-rows:minmax(16px,auto) minmax(26px,auto)!important;
+  gap:1px 4px!important;
+  border-radius:6px!important;
+  box-shadow:inset 0 1px 0 #e0f1fd1c!important;
+}
+.app>header .infoHub .stats>.stat::before{
+  height:16px!important;width:3px!important;
+  inset:auto auto 7px 6px!important;
+}
+.app>header .infoHub .stats>.stat .alpha-command-stat-icon{
+  width:16px!important;height:18px!important;
+}
+.app>header .infoHub .stats>.stat span:not(.alpha-command-stat-icon){
+  font-size:clamp(9px,1.05vw,12px)!important;
+  line-height:1.15!important;
+  font-weight:590!important;
+}
+.app>header .infoHub .stats>.stat b{
+  font-size:clamp(24px,2.5vw,31px)!important;
+  line-height:1!important;
+}
+
+/* Four original tab names: smaller, flatter, with the active tab still clear. */
+.app>header .alpha-tabs{
+  margin-top:9px!important;
+  gap:6px!important;
+}
+.app>header .alpha-tabs [role="tab"]{
+  min-height:49px!important;
+  padding:7px 5px!important;
+  flex-direction:row!important;
+  justify-content:center!important;
+  gap:7px!important;
+  font-size:clamp(10px,1.2vw,13px)!important;
+  font-weight:660!important;
+  border-radius:6px!important;
+  line-height:1.15!important;
+}
+.app>header .alpha-tabs .alpha-command-tab-icon{
+  flex:0 0 19px!important;
+  width:19px!important;height:19px!important;
+}
+.app>header .alpha-tabs [role="tab"][aria-selected="true"]{
+  border-bottom-width:2px!important;
+}
+
+/* One information strip containing both testing types and the call-off link. */
+.app>header .infoHub .hubGrid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:0!important;
+  align-items:stretch!important;
+  min-height:54px!important;
+  margin-top:9px!important;
+  padding:5px 8px!important;
+  border:1px solid #547b95!important;
+  border-radius:7px!important;
+  background:linear-gradient(155deg,#213b50,#142b3d)!important;
+  box-shadow:inset 0 1px 0 #ffffff1a!important;
+}
+.app>header .infoHub .hubTesting{display:contents!important}
+.app>header .infoHub .hubGrid .hubTestingRow,
+.app>header .infoHub .hubGrid .hubCalloff{
+  box-sizing:border-box!important;
+  min-height:47px!important;
+  margin:0!important;padding:5px 8px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:3px!important;
+  background:transparent!important;
+  border:0!important;border-radius:0!important;
+  box-shadow:none!important;
+}
+.app>header .infoHub .hubGrid .hubTestingRow:first-child,
+.app>header .infoHub .hubGrid .hubTestingRow:nth-child(2){
+  border-right:1px solid #58778d60!important;
+}
+.app>header .infoHub .hubGrid .hubCalloff{
+  grid-column:auto!important;
+}
+.app>header .infoHub .hubTestingRow .hubLabel,
+.app>header .infoHub .hubCalloff .hubLabel{
+  color:#b9ccda!important;
+  font-size:clamp(10px,1vw,12px)!important;
+  font-weight:570!important;
+}
+.app>header .infoHub .hubTesting #alphaTestingType,
+.app>header .infoHub .hubTesting #alphaTestingTomorrow{
+  font-size:clamp(16px,1.7vw,21px)!important;
+  font-weight:730!important;
+}
+.app>header .infoHub .hubCalloff #calloffPhone{
+  font-size:clamp(12px,1.4vw,18px)!important;
+  font-weight:730!important;
+  white-space:nowrap!important;
+}
+
+/* Same actions and permissions; smaller touch-safe button row. */
+.app>header .infoHub .tools{
+  gap:6px!important;
+  margin-top:8px!important;
+}
+.app>header .infoHub .tools button{
+  min-height:40px!important;
+  padding:7px 7px!important;
+  border-radius:6px!important;
+  font-size:clamp(11px,1.15vw,13px)!important;
+}
+.app>header .infoHub .hubNotice{
+  margin-top:5px!important;padding:2px!important;font-size:10px!important;
+}
+.section{
+  margin-top:11px!important;
+  margin-bottom:8px!important;
+  padding:8px 11px!important;
+  font-size:clamp(16px,1.75vw,20px)!important;
+}
+
+/* Compact OT personnel strips. Names, badges, activity and Admin buttons stay. */
+#alphaListPanel .card{margin-bottom:6px!important}
+#alphaListPanel .card .main{
+  min-height:74px!important;
+  padding-top:8px!important;
+  padding-bottom:8px!important;
+  gap:9px!important;
+}
+#alphaListPanel .card .main>.num{
+  width:43px!important;height:46px!important;font-size:24px!important;
+}
+#alphaListPanel .card .nameRow .name{
+  font-size:clamp(16px,1.6vw,20px)!important;
+}
+#alphaListPanel .card .activityLine{margin-top:3px!important}
+#alphaListPanel .card .alpha-command-old-activity{margin-top:1px!important}
+#alphaListPanel .card .alpha-command-old-activity>summary{
+  min-height:22px!important;padding:2px 0!important;
+}
+#alphaListPanel .card .alpha-call-number strong,
+#alphaListPanel .card .alpha-call-number.alpha-command-digits-3 strong,
+#alphaListPanel .card .alpha-call-number.alpha-command-digits-4 strong{
+  font-size:clamp(25px,3.1vw,36px)!important;
+}
+#alphaIEASPanel .ieas-card{margin-bottom:6px!important}
+#alphaIEASPanel .ieas-card-main{
+  min-height:74px!important;
+  padding-top:8px!important;padding-bottom:8px!important;
+  gap:9px!important;
+}
+#alphaIEASPanel .ieas-card .ieas-number{
+  width:43px!important;height:46px!important;font-size:24px!important;
+}
+#alphaIEASPanel .ieas-card-tools{padding:5px 9px!important}
+
+/* Mobile: single-row navigation where legible, two testing values plus a
+   horizontal phone row, 4x2 status indicator grid without wasted space. */
+@media(max-width:700px){
+  .app>header .head{
+    min-height:calc(80px + env(safe-area-inset-top,0px))!important;
+    padding:calc(9px + env(safe-area-inset-top,0px)) 11px 9px!important;
+  }
+  .app>header .head .alpha-command-mark{
+    width:39px!important;height:39px!important;
+  }
+  .app>header .head .brand{gap:7px!important}
+  .app>header .head .brandTitle{
+    font-size:clamp(26px,6.5vw,34px)!important;
+  }
+  .app>header .head .sub{font-size:10px!important}
+  .app>header>.hubHeading.alpha-command-centered-date{
+    min-height:34px!important;
+    margin-top:5px!important;
+    padding:6px 9px!important;
+  }
+  .app>header>.hubHeading.alpha-command-centered-date .hubDate{
+    font-size:clamp(13px,3.5vw,17px)!important;
+  }
+  .app>header .infoHub .stats{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:5px!important;
+    margin-top:7px!important;
+  }
+  .app>header .infoHub .stats>.stat{
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto 25px!important;
+    min-height:58px!important;
+    gap:2px!important;
+    padding:5px 3px!important;
+  }
+  .app>header .infoHub .stats>.stat .alpha-command-stat-icon{
+    display:none!important;
+  }
+  .app>header .infoHub .stats>.stat span:not(.alpha-command-stat-icon){
+    grid-column:1!important;grid-row:1!important;
+    text-align:center!important;
+    font-size:clamp(8px,2.08vw,10px)!important;
+    line-height:1.1!important;
+  }
+  .app>header .infoHub .stats>.stat b{
+    grid-column:1!important;grid-row:2!important;
+    font-size:clamp(22px,5.7vw,29px)!important;
+  }
+  .app>header .alpha-tabs{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:4px!important;
+    margin-top:8px!important;
+  }
+  .app>header .alpha-tabs [role="tab"]{
+    flex-direction:column!important;
+    min-height:52px!important;
+    padding:5px 3px!important;
+    gap:3px!important;
+    font-size:clamp(9px,2.45vw,11px)!important;
+    line-height:1.1!important;
+    border-radius:5px!important;
+  }
+  .app>header .alpha-tabs .alpha-command-tab-icon{
+    width:16px!important;height:16px!important;
+    flex-basis:16px!important;
+  }
+  .app>header .infoHub .hubGrid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    min-height:0!important;
+    margin-top:8px!important;
+    padding:4px 8px!important;
+  }
+  .app>header .infoHub .hubGrid .hubTestingRow{
+    min-height:43px!important;
+    padding:4px 6px!important;
+  }
+  .app>header .infoHub .hubGrid .hubTestingRow:nth-child(2){
+    border-right:0!important;
+  }
+  .app>header .infoHub .hubGrid .hubCalloff{
+    grid-column:1/-1!important;
+    flex-direction:row!important;
+    justify-content:space-between!important;
+    align-items:center!important;
+    min-height:38px!important;
+    margin-top:3px!important;
+    padding:5px 7px!important;
+    border-top:1px solid #61809a50!important;
+    gap:8px!important;
+  }
+  .app>header .infoHub .hubCalloff .hubLabel{
+    flex:0 0 auto!important;
+    font-size:11px!important;
+  }
+  .app>header .infoHub .hubCalloff #calloffPhone{
+    font-size:clamp(16px,4.4vw,20px)!important;
+    min-width:0!important;
+  }
+  .app>header .infoHub .hubCalloff #calloffPhone .alpha-command-phone-icon{
+    width:16px!important;height:16px!important;flex-basis:16px!important;
+  }
+  .app>header .infoHub .tools{margin-top:7px!important;gap:5px!important}
+  .app>header .infoHub .tools button{
+    min-height:38px!important;
+    font-size:clamp(10px,2.9vw,12px)!important;
+    padding:6px 3px!important;
+  }
+  .app>header .infoHub .hubNotice{font-size:9px!important;margin-top:3px!important}
+  .section{margin-top:9px!important;padding:7px 9px!important}
+  #alphaListPanel .card .main{
+    min-height:72px!important;
+    padding:7px 29% 7px 13px!important;
+    grid-template-columns:38px minmax(0,1fr)!important;
+    gap:8px!important;
+  }
+  #alphaListPanel .card .main>.num{
+    width:38px!important;height:42px!important;font-size:22px!important;
+  }
+  #alphaListPanel .card .nameRow .name{font-size:clamp(15px,4vw,18px)!important}
+  #alphaListPanel .card .activityLine{font-size:10px!important}
+  #alphaListPanel .card .alpha-call-number{width:29%!important;max-width:29%!important}
+  #alphaListPanel .card .alpha-call-number strong,
+  #alphaListPanel .card .alpha-call-number.alpha-command-digits-3 strong,
+  #alphaListPanel .card .alpha-call-number.alpha-command-digits-4 strong{
+    font-size:clamp(25px,7.1vw,31px)!important;
+  }
+  #alphaIEASPanel .ieas-card-main{
+    min-height:72px!important;
+    grid-template-columns:38px minmax(0,1fr)!important;
+    padding:7px 29% 7px 13px!important;
+    gap:8px!important;
+  }
+  #alphaIEASPanel .ieas-card .ieas-number{
+    width:38px!important;height:42px!important;font-size:22px!important;
+  }
+  #alphaIEASPanel .ieas-card .ieas-call,
+  #alphaIEASPanel .ieas-card .ieas-call.alpha-command-ieas-digits-3,
+  #alphaIEASPanel .ieas-card .ieas-call.alpha-command-ieas-digits-4{
+    width:29%!important;max-width:29%!important;
+    font-size:clamp(25px,7.1vw,31px)!important;
+  }
+}
+@media(max-width:350px){
+  .app>header .alpha-tabs{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .app>header .alpha-tabs [role="tab"]{
+    min-height:36px!important;
+    flex-direction:row!important;
+  }
+  .app>header .infoHub .hubCalloff #calloffPhone{font-size:14px!important}
+  .app>header .infoHub .hubCalloff .hubLabel{font-size:10px!important}
+}
