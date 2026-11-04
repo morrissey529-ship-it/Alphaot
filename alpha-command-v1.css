@@ -1974,3 +1974,105 @@ dialog .modal{background:linear-gradient(150deg,#14263a,#0a1420)!important}
     }
   }
 }
+
+/* ALPHA COMMAND / refined header palette + matching call numbers 20261103
+   Presentation-only. Keep each availability category recognizable while
+   replacing bright rainbow/neon surfaces with subdued professional instruments. */
+.app>header .infoHub .stat:has(#ac){--ac-accent:#78b39f;--ac-glow:#78b39f14}
+.app>header .infoHub .stat:has(#oc){--ac-accent:#98aabb;--ac-glow:#98aabb12}
+.app>header .infoHub .stat:has(#vc){--ac-accent:#c6b17d;--ac-glow:#c6b17d14}
+.app>header .infoHub .stat:has(#bc){--ac-accent:#7eacb7;--ac-glow:#7eacb714}
+.app>header .infoHub .stat:has(#mc){--ac-accent:#86aaca;--ac-glow:#86aaca15}
+.app>header .infoHub .stat:has(#bnc){--ac-accent:#b3a1c6;--ac-glow:#b3a1c614}
+.app>header .infoHub .stat:has(#jc){--ac-accent:#c2aa92;--ac-glow:#c2aa9213}
+.app>header .infoHub .stat:has(#uc){--ac-accent:#c29eac;--ac-glow:#c29eac14}
+.app>header .infoHub .stat{
+  background:linear-gradient(180deg,#1a2c3d 0%,#0d1b2a 38%,#091522 100%)!important;
+  border:1px solid #456174!important;
+  border-top-color:var(--ac-accent)!important;
+  border-radius:8px!important;
+  clip-path:none!important;
+  box-shadow:inset 0 1px 0 #ffffff1b,0 3px 8px #0006!important;
+}
+.app>header .infoHub .stat::before{
+  inset:0 11px auto!important;
+  height:3px!important;
+  background:var(--ac-accent)!important;
+  opacity:.85!important;
+  box-shadow:none!important;
+}
+.app>header .infoHub .stat::after{
+  opacity:.24!important;
+}
+.app>header .infoHub .stat b{
+  color:#e9f1f9!important;
+  text-shadow:0 1px 3px #0009!important;
+}
+.app>header .infoHub .stat .alpha-command-stat-icon{
+  color:var(--ac-accent)!important;
+  filter:none!important;
+  opacity:.92!important;
+}
+.app>header .infoHub .stat span:not(.alpha-command-stat-icon){
+  color:#c2d0de!important;
+  text-shadow:none!important;
+}
+
+/* The standard OT list now uses exactly the same metallic ice-blue
+   digit treatment as the IE/AS list, rather than the grayer embossed style. */
+#alphaListPanel .card .alpha-call-number{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  right:4px!important;
+  width:31%!important;
+  max-width:31%!important;
+  padding:0 2px!important;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 13%,#000 100%)!important;
+  mask-image:linear-gradient(90deg,transparent,#000 13%,#000 100%)!important;
+}
+#alphaListPanel .card .alpha-call-number strong,
+#alphaListPanel .card .alpha-call-number.alpha-command-digits-3 strong,
+#alphaListPanel .card .alpha-call-number.alpha-command-digits-4 strong,
+#alphaIEASPanel .ieas-card .ieas-call,
+#alphaIEASPanel .ieas-card .ieas-call.alpha-command-ieas-digits-3,
+#alphaIEASPanel .ieas-card .ieas-call.alpha-command-ieas-digits-4{
+  font-family:Impact,"Arial Narrow",Arial,sans-serif!important;
+  font-size:clamp(46px,14vw,112px)!important;
+  font-style:italic!important;
+  font-weight:900!important;
+  letter-spacing:-.065em!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+  background:linear-gradient(148deg,#eafaff,#91d8ff 28%,#427da6 58%,#7acbff 85%,#d8f3ff)!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  -webkit-text-stroke:.6px #a4dbff73!important;
+  text-shadow:2px 3px 4px #0007!important;
+  filter:drop-shadow(0 0 7px #47baff55)!important;
+  transform:none!important;
+  box-sizing:border-box!important;
+  padding:0 2px!important;
+}
+@media(max-width:540px){
+  #alphaListPanel .card .alpha-call-number strong,
+  #alphaListPanel .card .alpha-call-number.alpha-command-digits-3 strong,
+  #alphaListPanel .card .alpha-call-number.alpha-command-digits-4 strong,
+  #alphaIEASPanel .ieas-card .ieas-call,
+  #alphaIEASPanel .ieas-card .ieas-call.alpha-command-ieas-digits-3,
+  #alphaIEASPanel .ieas-card .ieas-call.alpha-command-ieas-digits-4{
+    font-size:clamp(42px,13vw,64px)!important;
+  }
+}
+@media(max-width:355px){
+  #alphaListPanel .card .alpha-call-number strong,
+  #alphaListPanel .card .alpha-call-number.alpha-command-digits-3 strong,
+  #alphaListPanel .card .alpha-call-number.alpha-command-digits-4 strong,
+  #alphaIEASPanel .ieas-card .ieas-call,
+  #alphaIEASPanel .ieas-card .ieas-call.alpha-command-ieas-digits-3,
+  #alphaIEASPanel .ieas-card .ieas-call.alpha-command-ieas-digits-4{
+    font-size:41px!important;
+  }
+}
