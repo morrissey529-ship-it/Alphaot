@@ -36,7 +36,6 @@
     '<div class="ieas-shell">',
       '<section class="ieas-head">',
         '<h2>In Early / Aftershift</h2>',
-        '<p>Independent Alpha Crew rotation. Scheduling does not change a position. An officer drops only when the work is recorded as completed.</p>',
         '<div class="ieas-summary" id="ieasSummary"></div>',
       '</section>',
       '<div class="ieas-toolbar"><h3>Current IE/AS List</h3><button type="button" class="dark" data-ieas-action="refresh">Refresh</button></div>',
