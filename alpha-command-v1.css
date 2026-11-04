@@ -2076,3 +2076,14 @@ dialog .modal{background:linear-gradient(150deg,#14263a,#0a1420)!important}
     font-size:41px!important;
   }
 }
+
+/* OT call-number black-edge correction — preserve metallic ice-blue fill. */
+#alphaListPanel .card .alpha-call-number strong,
+#alphaListPanel .card .alpha-call-number.alpha-command-digits-3 strong,
+#alphaListPanel .card .alpha-call-number.alpha-command-digits-4 strong {
+  /* WebKit text-shadow on transparent, background-clipped lettering creates
+     a second dark outline beyond the glyphs on iPhone. */
+  text-shadow:none!important;
+  -webkit-text-stroke:0 transparent!important;
+  filter:drop-shadow(0 0 5px rgba(92,185,240,.28))!important;
+}
