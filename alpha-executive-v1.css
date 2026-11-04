@@ -1,0 +1,809 @@
+/* ALPHA OT / EXECUTIVE OPERATIONS 2026
+   Visual redesign only. Existing OT, IE/AS, attendance and authorization logic untouched.
+   Existing Alpha Command theme remains as fallback; this loads after it. */
+:root{
+  --exec-bg:#06111c;--exec-panel:#13283a;--exec-panel-high:#203b51;
+  --exec-edge:#547791;--exec-muted:#adc3d4;--exec-blue:#67b8ea;
+  --exec-slate:#9eb5c9;--exec-white:#eef6fc;
+}
+html,body{background:#06111c!important;color:#eaf3fa!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important}
+body{
+  background-image:radial-gradient(ellipse 100% 28% at 50% -5%,#21405750,transparent 80%)!important;
+}
+.app{max-width:1220px!important;margin-inline:auto!important;padding-left:clamp(9px,2vw,22px)!important;padding-right:clamp(9px,2vw,22px)!important}
+.app>header{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  margin:0 calc(-1 * clamp(9px,2vw,22px))!important;
+  padding:0 clamp(9px,2vw,22px) 9px!important;
+  background:transparent!important;
+}
+.app>header .infoHub{display:contents!important}
+.app>header .head{
+  order:0!important;
+  position:relative!important;
+  min-height:128px!important;
+  grid-template-columns:minmax(0,1fr) auto!important;grid-template-rows:auto!important;
+  display:grid!important;align-items:center!important;gap:12px!important;
+  padding:20px 23px 17px!important;
+  background:
+    linear-gradient(90deg,#0b1e30 2%,#0b1e30f2 40%,#112d3ba1 69%,#0c1a26d4 100%),
+    url("assets/alpha-command-plant.svg") right center/auto 100% no-repeat,
+    #102438!important;
+  border:1px solid #517993!important;border-top:0!important;
+  border-bottom:2px solid #5d94b7!important;border-radius:0 0 8px 8px!important;
+  box-shadow:inset 0 -10px 20px #09121f41,0 5px 15px #0006!important;
+  clip-path:none!important;isolation:isolate;
+}
+.app>header .head::before{display:none!important}
+.app>header .head::after{
+  height:1px!important;inset:auto 8% 0!important;
+  background:linear-gradient(90deg,transparent,#b1d3e677,transparent)!important;
+  filter:none!important;
+}
+.app>header .head .title{grid-column:1!important;grid-row:1!important;min-width:0;text-align:left!important}
+.app>header .head .brand{display:flex!important;align-items:center!important;gap:14px!important;text-align:left!important}
+.app>header .head .alpha-command-mark{
+  width:clamp(45px,6vw,66px)!important;height:clamp(45px,6vw,66px)!important;
+  flex:0 0 auto!important;filter:none!important;
+}
+.app>header .head .alpha-command-wordmark{min-width:0!important;gap:2px!important}
+.app>header .head .brandTitle{
+  color:#edf6fb!important;-webkit-text-fill-color:#edf6fb!important;
+  background:none!important;-webkit-background-clip:initial!important;background-clip:initial!important;
+  -webkit-text-stroke:0!important;text-shadow:0 2px 3px #0007!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(31px,4.4vw,51px)!important;
+  font-weight:800!important;font-style:normal!important;
+  letter-spacing:.045em!important;line-height:1.02!important;
+  white-space:nowrap!important;transform:none!important;
+}
+.app>header .head .sub{
+  color:#d5e5f0!important;font-size:clamp(10px,1.3vw,15px)!important;
+  font-weight:520!important;letter-spacing:.035em!important;
+  text-transform:none!important;text-shadow:none!important;
+  line-height:1.2!important;margin:4px 0 0!important;
+}
+.app>header .head .alpha-command-descriptor{font-size:11px!important;color:#98b5c7!important;margin-top:4px}
+.app>header .head #topMode{
+  grid-column:2!important;grid-row:1!important;
+  position:relative!important;justify-self:end!important;align-self:center!important;
+  padding:7px 11px!important;margin:0!important;top:auto!important;right:auto!important;
+  border:1px solid #6f94af!important;border-radius:999px!important;
+  background:#263f53b7!important;box-shadow:none!important;
+  color:#dce9f3!important;font-size:11px!important;letter-spacing:0!important;
+  text-transform:none!important;white-space:nowrap;
+}
+.app>header>.hubHeading.alpha-command-centered-date{
+  order:1!important;width:100%!important;min-width:0!important;
+  margin:8px 0 0!important;padding:9px 16px!important;min-height:42px!important;
+  display:flex!important;justify-content:center!important;align-items:center!important;
+  border:1px solid #597e98!important;border-radius:7px!important;
+  background:linear-gradient(105deg,#1c3549,#29435b 50%,#172d42)!important;
+  box-shadow:inset 0 1px 0 #d3edfc22!important;
+  clip-path:none!important;
+}
+.app>header>.hubHeading.alpha-command-centered-date::before,
+.app>header>.hubHeading.alpha-command-centered-date::after{
+  display:none!important;
+}
+.app>header>.hubHeading.alpha-command-centered-date .hubDate{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(15px,2.3vw,20px)!important;
+  font-weight:680!important;font-style:normal!important;
+  letter-spacing:.015em!important;text-transform:none!important;
+  color:#eff7fb!important;text-shadow:none!important;text-align:center!important;
+}
+.app>header .infoHub .stats{
+  order:2!important;
+  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:8px!important;max-width:none!important;width:100%!important;
+  margin:12px 0 0!important;
+}
+.app>header .infoHub .stats>.stat{
+  --ac-accent:#8aadc6;--ac-glow:transparent;
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:22px minmax(0,1fr)!important;
+  grid-template-rows:minmax(22px,auto) minmax(29px,auto)!important;
+  align-content:center!important;align-items:center!important;
+  min-width:0!important;min-height:78px!important;
+  gap:4px 6px!important;padding:10px 10px 9px!important;
+  grid-column:auto!important;grid-row:auto!important;
+  justify-self:stretch!important;width:auto!important;
+  background:linear-gradient(160deg,#213b50,#122638 65%,#0e1e2c)!important;
+  border:1px solid #476982!important;border-radius:8px!important;
+  clip-path:none!important;
+  box-shadow:inset 0 1px 0 #d0ebfc24,0 2px 5px #0005!important;
+}
+.app>header .infoHub .stats>.stat::before{
+  content:"";position:absolute!important;
+  inset:auto auto 10px 8px!important;width:3px!important;height:24px!important;
+  background:var(--ac-accent)!important;opacity:.9!important;border-radius:3px;
+  box-shadow:none!important;
+}
+.app>header .infoHub .stats>.stat::after{display:none!important}
+.app>header .infoHub .stat:has(#ac){--ac-accent:#5c9cc5}
+.app>header .infoHub .stat:has(#oc){--ac-accent:#8fa0b0}
+.app>header .infoHub .stat:has(#vc){--ac-accent:#c2a665}
+.app>header .infoHub .stat:has(#bc){--ac-accent:#aaa9bc}
+.app>header .infoHub .stat:has(#mc){--ac-accent:#84a0bc}
+.app>header .infoHub .stat:has(#bnc){--ac-accent:#9e91b1}
+.app>header .infoHub .stat:has(#jc){--ac-accent:#acaa9e}
+.app>header .infoHub .stat:has(#uc){--ac-accent:#ad8b9a}
+.app>header .infoHub .stats>.stat .alpha-command-stat-icon{
+  position:static!important;grid-column:1!important;grid-row:1!important;
+  display:grid!important;place-items:center!important;
+  width:21px!important;height:24px!important;
+  color:#d1e3f0!important;filter:none!important;opacity:.94!important;
+}
+.app>header .infoHub .stats>.stat .alpha-command-stat-icon svg{width:100%;height:100%}
+.app>header .infoHub .stats>.stat span:not(.alpha-command-stat-icon){
+  grid-column:2!important;grid-row:1!important;min-width:0!important;
+  display:block!important;align-self:center!important;
+  padding:0!important;margin:0!important;text-align:left!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(10px,1.2vw,14px)!important;line-height:1.15!important;
+  font-weight:570!important;letter-spacing:0!important;
+  text-transform:none!important;color:#dbe6ee!important;
+  white-space:normal!important;overflow-wrap:anywhere!important;text-shadow:none!important;
+}
+.app>header .infoHub .stats>.stat b{
+  grid-column:1/-1!important;grid-row:2!important;
+  display:block!important;margin:0!important;padding:0!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(25px,2.6vw,36px)!important;
+  font-weight:750!important;font-style:normal!important;line-height:1.1!important;
+  letter-spacing:0!important;text-align:center!important;color:#edf6fb!important;
+  text-shadow:none!important;
+}
+.app>header .alpha-tabs{
+  order:3!important;
+  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:8px!important;padding:0!important;margin:13px 0 0!important;
+  border:0!important;border-radius:0!important;background:transparent!important;
+}
+.app>header .alpha-tabs [role="tab"]{
+  min-width:0!important;min-height:73px!important;
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;gap:6px!important;
+  padding:9px 5px!important;
+  border:1px solid #63849d!important;border-bottom:2px solid #547992!important;
+  border-radius:9px!important;
+  background:linear-gradient(155deg,#243e52,#152a3b 77%)!important;
+  box-shadow:inset 0 1px 0 #e9f7ff20!important;
+  color:#e3edf4!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(11px,1.4vw,15px)!important;
+  font-weight:630!important;letter-spacing:0!important;text-shadow:none!important;
+  text-align:center!important;text-transform:none!important;
+  white-space:normal!important;line-height:1.15!important;
+  overflow-wrap:anywhere!important;
+}
+.app>header .alpha-tabs [role="tab"]::after{display:none!important}
+.app>header .alpha-tabs [role="tab"][aria-selected="true"]{
+  background:linear-gradient(160deg,#315f84,#153a59)!important;
+  border:1px solid #77b7e6!important;border-bottom:3px solid #65baf1!important;
+  color:#f4fbff!important;
+  box-shadow:inset 0 1px 0 #d2e8fb4a,0 0 0 1px #69b2e223!important;
+}
+.app>header .alpha-tabs .alpha-command-tab-icon{
+  display:grid!important;place-items:center!important;
+  flex:0 0 auto!important;width:24px!important;height:24px!important;
+  color:#dceaf5!important;
+}
+.app>header .alpha-tabs .alpha-command-tab-icon svg{width:100%;height:100%}
+.app>header .infoHub .hubGrid{
+  order:4!important;
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:8px!important;margin:13px 0 0!important;
+}
+.app>header .infoHub .hubTesting{display:contents!important}
+.app>header .infoHub .hubTestingRow,
+.app>header .infoHub .hubCalloff{
+  min-width:0!important;min-height:76px!important;
+  display:flex!important;flex-direction:column!important;
+  justify-content:center!important;align-items:center!important;gap:7px!important;
+  padding:10px!important;margin:0!important;
+  border:1px solid #5d7f99!important;border-radius:9px!important;
+  background:linear-gradient(155deg,#233f54,#162e41)!important;
+  box-shadow:inset 0 1px 0 #d9ecfa26!important;
+}
+.app>header .infoHub .hubTestingRow .hubLabel,
+.app>header .infoHub .hubCalloff .hubLabel{
+  color:#d9e6ef!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(10px,1.2vw,13px)!important;
+  line-height:1.2!important;font-weight:570!important;
+  text-transform:none!important;letter-spacing:0!important;
+  text-align:center!important;
+}
+.app>header .infoHub .hubTesting #alphaTestingType,
+.app>header .infoHub .hubTesting #alphaTestingTomorrow{
+  color:#f0f7fc!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(17px,2vw,25px)!important;
+  font-style:normal!important;font-weight:750!important;letter-spacing:0!important;
+}
+.app>header .infoHub .hubCalloff .hubDetail{display:none!important}
+.app>header .infoHub .hubCalloff #calloffPhone{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  gap:7px!important;min-width:0!important;
+  color:#e6f4fc!important;text-decoration:none!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(13px,1.6vw,21px)!important;font-weight:720!important;
+  letter-spacing:0!important;white-space:nowrap!important;
+}
+.app>header .infoHub #calloffPhone .alpha-command-phone-icon{
+  width:18px!important;height:18px!important;flex:0 0 18px!important;
+  color:#b9dcf2!important;filter:none!important;
+}
+.app>header .infoHub .tools{
+  order:5!important;
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:8px!important;margin:11px 0 0!important;padding:0!important;
+  border:0!important;
+}
+.app>header .infoHub .tools button{
+  min-width:0!important;min-height:43px!important;
+  padding:9px 7px!important;
+  border:1px solid #587e9b!important;border-radius:8px!important;
+  background:linear-gradient(160deg,#27445a,#122a3b)!important;
+  box-shadow:inset 0 1px 0 #d9f1ff24!important;
+  color:#e7f2f9!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(11px,1.3vw,14px)!important;
+  font-weight:650!important;letter-spacing:0!important;
+  text-transform:none!important;text-shadow:none!important;
+}
+.app>header .infoHub .tools button:hover{border-color:#84c3e9!important}
+.app>header .infoHub .hubNotice{
+  order:6!important;margin:8px 0 0!important;padding:5px 2px!important;
+  color:#839caf!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:10px!important;font-weight:550!important;
+  text-align:center!important;letter-spacing:.02em!important;
+  text-transform:none!important;
+}
+.section{
+  margin:17px 0 10px!important;
+  padding:10px 12px!important;
+  border:1px solid #4a718c!important;
+  border-radius:5px!important;
+  background:linear-gradient(105deg,#1b3a50,#0c2134)!important;
+  color:#e7f4fc!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(17px,2vw,22px)!important;
+  font-weight:725!important;letter-spacing:.015em!important;
+  text-transform:none!important;
+}
+
+/* Compact personnel strips: no striped/radiation overlay, black ghost edge or competing glows. */
+#alphaListPanel .card{
+  --exec-rail:#82afc9!important;
+  position:relative;isolation:isolate;overflow:hidden;
+  margin:0 0 8px!important;
+  border:1px solid #50758f!important;border-radius:8px!important;
+  background:linear-gradient(110deg,#162b3d 0%,#0c1f30 65%,#152f43 100%)!important;
+  box-shadow:inset 0 1px 0 #cee5f621,0 2px 6px #0006!important;
+}
+#alphaListPanel .card[data-alpha-command-status="active"]{--exec-rail:#72b9a4!important}
+#alphaListPanel .card[data-alpha-command-status="vacation"]{--exec-rail:#c9ad74!important}
+#alphaListPanel .card[data-alpha-command-status="off-shift"]{--exec-rail:#9ca9b3!important}
+#alphaListPanel .card[data-alpha-command-status="military"]{--exec-rail:#8cb6ce!important}
+#alphaListPanel .card[data-alpha-command-status="bonding"]{--exec-rail:#b2a5c5!important}
+#alphaListPanel .card[data-alpha-command-status="bereavement"]{--exec-rail:#a6baca!important}
+#alphaListPanel .card[data-alpha-command-status="jury-duty"]{--exec-rail:#bdae94!important}
+#alphaListPanel .card[data-alpha-command-status="unavailable"]{--exec-rail:#c29cad!important}
+#alphaListPanel .card::before{
+  content:"";display:block!important;position:absolute!important;
+  inset:7px auto 7px 5px!important;width:4px!important;
+  border-radius:4px!important;background:var(--exec-rail)!important;
+  box-shadow:none!important;opacity:1!important;
+}
+#alphaListPanel .card::after{display:none!important}
+#alphaListPanel .card .main{
+  position:relative!important;z-index:1!important;
+  display:grid!important;grid-template-columns:52px minmax(0,1fr)!important;
+  gap:12px!important;align-items:center!important;
+  min-height:89px!important;
+  margin:0!important;padding:12px 27% 12px 17px!important;
+  background:transparent!important;
+}
+#alphaListPanel .card .main::before{display:none!important}
+#alphaListPanel .card .main>.num{
+  width:51px!important;height:57px!important;min-width:0!important;
+  display:grid!important;place-items:center!important;
+  background:linear-gradient(150deg,#30526a,#152e41)!important;
+  border:1px solid #88a8bd!important;border-radius:7px!important;
+  color:#eff6fb!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:27px!important;font-style:normal!important;font-weight:770!important;
+  line-height:1!important;letter-spacing:0!important;text-shadow:none!important;
+  box-shadow:inset 0 1px 0 #fff3!important;transform:none!important;
+}
+#alphaListPanel .card .main>.num.off{color:#a6b8c9!important;background:#132737!important}
+#alphaListPanel .card .main>div:nth-child(2){
+  position:relative!important;z-index:2!important;
+  min-width:0!important;overflow-wrap:anywhere!important;
+}
+#alphaListPanel .card .nameRow{gap:4px 8px!important;margin:0!important}
+#alphaListPanel .card .nameRow .name{
+  display:block!important;flex:1 1 100%!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(16px,1.7vw,21px)!important;font-weight:760!important;
+  line-height:1.15!important;font-style:normal!important;
+  color:#f0f6fb!important;text-shadow:none!important;
+  letter-spacing:0!important;
+}
+#alphaListPanel .card .nameRow .badge{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:11px!important;letter-spacing:0!important;
+  font-weight:680!important;color:var(--exec-rail)!important;
+  text-shadow:none!important;text-transform:none!important;
+}
+#alphaListPanel .card .nameRow .badge::before{
+  width:6px!important;height:6px!important;
+  background:var(--exec-rail)!important;box-shadow:none!important;
+}
+#alphaListPanel .card .activityTitle{display:none!important}
+#alphaListPanel .card .activityLine{
+  display:flex!important;gap:7px!important;align-items:baseline!important;flex-wrap:wrap!important;
+  color:#c0d3df!important;font-size:11px!important;line-height:1.3!important;
+  margin:5px 0 0!important;min-width:0!important;
+}
+#alphaListPanel .card .activityLine time,
+#alphaListPanel .card .activityLine strong{color:#e5eef5!important}
+#alphaListPanel .card .scheduled,
+#alphaListPanel .card .meta{color:#bbd0de!important;font-size:11px!important}
+#alphaListPanel .card .alpha-command-old-activity{margin:3px 0 0!important}
+#alphaListPanel .card .alpha-command-old-activity>summary{
+  padding:3px 0!important;font-size:10px!important;
+  font-weight:550!important;letter-spacing:0!important;color:#9ac8e2!important;
+  text-transform:none!important;text-shadow:none!important;
+}
+#alphaListPanel .card .alpha-call-number{
+  position:absolute!important;z-index:1!important;top:0!important;
+  right:0!important;bottom:0!important;
+  display:flex!important;justify-content:center!important;align-items:center!important;
+  width:clamp(95px,25%,245px)!important;max-width:27%!important;height:100%!important;
+  padding:0 8px!important;margin:0!important;
+  background:linear-gradient(120deg,#395972,#1b3d57 53%,#23435b)!important;
+  border:0!important;border-left:1px solid #91b4ca55!important;
+  border-radius:0!important;
+  clip-path:polygon(17% 0,100% 0,100% 100%,0 100%)!important;
+  -webkit-mask-image:none!important;mask-image:none!important;
+  box-shadow:none!important;filter:none!important;
+  pointer-events:none!important;
+}
+#alphaListPanel .card .alpha-call-number>span{display:none!important}
+#alphaListPanel .card .alpha-call-number strong,
+#alphaListPanel .card .alpha-call-number.alpha-command-digits-3 strong,
+#alphaListPanel .card .alpha-call-number.alpha-command-digits-4 strong{
+  display:block!important;position:relative!important;
+  width:auto!important;max-width:100%!important;
+  margin:0!important;padding:0!important;overflow:visible!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(25px,3.4vw,39px)!important;
+  font-style:normal!important;font-weight:760!important;line-height:1!important;
+  letter-spacing:-.045em!important;font-variant-numeric:tabular-nums!important;
+  color:#edf7ff!important;-webkit-text-fill-color:#edf7ff!important;
+  -webkit-background-clip:initial!important;background-clip:initial!important;
+  background:none!important;-webkit-text-stroke:0!important;
+  text-shadow:none!important;filter:none!important;transform:none!important;
+}
+#alphaListPanel .card .actions,
+#alphaListPanel .card .editor,
+#alphaListPanel .card .reorderTools{
+  position:relative!important;z-index:3!important;
+  background:#142738!important;border-top:1px solid #375b75!important;
+}
+#alphaListPanel .card .actions{padding:8px 11px!important}
+#alphaListPanel .card .actions button,
+#alphaListPanel .card .reorderTools button,
+#alphaListPanel .card .editor button{
+  min-height:38px!important;background:#23435b!important;border:1px solid #648aa4!important;
+  color:#e9f3fb!important;border-radius:7px!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-weight:620!important;font-size:12px!important;
+  text-transform:none!important;
+}
+#alphaListPanel .card .editor{padding:14px!important}
+#alphaListPanel .card .editor input,
+#alphaListPanel .card .editor select{
+  min-width:0!important;background:#0c2234!important;
+  border:1px solid #5c819b!important;color:#edf6fb!important;
+}
+
+/* IE/AS: the same personnel strip language, preserving the distinct independent rotation. */
+#alphaIEASPanel .ieas-shell{gap:11px!important;margin-top:14px!important}
+#alphaIEASPanel .ieas-head{
+  padding:13px 15px!important;
+  border:1px solid #53778d!important;border-radius:8px!important;
+  background:linear-gradient(130deg,#1b3447,#0d2233)!important;
+  box-shadow:inset 0 1px 0 #ffffff20!important;
+}
+#alphaIEASPanel .ieas-head::before{display:none!important}
+#alphaIEASPanel .ieas-head h2,
+#alphaStatsPanel .otstats-title-row h2{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-style:normal!important;font-size:clamp(17px,2vw,23px)!important;
+  font-weight:750!important;letter-spacing:.012em!important;text-transform:none!important;
+  color:#edf6fc!important;text-shadow:none!important;
+}
+#alphaIEASPanel .ieas-head p{font-size:12px!important;color:#b4ccdc!important}
+#alphaIEASPanel .ieas-summary{gap:8px!important}
+#alphaIEASPanel .ieas-summary span{
+  min-height:65px!important;border:1px solid #56768e!important;border-top:2px solid #7da5c0!important;
+  border-radius:7px!important;
+  background:linear-gradient(155deg,#243f53,#112739)!important;
+  box-shadow:none!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:11px!important;letter-spacing:0!important;text-transform:none!important;
+}
+#alphaIEASPanel .ieas-summary strong{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(23px,3vw,31px)!important;
+  font-style:normal!important;color:#edf6fc!important;text-shadow:none!important;
+}
+#alphaIEASPanel .ieas-toolbar h3{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:15px!important;font-weight:720!important;color:#dceaf4!important;
+  text-transform:none!important;letter-spacing:0!important;
+}
+#alphaIEASPanel .ieas-card{
+  --exec-rail:#7cb6a5;
+  margin:0!important;padding:0!important;
+  border:1px solid #54758f!important;border-radius:8px!important;
+  background:linear-gradient(110deg,#142d40,#0d2030 68%,#183247)!important;
+  box-shadow:inset 0 1px 0 #e4f8ff21,0 2px 5px #0006!important;
+  overflow:hidden!important;
+}
+#alphaIEASPanel .ieas-card::before{
+  inset:7px auto 7px 5px!important;width:4px!important;
+  background:var(--exec-rail)!important;box-shadow:none!important;
+}
+#alphaIEASPanel .ieas-card::after{display:none!important}
+#alphaIEASPanel .ieas-card:has(.ieas-status-active){--exec-rail:#72b9a4}
+#alphaIEASPanel .ieas-card:has(.ieas-status-vacation){--exec-rail:#c9ad74}
+#alphaIEASPanel .ieas-card:has(.ieas-status-bonding){--exec-rail:#aea0c5}
+#alphaIEASPanel .ieas-card:has(.ieas-status-military){--exec-rail:#91bbd5}
+#alphaIEASPanel .ieas-card:has(.ieas-status-off-shift){--exec-rail:#9eafb9}
+#alphaIEASPanel .ieas-card-main{
+  min-height:85px!important;padding:11px 27% 10px 17px!important;
+  display:grid!important;grid-template-columns:52px minmax(0,1fr)!important;
+  gap:11px!important;align-items:center!important;
+  position:relative!important;z-index:1!important;
+}
+#alphaIEASPanel .ieas-card .ieas-number{
+  width:51px!important;height:57px!important;flex:0 0 51px!important;
+  border-radius:7px!important;border:1px solid #88a8bd!important;
+  background:linear-gradient(150deg,#30526a,#152e41)!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:27px!important;font-weight:770!important;font-style:normal!important;
+  color:#f0f7fc!important;text-shadow:none!important;box-shadow:inset 0 1px 0 #fff3!important;
+}
+#alphaIEASPanel .ieas-card .ieas-number-off{color:#a6b8c9!important;background:#132737!important}
+#alphaIEASPanel .ieas-person{min-width:0!important}
+#alphaIEASPanel .ieas-name-line strong{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(16px,1.7vw,21px)!important;font-weight:750!important;
+  color:#f0f7fb!important;letter-spacing:0!important;
+}
+#alphaIEASPanel .ieas-badge{
+  background:transparent!important;border:0!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:11px!important;font-weight:650!important;letter-spacing:0!important;
+  text-transform:none!important;color:var(--exec-rail)!important;text-shadow:none!important;
+}
+#alphaIEASPanel .ieas-badge::before{
+  background:var(--exec-rail)!important;box-shadow:none!important;width:6px!important;height:6px!important;
+}
+#alphaIEASPanel .ieas-last{font-size:11px!important;color:#b5ccda!important;line-height:1.3!important;margin-top:5px!important}
+#alphaIEASPanel .ieas-card .ieas-call,
+#alphaIEASPanel .ieas-card .ieas-call.alpha-command-ieas-digits-3,
+#alphaIEASPanel .ieas-card .ieas-call.alpha-command-ieas-digits-4{
+  position:absolute!important;top:0!important;bottom:0!important;right:0!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:clamp(95px,25%,245px)!important;max-width:27%!important;height:100%!important;
+  margin:0!important;padding:0 7px!important;overflow:visible!important;
+  border:0!important;border-left:1px solid #91b4ca55!important;border-radius:0!important;
+  background:linear-gradient(120deg,#395972,#1b3d57 53%,#23435b)!important;
+  -webkit-background-clip:initial!important;background-clip:initial!important;
+  -webkit-mask-image:none!important;mask-image:none!important;
+  clip-path:polygon(17% 0,100% 0,100% 100%,0 100%)!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(25px,3.4vw,39px)!important;
+  font-weight:760!important;font-style:normal!important;letter-spacing:-.045em!important;
+  color:#edf7ff!important;-webkit-text-fill-color:#edf7ff!important;
+  -webkit-text-stroke:0!important;text-shadow:none!important;filter:none!important;
+  transform:none!important;pointer-events:none!important;
+}
+#alphaIEASPanel .ieas-card-tools{
+  position:relative!important;z-index:2!important;
+  margin:0!important;padding:7px 10px!important;
+  border-top:1px solid #385b75!important;
+  background:#14293a!important;
+}
+#alphaIEASPanel .ieas-card-tools button,
+#alphaIEASPanel .ieas-form-actions button,
+#alphaIEASPanel .ieas-toolbar button{
+  min-height:38px!important;
+  border:1px solid #5b839f!important;
+  background:#23435b!important;color:#e6f2fb!important;border-radius:6px!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:12px!important;font-weight:650!important;text-transform:none!important;letter-spacing:0!important;
+}
+#alphaIEASPanel .ieas-entry{position:relative!important;z-index:3!important;padding:12px!important;background:#13283a!important}
+#alphaIEASPanel .ieas-entry-grid label{font-size:12px!important;color:#b8cfdd!important}
+
+/* CALENDAR/TRAINING: readable native calendar and factual upcoming agenda. */
+#alphaCalendarPanel{min-width:0!important}
+#alphaCalendarPanel .exec-calendar-layout{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:10px!important;
+  align-items:start!important;margin-top:12px!important;
+}
+#alphaCalendarPanel .alpha-calendar{
+  margin:0!important;padding:12px!important;min-width:0!important;
+  border:1px solid #577d96!important;border-radius:9px!important;
+  background:linear-gradient(135deg,#162f42,#0b2131)!important;
+  box-shadow:inset 0 1px 0 #c8e6f51b,0 4px 12px #0006!important;
+}
+#alphaCalendarPanel .alpha-calendar-kicker{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:14px!important;font-style:normal!important;font-weight:700!important;
+  letter-spacing:0!important;text-transform:none!important;color:#d7e7f3!important;
+}
+#alphaCalendarPanel .alpha-calendar-nav{gap:6px!important}
+#alphaCalendarPanel .alpha-calendar-nav h2{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(19px,2.5vw,25px)!important;
+  font-weight:740!important;font-style:normal!important;letter-spacing:0!important;
+  text-transform:none!important;color:#ecf7fc!important;text-shadow:none!important;
+}
+#alphaCalendarPanel .alpha-calendar-nav button,
+#alphaCalendarPanel .alpha-calendar-tools button{
+  border:1px solid #638eaa!important;border-radius:6px!important;
+  background:linear-gradient(160deg,#2c5069,#16364a)!important;
+  color:#e8f4fb!important;font-size:20px!important;
+  box-shadow:none!important;
+}
+#alphaCalendarPanel .alpha-calendar-tools button{font-size:12px!important}
+#alphaCalendarPanel .alpha-calendar-table{border-spacing:2px!important;table-layout:fixed!important}
+#alphaCalendarPanel .alpha-calendar-table th{
+  padding:7px 0!important;font-size:11px!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-weight:680!important;color:#bfd6e4!important;
+}
+#alphaCalendarPanel .alpha-calendar-table td{
+  border:1px solid #3e627c!important;border-radius:4px!important;
+  background:#102639!important;box-shadow:none!important;
+}
+#alphaCalendarPanel .alpha-calendar-table td.alpha-workday{
+  border-color:#487d9e!important;background:#1e3d54!important;
+}
+#alphaCalendarPanel .alpha-calendar-table td[aria-current="date"]{
+  border-color:#76b7df!important;box-shadow:inset 0 0 0 1px #76b7df!important;
+}
+#alphaCalendarPanel .alpha-calendar-day{min-height:72px!important;padding:5px 1px!important;gap:3px!important}
+#alphaCalendarPanel .alpha-calendar-date{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:14px!important;font-weight:700!important;color:#eff6fc!important;
+}
+#alphaCalendarPanel .alpha-calendar-training,
+#alphaCalendarPanel .alpha-calendar-ot{
+  width:calc(100% - 2px)!important;
+  min-height:32px!important;padding:3px 1px!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:10px!important;font-weight:680!important;letter-spacing:0!important;
+  border-radius:4px!important;box-shadow:none!important;text-shadow:none!important;
+}
+#alphaCalendarPanel .alpha-calendar-training{background:#56472e!important;border-color:#ba9859!important;color:#f5ddab!important}
+#alphaCalendarPanel .alpha-calendar-ot{background:#1d587b!important;border-color:#69a8ce!important;color:#e1f5ff!important}
+#alphaCalendarPanel .alpha-calendar-duty{font-size:10px!important}
+#alphaCalendarPanel .alpha-calendar-legend{margin-top:11px!important;padding-top:10px!important}
+#alphaCalendarPanel .alpha-training-roster>h3,
+#alphaStatsPanel .otstats-history>h3{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:18px!important;font-weight:730!important;font-style:normal!important;
+  letter-spacing:0!important;text-transform:none!important;color:#e5f1fa!important;
+}
+#alphaCalendarPanel .alpha-ot-month,
+#alphaStatsPanel .alpha-ot-month{
+  border:1px solid #4c738c!important;border-radius:8px!important;
+  background:linear-gradient(135deg,#1e394e,#0d2434)!important;
+  box-shadow:none!important;
+}
+#alphaCalendarPanel .alpha-ot-month>summary,
+#alphaStatsPanel .alpha-ot-month>summary{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:14px!important;font-weight:700!important;letter-spacing:0!important;
+  text-transform:none!important;
+}
+#alphaCalendarPanel .alpha-training-card,
+#alphaStatsPanel .alpha-ot-card{
+  border:1px solid #496b85!important;border-left:3px solid #699fbd!important;
+  border-radius:7px!important;padding:10px!important;
+  background:#132a3b!important;box-shadow:none!important;
+}
+#alphaCalendarPanel .alpha-training-heading h4,
+#alphaStatsPanel .alpha-training-heading h4{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:13px!important;font-weight:720!important;letter-spacing:0!important;
+}
+#alphaCalendarPanel .alpha-training-names li{background:#1f3c53!important;border:1px solid #4d7390!important}
+
+/* Factual, read-only upcoming schedule sidebar. */
+#alphaCalendarPanel .exec-agenda{
+  min-width:0!important;
+  border:1px solid #537991!important;border-radius:9px!important;
+  background:linear-gradient(145deg,#1b354a,#102638)!important;
+  padding:12px!important;
+  color:#e7f3fc!important;box-shadow:inset 0 1px 0 #ffffff1d!important;
+}
+#alphaCalendarPanel .exec-agenda h3{
+  margin:0 0 5px!important;font-size:16px!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-weight:730!important;color:#edf7fd!important;
+}
+#alphaCalendarPanel .exec-agenda p{margin:0 0 8px;font-size:11px;color:#9fbacc;line-height:1.4}
+#alphaCalendarPanel .exec-agenda-items{display:grid;gap:6px}
+#alphaCalendarPanel .exec-agenda-item{
+  display:grid;grid-template-columns:56px 4px minmax(0,1fr);
+  gap:8px;align-items:center;min-height:54px;
+  border:1px solid #4e7087;border-radius:6px;
+  padding:7px;background:#172f43;
+}
+#alphaCalendarPanel .exec-agenda-day{font-size:11px;line-height:1.3;text-align:center;color:#d5e5ef}
+#alphaCalendarPanel .exec-agenda-line{height:34px;width:4px;border-radius:2px;background:#70aad2}
+#alphaCalendarPanel .exec-agenda-training .exec-agenda-line{background:#b69e70}
+#alphaCalendarPanel .exec-agenda-content{min-width:0}
+#alphaCalendarPanel .exec-agenda-content strong{font-size:12px;display:block;color:#f0f7fc;font-weight:720}
+#alphaCalendarPanel .exec-agenda-content span{font-size:11px;display:block;color:#acc8db;margin-top:3px}
+#alphaCalendarPanel .exec-agenda-empty{padding:10px;text-align:center;color:#a5c1d3;font-size:12px}
+@media(min-width:940px){
+  #alphaCalendarPanel .exec-calendar-layout{grid-template-columns:minmax(0,1.35fr) minmax(290px,.65fr)!important}
+}
+
+/* OT STATS: same understated panels; keep all real days/spots, charts and podium. */
+#alphaStatsPanel .otstats-shell{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:11px!important}
+#alphaStatsPanel .otstats-title-row{
+  padding:12px 15px!important;
+  border:1px solid #557b97!important;border-radius:8px!important;
+  background:linear-gradient(135deg,#244155,#122a3c)!important;box-shadow:none!important;
+}
+#alphaStatsPanel .otstats-title-row::before{display:none!important}
+#alphaStatsPanel .otstats-title-row h2{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:20px!important;font-weight:750!important;font-style:normal!important;
+  color:#ecf6fb!important;letter-spacing:0!important;text-transform:none!important;text-shadow:none!important;
+}
+#alphaStatsPanel .otstats-title-row button,
+#alphaStatsPanel button.dark{
+  min-height:39px!important;border:1px solid #6488a1!important;border-radius:7px!important;
+  background:#29475d!important;color:#e7f3fa!important;box-shadow:none!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:12px!important;font-weight:650!important;text-transform:none!important;
+}
+#alphaStatsPanel .alpha-monthly-summary,
+#alphaStatsPanel .otworked-podium-card,
+#alphaStatsPanel .otstats-chart-card{
+  margin:0!important;padding:13px!important;
+  border:1px solid #527891!important;border-radius:8px!important;
+  background:linear-gradient(145deg,#203a4e,#102638)!important;
+  box-shadow:inset 0 1px 0 #d8ecfb21!important;
+  overflow:hidden!important;
+}
+#alphaStatsPanel .otstats-chart-card h3,
+#alphaStatsPanel .otworked-podium-header h3,
+#alphaStatsPanel .alpha-monthly-summary-heading h2{
+  color:#edf5fb!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(15px,1.7vw,19px)!important;font-weight:720!important;
+  font-style:normal!important;text-transform:none!important;letter-spacing:0!important;
+}
+#alphaStatsPanel .alpha-monthly-metrics{gap:8px!important;margin-top:11px!important}
+#alphaStatsPanel .alpha-monthly-metric{
+  min-height:83px!important;padding:10px 4px!important;
+  border:1px solid #55768c!important;border-radius:7px!important;
+  background:#152c3d!important;box-shadow:none!important;
+}
+#alphaStatsPanel .alpha-monthly-metric strong{
+  color:#e9f4fb!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(24px,3vw,35px)!important;font-style:normal!important;font-weight:770!important;
+  text-shadow:none!important;
+}
+#alphaStatsPanel .alpha-monthly-metric span{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:11px!important;color:#b8d0df!important;text-transform:none!important;letter-spacing:0!important}
+#alphaStatsPanel .otworked-podium-card{border-color:#6489a1!important}
+#alphaStatsPanel .otworked-name,
+#alphaStatsPanel .otworked-total,
+#alphaStatsPanel .otworked-platform strong{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-style:normal!important;text-shadow:none!important;
+}
+#alphaStatsPanel .otworked-name{font-size:clamp(11px,1.4vw,15px)!important;font-weight:710!important}
+#alphaStatsPanel .otworked-platform strong{font-size:clamp(29px,3.5vw,46px)!important}
+#alphaStatsPanel .otworked-platform{box-shadow:inset 0 1px 0 #fff8,0 2px 5px #0005!important}
+#alphaStatsPanel .otstats-bar-fill{box-shadow:none!important;border:0!important;
+  background:linear-gradient(180deg,#9fd0ec,#437fa8)!important}
+#alphaStatsPanel .otstats-bar-current .otstats-bar-fill{background:linear-gradient(180deg,#a2d5df,#478f9e)!important}
+#alphaStatsPanel .otstats-line-svg circle[fill="#8fd8c2"]{fill:#82bad8!important}
+#alphaStatsPanel .otstats-line-svg path[stroke="#8fd8c2"]{stroke:#82bad8!important}
+#alphaStatsPanel .alpha-ot-month-stats strong{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  font-size:clamp(22px,3vw,30px)!important;color:#dceff9!important;
+}
+#alphaStatsPanel .alpha-ot-month>summary{color:#e6f4fa!important}
+@media(min-width:820px){
+  #alphaStatsPanel .otstats-shell{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #alphaStatsPanel .otstats-title-row,
+  #alphaStatsPanel .otstats-description,
+  #alphaStatsPanel .otstats-history{grid-column:1/-1}
+}
+
+/* Keep familiar modal controls, forms and actions accessible. */
+dialog,
+#ieasHistoryDialog{
+  border:1px solid #5c849f!important;border-radius:9px!important;
+  background:#102638!important;box-shadow:0 12px 40px #000b!important;
+}
+dialog .modal,#ieasHistoryDialog .modal{background:linear-gradient(145deg,#1c374b,#0d2133)!important}
+dialog button{min-height:40px!important}
+button:focus-visible,a:focus-visible,summary:focus-visible,
+[role="tab"]:focus-visible{outline:2px solid #9ed9fc!important;outline-offset:2px!important}
+@media(max-width:700px){
+  .app>header .head{padding:calc(11px + env(safe-area-inset-top,0px)) 12px 12px!important;
+    min-height:calc(102px + env(safe-area-inset-top,0px))!important}
+  .app>header .head .alpha-command-mark{width:44px!important;height:44px!important}
+  .app>header .head .brand{gap:7px!important}
+  .app>header .head .brandTitle{font-size:clamp(26px,6.8vw,37px)!important;letter-spacing:.01em!important}
+  .app>header .head .sub{font-size:10px!important;line-height:1.2!important}
+  .app>header .head .alpha-command-descriptor{font-size:9px!important}
+  .app>header .head #topMode{font-size:9px!important;padding:5px 8px!important}
+  .app>header .infoHub .stats{gap:6px!important}
+  .app>header .infoHub .stats>.stat{min-height:75px!important;padding:8px 5px 7px!important;gap:3px!important;
+    grid-template-columns:17px minmax(0,1fr)!important;grid-template-rows:22px 29px!important}
+  .app>header .infoHub .stats>.stat .alpha-command-stat-icon{width:17px!important;height:19px!important}
+  .app>header .infoHub .stats>.stat span:not(.alpha-command-stat-icon){font-size:clamp(8px,2vw,11px)!important}
+  .app>header .infoHub .stats>.stat b{font-size:clamp(24px,6vw,30px)!important}
+  .app>header .alpha-tabs{gap:5px!important}
+  .app>header .alpha-tabs [role="tab"]{min-height:72px!important;padding:7px 3px!important;
+    font-size:clamp(9px,2.8vw,12px)!important;line-height:1.13!important;gap:4px!important}
+  .app>header .alpha-tabs .alpha-command-tab-icon{width:20px!important;height:20px!important}
+  .app>header .infoHub .hubGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+  .app>header .infoHub .hubCalloff{grid-column:1/-1!important;min-height:65px!important}
+  .app>header .infoHub .hubTestingRow{min-height:69px!important}
+  .app>header .infoHub .hubCalloff #calloffPhone{font-size:clamp(17px,4.5vw,22px)!important}
+  .app>header .infoHub .tools{gap:6px!important}
+  .app>header .infoHub .tools button{font-size:clamp(10px,2.8vw,13px)!important;padding:7px 4px!important}
+  #alphaListPanel .card .main{min-height:83px!important;padding:10px 29% 10px 14px!important;
+    grid-template-columns:40px minmax(0,1fr)!important;gap:8px!important}
+  #alphaListPanel .card .main>.num{width:40px!important;height:46px!important;font-size:23px!important}
+  #alphaListPanel .card .nameRow .name{font-size:clamp(15px,4.2vw,18px)!important}
+  #alphaListPanel .card .alpha-call-number{width:29%!important;max-width:29%!important}
+  #alphaListPanel .card .alpha-call-number strong,
+  #alphaListPanel .card .alpha-call-number.alpha-command-digits-3 strong,
+  #alphaListPanel .card .alpha-call-number.alpha-command-digits-4 strong{font-size:clamp(26px,7.2vw,33px)!important}
+  #alphaIEASPanel .ieas-card-main{min-height:82px!important;padding:10px 29% 10px 14px!important;
+    grid-template-columns:40px minmax(0,1fr)!important;gap:8px!important}
+  #alphaIEASPanel .ieas-card .ieas-number{width:40px!important;height:46px!important;font-size:23px!important}
+  #alphaIEASPanel .ieas-card .ieas-call,
+  #alphaIEASPanel .ieas-card .ieas-call.alpha-command-ieas-digits-3,
+  #alphaIEASPanel .ieas-card .ieas-call.alpha-command-ieas-digits-4{
+    width:29%!important;max-width:29%!important;font-size:clamp(26px,7.2vw,33px)!important}
+  #alphaIEASPanel .ieas-name-line strong{font-size:clamp(15px,4.2vw,18px)!important}
+  #alphaIEASPanel .ieas-last{font-size:10px!important}
+}
+@media(max-width:380px){
+  .app>header .head .brandTitle{font-size:27px!important}
+  .app>header .alpha-tabs [role="tab"]{font-size:10px!important}
+  .app>header .infoHub .stats>.stat span:not(.alpha-command-stat-icon){font-size:9px!important}
+  #alphaListPanel .card .main,#alphaIEASPanel .ieas-card-main{padding-right:32%!important}
+  #alphaCalendarPanel .alpha-calendar-day{min-height:69px!important}
+  #alphaCalendarPanel .alpha-calendar-training,
+  #alphaCalendarPanel .alpha-calendar-ot{font-size:9px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  #alphaListPanel .card,#alphaIEASPanel .ieas-card,
+  .app>header .alpha-tabs [role="tab"]{transition:none!important;animation:none!important}
+}
