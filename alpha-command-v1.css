@@ -2087,3 +2087,34 @@ dialog .modal{background:linear-gradient(150deg,#14263a,#0a1420)!important}
   -webkit-text-stroke:0 transparent!important;
   filter:drop-shadow(0 0 5px rgba(92,185,240,.28))!important;
 }
+
+/* iPhone OT numbers: remove the trailing dark duplicate layer (v11). */
+#alphaListPanel .card .alpha-call-number,
+#alphaListPanel .card .alpha-call-number strong,
+#alphaListPanel .card .alpha-call-number.alpha-command-digits-3 strong,
+#alphaListPanel .card .alpha-call-number.alpha-command-digits-4 strong {
+  filter:none!important;
+  -webkit-filter:none!important;
+  text-shadow:none!important;
+  -webkit-text-stroke:0 transparent!important;
+  text-stroke:0 transparent!important;
+  box-shadow:none!important;
+}
+#alphaListPanel .card .alpha-call-number::before,
+#alphaListPanel .card .alpha-call-number::after,
+#alphaListPanel .card .alpha-call-number strong::before,
+#alphaListPanel .card .alpha-call-number strong::after{
+  content:none!important;
+  display:none!important;
+}
+#alphaListPanel .card .alpha-call-number strong,
+#alphaListPanel .card .alpha-call-number.alpha-command-digits-3 strong,
+#alphaListPanel .card .alpha-call-number.alpha-command-digits-4 strong {
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+  background:linear-gradient(148deg,#eafaff 0%,#91d8ff 28%,#427da6 58%,#7acbff 85%,#d8f3ff 100%)!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  letter-spacing:-.065em!important;
+  transform:none!important;
+}
