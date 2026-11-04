@@ -8,6 +8,21 @@
   if(document.documentElement.dataset.alphaExecutive==='ready')return;
   document.documentElement.dataset.alphaExecutive='ready';
 
+  // Clarify that the four existing tab controls switch sections.
+  // Their labels, tab identities, ARIA selection and keyboard handlers stay unchanged.
+  const tabBar=document.querySelector('.app>header .alpha-tabs');
+  if(tabBar&&!document.getElementById('alphaViewHint')){
+    const hint=document.createElement('div');
+    hint.id='alphaViewHint';
+    hint.className='exec-tab-heading';
+    hint.innerHTML='<strong>Select a view</strong><span>Tap to switch sections</span>';
+    tabBar.insertAdjacentElement('beforebegin',hint);
+    tabBar.setAttribute('aria-label','Choose an Alpha OT section');
+    tabBar.querySelectorAll('[role="tab"]').forEach(tab=>{
+      tab.classList.add('exec-navigation-tab');
+    });
+  }
+
   const note=document.getElementById('viewerNote');
   if(note)note.textContent=note.textContent.replace(/\boffical\b/gi,'official');
 
