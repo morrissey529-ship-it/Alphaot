@@ -74,3 +74,19 @@
 .ieas-badge.ieas-status-bonding{background:#3b2b51;color:#d8b9ff}
 .ieas-badge.ieas-status-jury-duty{background:#473127;color:#ffc3a2}
 .ieas-badge.ieas-status-unavailable-today{background:#4b2936;color:#ffb3c2}
+
+/* Admin-only manual IE/AS moves, independent from Day-Off OT reordering. */
+.ieas-card-tools{flex-wrap:wrap;align-items:center}
+.ieas-move-actions{display:flex;align-items:center;gap:5px;margin-right:auto}
+.ieas-card-tools .ieas-move-actions button{min-width:36px;padding:7px 9px;font-size:12px}
+.ieas-move-actions button:disabled{opacity:.35;cursor:not-allowed}
+.ieas-move-entry[hidden]{display:none!important}
+.ieas-move-entry{margin-top:12px;border-top:1px solid var(--line);padding-top:13px}
+.ieas-move-grid{display:grid;grid-template-columns:minmax(95px,.7fr) minmax(0,1.3fr);gap:10px}
+.ieas-move-grid label{display:grid;gap:6px;color:var(--muted);font-size:12px;font-weight:650}
+.ieas-move-grid select{width:100%;min-height:43px;padding:8px;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px}
+.ieas-move-entry .ieas-small{margin:8px 0 0}
+@media(max-width:420px){
+ .ieas-card-tools .ieas-move-actions button{font-size:11px;min-width:32px;padding:6px 8px}
+ .ieas-move-grid{grid-template-columns:1fr}
+}
