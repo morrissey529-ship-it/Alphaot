@@ -39,7 +39,8 @@
         '<h2>In Early / Aftershift</h2>',
         '<div class="ieas-summary" id="ieasSummary"></div>',
       '</section>',
-      '<div class="ieas-toolbar"><h3>Current IE/AS List</h3><button type="button" class="dark" data-ieas-action="refresh">Refresh</button></div>',
+      '<div class="ieas-toolbar"><h3>Current IE/AS List</h3><div class="ieas-toolbar-actions"><button type="button" class="dark" id="ieasReorderView" data-ieas-action="reorder-view" hidden>Reorder All</button><button type="button" class="dark" data-ieas-action="refresh">Refresh</button></div></div>',
+      '<p class="ieas-small ieas-reorder-hint" id="ieasReorderHint" hidden>Showing underlying IE/AS rotation order, including Off Shift and other unavailable officers. The numbers in this view are rotation positions, not availability ranks. Use ↑, ↓, or Move. Select Done to return to the availability list.</p>',
       '<div class="ieas-feedback" id="ieasFeedback" role="status" aria-live="polite" hidden></div>',
       '<div class="ieas-cards" id="ieasCards" aria-live="polite">Loading In Early / Aftershift list…</div>',
     '</div>'
@@ -49,9 +50,9 @@
   dialog.id='ieasHistoryDialog';
   dialog.innerHTML='<div class="modal ieas-history-modal"><div class="ieas-history-head"><h2 id="ieasHistoryTitle">IE/AS history</h2><button type="button" class="dark" data-ieas-action="close-history">Close</button></div><p class="ieas-small" id="ieasHistoryRange"></p><div id="ieasHistoryRows"></div></div>';
   document.body.appendChild(dialog);
-  let roster=[],busy=false,moveBusy=false,historyOfficerId=null,lastRole=null;
+  let roster=[],busy=false,moveBusy=false,reorderMode=false,historyOfficerId=null,lastRole=null;
   function available(o){return o.available===true;}
-  function sameMoveGroup(a,b){return !!(a&&b&&a.available===b.available&&(a.available===true||a.status===b.status));}
+  const rotationRows=()=>[...roster].sort((a,b)=>Number(a.position)-Number(b.position));
   function statusText(o){
     if(o.status==='Vacation')return 'Vacation';
     if(o.status==='Off Shift')return 'Off Shift';
@@ -79,15 +80,22 @@
   function render(){
     lastRole=typeof role==='undefined'?'viewer':role;
     if(!Array.isArray(roster))return;
+    if(!canMove())reorderMode=false;
+    const rotation=rotationRows();
+    const shown=reorderMode?rotation:roster;
+    const reorderButton=document.getElementById('ieasReorderView');
+    reorderButton.hidden=!canMove();
+    reorderButton.textContent=reorderMode?'Done Reordering':'Reorder All';
+    document.getElementById('ieasReorderHint').hidden=!reorderMode;
     const active=roster.filter(available).length;
     const vacation=roster.filter(o=>o.status==='Vacation').length;
     const unavailable=roster.length-active;
     document.getElementById('ieasSummary').innerHTML=
       '<span><strong>'+active+'</strong> Available</span><span><strong>'+unavailable+'</strong> Unavailable</span><span><strong>'+vacation+'</strong> Vacation</span>';
     let count=0;
-    cards.innerHTML=roster.map(o=>{
+    cards.innerHTML=shown.map(o=>{
       const isAvailable=available(o);
-      const rank=isAvailable?++count:'–';
+      const rank=reorderMode?o.position:(isAvailable?++count:'–');
       const currentStatus=statusText(o);
       const editable=canEdit()&&isAvailable;
       const statusClass=currentStatus.toLowerCase().replace(/[^a-z]+/g,'-').replace(/^-|-$/g,'');
@@ -97,17 +105,17 @@
       const history='<button type="button" class="dark ieas-utility" data-ieas-action="history" data-officer-id="'+safe(o.id)+'">History</button>';
       const assign=editable?'<button type="button" class="dark ieas-utility" data-ieas-action="toggle" data-officer-id="'+safe(o.id)+'">Assign</button>':'';
 
-      const rowIndex=roster.findIndex(x=>x.id===o.id);
-      const moveTargets=roster.filter(x=>x.id!==o.id&&sameMoveGroup(x,o));
+      const rowIndex=rotation.findIndex(x=>x.id===o.id);
+      const moveTargets=rotation.filter(x=>x.id!==o.id);
       const movable=canMove()&&moveTargets.length>0;
       const moveTools=movable?[
         '<div class="ieas-move-actions" aria-label="Move '+safe(o.name)+' on the IE/AS rotation">',
-        '<button type="button" class="dark" data-ieas-action="move-up" data-officer-id="'+safe(o.id)+'" aria-label="Move '+safe(o.name)+' up" title="Move up" '+(sameMoveGroup(roster[rowIndex-1],o)?'':'disabled')+'>↑</button>',
-        '<button type="button" class="dark" data-ieas-action="move-down" data-officer-id="'+safe(o.id)+'" aria-label="Move '+safe(o.name)+' down" title="Move down" '+(sameMoveGroup(roster[rowIndex+1],o)?'':'disabled')+'>↓</button>',
+        reorderMode?'<button type="button" class="dark" data-ieas-action="move-up" data-officer-id="'+safe(o.id)+'" aria-label="Move '+safe(o.name)+' up" title="Move up" '+(rowIndex>0?'':'disabled')+'>↑</button>':'',
+        reorderMode?'<button type="button" class="dark" data-ieas-action="move-down" data-officer-id="'+safe(o.id)+'" aria-label="Move '+safe(o.name)+' down" title="Move down" '+(rowIndex<rotation.length-1?'':'disabled')+'>↓</button>':'',
         '<button type="button" class="dark" data-ieas-action="move-open" data-officer-id="'+safe(o.id)+'">Move</button>',
         '</div>'
       ].join(''):'';
-      const moveOptions=moveTargets.map(x=>'<option value="'+safe(x.id)+'">'+safe(x.name)+'</option>').join('');
+      const moveOptions=moveTargets.map(x=>'<option value="'+safe(x.id)+'">'+safe(x.name)+' · '+safe(x.status)+'</option>').join('');
       const moveForm=movable?[
         '<div class="ieas-move-entry" hidden>',
           '<div class="ieas-move-grid">',
@@ -118,7 +126,7 @@
             '<button type="button" class="blue" data-ieas-action="move-save" data-officer-id="'+safe(o.id)+'">Save Position</button>',
             '<button type="button" class="dark" data-ieas-action="move-cancel">Cancel</button>',
           '</div>',
-          '<p class="ieas-small">Manual changes affect the IE/AS rotation only. Future worked shifts still move officers to the bottom.</p>',
+          '<p class="ieas-small">Admin move works for any status, including Off Shift. The availability list still temporarily puts unavailable officers at the bottom. Future worked shifts continue to drop officers normally.</p>',
         '</div>'
       ].join(''):'';
       const entryForm=editable?[
@@ -169,8 +177,8 @@
     if(moveBusy||busy)return notify('A change is already saving.');
     const source=roster.find(o=>o.id===officerId);
     const anchor=roster.find(o=>o.id===anchorId);
-    if(!source||!anchor||!sameMoveGroup(source,anchor)||officerId===anchorId)
-      return notify('Choose another officer in the same availability section.');
+    if(!source||!anchor||officerId===anchorId)
+      return notify('Choose another officer on the same IE/AS rotation.');
     moveBusy=true;
     button.disabled=true;
     try{
@@ -178,7 +186,7 @@
         method:'POST',
         body:JSON.stringify({
           p_officer_id:officerId,p_anchor_id:anchorId,
-          p_placement:placement,p_expected_order:roster.map(o=>o.id)
+          p_placement:placement,p_expected_order:rotationRows().map(o=>o.id)
         })
       });
       await load(true);
@@ -246,15 +254,32 @@
     if(!button)return;
     const action=button.dataset.ieasAction;
     if(action==='refresh')return void load(true);
-
+    if(action==='reorder-view'){
+      if(!canMove())return;
+      reorderMode=!reorderMode;
+      render();
+      return;
+    }
     if(action==='move-up'||action==='move-down'){
-      const position=roster.findIndex(o=>o.id===button.dataset.officerId);
-      const adjacent=roster[position+(action==='move-up'?-1:1)];
+      if(!reorderMode||!canMove())return;
+      const rotation=rotationRows();
+      const position=rotation.findIndex(o=>o.id===button.dataset.officerId);
+      const adjacent=rotation[position+(action==='move-up'?-1:1)];
       if(position<0||!adjacent)return;
       return void moveOfficer(button.dataset.officerId,adjacent.id,action==='move-up'?'before':'after',button);
     }
     if(action==='move-open'){
       if(!canMove())return;
+      const officerId=button.dataset.officerId;
+      if(!reorderMode){
+        reorderMode=true;
+        render();
+        const row=Array.from(cards.children).find(node=>node.dataset.officerId===officerId);
+        const openForm=row&&row.querySelector('.ieas-move-entry');
+        const opener=row&&row.querySelector('[data-ieas-action="move-open"]');
+        if(openForm){openForm.hidden=false;if(opener)opener.textContent='Close Move';row.scrollIntoView({block:'center',behavior:'smooth'});}
+        return;
+      }
       const card=button.closest('.ieas-card');
       const form=card&&card.querySelector('.ieas-move-entry');
       if(!form)return;
