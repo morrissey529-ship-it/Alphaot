@@ -90,3 +90,9 @@
  .ieas-card-tools .ieas-move-actions button{font-size:11px;min-width:32px;padding:6px 8px}
  .ieas-move-grid{grid-template-columns:1fr}
 }
+
+/* Full rotation view: manual placement works across all officer statuses. */
+.ieas-toolbar-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.ieas-toolbar-actions [hidden],.ieas-reorder-hint[hidden]{display:none!important}
+.ieas-reorder-hint{margin:0;padding:10px 13px;border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:9px;background:var(--surface);color:var(--muted);line-height:1.5}
+@media(max-width:430px){.ieas-toolbar{align-items:flex-start}.ieas-toolbar-actions{gap:5px}.ieas-toolbar-actions button{padding:7px 9px;font-size:11px}}
