@@ -7,6 +7,7 @@
   const centralParts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'});
   const safe=value=>String(value==null?'':value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const canEdit=()=>typeof role!=='undefined'&&(role==='admin'||role==='editor');
+  const canMove=()=>typeof role!=='undefined'&&role==='admin';
   const today=()=>{
     const parts=Object.fromEntries(centralParts.formatToParts(new Date()).map(p=>[p.type,p.value]));
     return parts.year+'-'+parts.month+'-'+parts.day;
@@ -48,8 +49,9 @@
   dialog.id='ieasHistoryDialog';
   dialog.innerHTML='<div class="modal ieas-history-modal"><div class="ieas-history-head"><h2 id="ieasHistoryTitle">IE/AS history</h2><button type="button" class="dark" data-ieas-action="close-history">Close</button></div><p class="ieas-small" id="ieasHistoryRange"></p><div id="ieasHistoryRows"></div></div>';
   document.body.appendChild(dialog);
-  let roster=[],busy=false,historyOfficerId=null,lastRole=null;
+  let roster=[],busy=false,moveBusy=false,historyOfficerId=null,lastRole=null;
   function available(o){return o.available===true;}
+  function sameMoveGroup(a,b){return !!(a&&b&&a.available===b.available&&(a.available===true||a.status===b.status));}
   function statusText(o){
     if(o.status==='Vacation')return 'Vacation';
     if(o.status==='Off Shift')return 'Off Shift';
@@ -94,6 +96,31 @@
       const last=recentSummary(o);
       const history='<button type="button" class="dark ieas-utility" data-ieas-action="history" data-officer-id="'+safe(o.id)+'">History</button>';
       const assign=editable?'<button type="button" class="dark ieas-utility" data-ieas-action="toggle" data-officer-id="'+safe(o.id)+'">Assign</button>':'';
+
+      const rowIndex=roster.findIndex(x=>x.id===o.id);
+      const moveTargets=roster.filter(x=>x.id!==o.id&&sameMoveGroup(x,o));
+      const movable=canMove()&&moveTargets.length>0;
+      const moveTools=movable?[
+        '<div class="ieas-move-actions" aria-label="Move '+safe(o.name)+' on the IE/AS rotation">',
+        '<button type="button" class="dark" data-ieas-action="move-up" data-officer-id="'+safe(o.id)+'" aria-label="Move '+safe(o.name)+' up" title="Move up" '+(sameMoveGroup(roster[rowIndex-1],o)?'':'disabled')+'>↑</button>',
+        '<button type="button" class="dark" data-ieas-action="move-down" data-officer-id="'+safe(o.id)+'" aria-label="Move '+safe(o.name)+' down" title="Move down" '+(sameMoveGroup(roster[rowIndex+1],o)?'':'disabled')+'>↓</button>',
+        '<button type="button" class="dark" data-ieas-action="move-open" data-officer-id="'+safe(o.id)+'">Move</button>',
+        '</div>'
+      ].join(''):'';
+      const moveOptions=moveTargets.map(x=>'<option value="'+safe(x.id)+'">'+safe(x.name)+'</option>').join('');
+      const moveForm=movable?[
+        '<div class="ieas-move-entry" hidden>',
+          '<div class="ieas-move-grid">',
+            '<label>Place<select name="ieasMovePlacement"><option value="before">Above</option><option value="after">Below</option></select></label>',
+            '<label>Officer<select name="ieasMoveAnchor">'+moveOptions+'</select></label>',
+          '</div>',
+          '<div class="ieas-form-actions">',
+            '<button type="button" class="blue" data-ieas-action="move-save" data-officer-id="'+safe(o.id)+'">Save Position</button>',
+            '<button type="button" class="dark" data-ieas-action="move-cancel">Cancel</button>',
+          '</div>',
+          '<p class="ieas-small">Manual changes affect the IE/AS rotation only. Future worked shifts still move officers to the bottom.</p>',
+        '</div>'
+      ].join(''):'';
       const entryForm=editable?[
         '<div class="ieas-entry" hidden>',
           '<div class="ieas-entry-grid">',
@@ -115,15 +142,16 @@
               (o.call_number?'<div class="ieas-call">Call # '+safe(o.call_number)+'</div>':''),
             '</div>',
           '</div>',
-          '<div class="ieas-card-tools">'+assign+history+'</div>',
+          '<div class="ieas-card-tools">'+moveTools+assign+history+'</div>',
           entryForm,
+          moveForm,
         '</article>'
       ].join('');
     }).join('')||'<p>No Alpha Crew officers were returned.</p>';
   }
   async function load(force){
     if(busy)return;
-    if(!force&&(panel.querySelector('.ieas-entry:not([hidden])')||dialog.open))return;
+    if(!force&&(panel.querySelector('.ieas-entry:not([hidden]),.ieas-move-entry:not([hidden])')||dialog.open))return;
     busy=true;
     try{
       // This is the same existing availability/vacation return refresh used by OT List.
@@ -134,6 +162,33 @@
       render();
     }catch(error){notify('Unable to load IE/AS list: '+error.message)}
     finally{busy=false}
+  }
+
+  async function moveOfficer(officerId,anchorId,placement,button){
+    if(!canMove())return notify('Admin access is required to move IE/AS officers.');
+    if(moveBusy||busy)return notify('A change is already saving.');
+    const source=roster.find(o=>o.id===officerId);
+    const anchor=roster.find(o=>o.id===anchorId);
+    if(!source||!anchor||!sameMoveGroup(source,anchor)||officerId===anchorId)
+      return notify('Choose another officer in the same availability section.');
+    moveBusy=true;
+    button.disabled=true;
+    try{
+      await api('/rest/v1/rpc/ieas_manual_move',{
+        method:'POST',
+        body:JSON.stringify({
+          p_officer_id:officerId,p_anchor_id:anchorId,
+          p_placement:placement,p_expected_order:roster.map(o=>o.id)
+        })
+      });
+      await load(true);
+      notify('IE/AS position saved. Future worked assignments will still update the rotation.');
+    }catch(error){
+      notify('Unable to move officer: '+error.message);
+    }finally{
+      moveBusy=false;
+      button.disabled=false;
+    }
   }
   async function save(officerId,mode,button){
     if(!canEdit())return notify('Admin or Editor sign-in required.');
@@ -191,11 +246,47 @@
     if(!button)return;
     const action=button.dataset.ieasAction;
     if(action==='refresh')return void load(true);
+
+    if(action==='move-up'||action==='move-down'){
+      const position=roster.findIndex(o=>o.id===button.dataset.officerId);
+      const adjacent=roster[position+(action==='move-up'?-1:1)];
+      if(position<0||!adjacent)return;
+      return void moveOfficer(button.dataset.officerId,adjacent.id,action==='move-up'?'before':'after',button);
+    }
+    if(action==='move-open'){
+      if(!canMove())return;
+      const card=button.closest('.ieas-card');
+      const form=card&&card.querySelector('.ieas-move-entry');
+      if(!form)return;
+      const next=form.hidden;
+      panel.querySelectorAll('.ieas-move-entry').forEach(x=>x.hidden=true);
+      panel.querySelectorAll('.ieas-entry').forEach(x=>x.hidden=true);
+      panel.querySelectorAll('[data-ieas-action="move-open"]').forEach(x=>x.textContent='Move');
+      form.hidden=!next;
+      button.textContent=next?'Close Move':'Move';
+      return;
+    }
+    if(action==='move-cancel'){
+      const card=button.closest('.ieas-card');
+      const form=card&&card.querySelector('.ieas-move-entry');
+      if(form)form.hidden=true;
+      const opener=card&&card.querySelector('[data-ieas-action="move-open"]');
+      if(opener)opener.textContent='Move';
+      return;
+    }
+    if(action==='move-save'){
+      const form=button.closest('.ieas-move-entry');
+      if(!form)return;
+      return void moveOfficer(button.dataset.officerId,
+        form.querySelector('[name="ieasMoveAnchor"]').value,
+        form.querySelector('[name="ieasMovePlacement"]').value,button);
+    }
+
     if(action==='close-history'){dialog.close();historyOfficerId=null;return}
     if(action==='toggle'){
       const card=button.closest('.ieas-card');
       const form=card&&card.querySelector('.ieas-entry');
-      if(form){const next=form.hidden;panel.querySelectorAll('.ieas-entry').forEach(x=>x.hidden=true);form.hidden=!next;button.textContent=next?'Close':'Assign'}
+      if(form){const next=form.hidden;panel.querySelectorAll('.ieas-entry').forEach(x=>x.hidden=true);panel.querySelectorAll('.ieas-move-entry').forEach(x=>x.hidden=true);panel.querySelectorAll('[data-ieas-action="move-open"]').forEach(x=>x.textContent='Move');form.hidden=!next;button.textContent=next?'Close':'Assign'}
       return;
     }
     if(action==='history')return void showHistory(button.dataset.officerId);
