@@ -7,15 +7,15 @@ const p=new URLSearchParams(window.location.search),source=p.get('crew'),officer
 const el=id=>document.getElementById(id);
 const ui={details:el('officerDetails'),fields:el('formFields'),dest:el('destination'),
  placement:el('placementFields'),guess:el('suggested'),anchor:el('anchor'),side:el('position'),
- rules:el('rules'),feedback:el('feedback'),success:el('success'),confirm:el('confirm'),
+ rules:el('rules'),ieasPreview:el('ieasSuggested'),feedback:el('feedback'),success:el('success'),confirm:el('confirm'),
  returnCrew:el('returnCrew'),openNewCrew:el('openNewCrew')};
-let current=null,destinationRevision=null,inFlight=false,seq=0;
+let current=null,destinationRevision=null,ieasPreviewLoaded=false,inFlight=false,seq=0;
 const session=()=>{try{return JSON.parse(localStorage.getItem('alpha_session')||'null')}catch{return null}};
 const message=s=>{ui.feedback.textContent=String(s||'')};
 const title=s=>{ui.details.textContent=String(s||'')};
 function setBusy(v){
  inFlight=v;ui.dest.disabled=v;ui.anchor.disabled=v;ui.side.disabled=v;
- ui.confirm.disabled=v||!current||current.blocked||destinationRevision===null;
+ ui.confirm.disabled=v||!current||current.blocked||destinationRevision===null||!ieasPreviewLoaded;
 }
 async function api(path,body){
  const active=session();
@@ -73,18 +73,44 @@ function makeOptions(rows){
  const issues=blockers(current);
  ui.rules.textContent=issues.length?'Transfer blocked until resolved: '+issues.join('; ')+'.':
   'The original officer record stays archived with history. No additional OT/Training event is created. '+
-  'The destination IE/AS rotation is independent and begins at the bottom. '+
+  'IE/AS uses its own qualifying activity date for placement, separately from OT. '+
   'Transfers cannot be reversed using the normal single-crew Undo Last Change.';
+}
+function showIEASPlan(plan){
+ const activity=plan.source_activity||{};
+ const previous=activity.event_date
+   ? 'Last qualifying IE/AS activity: '+(activity.activity_label||activity.event_date)+
+     (activity.from_worked?' (worked)':' (historical baseline)')
+   : 'No dated IE/AS activity; officer enters at the bottom';
+ const target=plan.anchor_name
+   ? 'Suggested: '+(plan.side==='before'?'above ':'below ')+plan.anchor_name
+   : 'Suggested: first officer on the new crew';
+ ui.ieasPreview.textContent=previous+'. '+target+
+  '. IE/AS is calculated independently of OT. No new IE/AS assignment will be recorded.';
 }
 async function reviewDestination(){
  if(!current)return;
- const req=++seq;destinationRevision=null;message('');setBusy(true);
+ const req=++seq;destinationRevision=null;ieasPreviewLoaded=false;
+ ui.ieasPreview.textContent='Checking IE/AS history and destination dates…';
+ message('');setBusy(true);
  try{
-  const rows=await api('/rest/v1/rpc/'+ui.dest.value+'_list_summary_for_block',{p_target_date:null});
+  const crew=ui.dest.value;
+  const [rows,plan]=await Promise.all([
+   api('/rest/v1/rpc/'+crew+'_list_summary_for_block',{p_target_date:null}),
+   api('/rest/v1/rpc/braidwood_switch_ieas_preview',{
+    p_source_crew:source,p_officer_id:officer,p_destination_crew:crew
+   })
+  ]);
   if(req!==seq)return;
-  if(!Array.isArray(rows))throw Error('Destination list did not load');
-  makeOptions(rows);
- }catch(e){if(req===seq)message('Could not review destination: '+String(e.message||e))}
+  if(!Array.isArray(rows))throw Error('Destination OT list did not load');
+  if(!plan||!plan.source_activity)throw Error('Destination IE/AS placement did not load');
+  makeOptions(rows);showIEASPlan(plan);ieasPreviewLoaded=true;
+ }catch(e){
+  if(req===seq){
+   ui.ieasPreview.textContent='IE/AS review could not be completed.';
+   message('Could not review destination: '+String(e.message||e));
+  }
+ }
  finally{if(req===seq)setBusy(false)}
 }
 async function start(){
@@ -115,8 +141,8 @@ async function save(){
  const anchor=selectedPeer||null;
  const placement=ui.placement.hidden?'after':ui.side.value;
  if(!window.confirm('Move '+current.name+' from '+labels[source]+' to '+labels[dest]+
-  ' Crew?\n\nThis changes both live lists and preserves the former crew history. '+
-  'The suggested OT position has been reviewed.'))return;
+  ' Crew?\n\nThis moves the officer into both rotations and preserves former crew history. '+
+  'OT position was reviewed; IE/AS position uses the most recent qualifying IE/AS date.'))return;
  setBusy(true);message('');
  try{
   const result=await api('/rest/v1/rpc/braidwood_switch_crew',{
@@ -128,7 +154,9 @@ async function save(){
   ui.fields.hidden=true;ui.success.hidden=false;ui.confirm.hidden=true;
   ui.success.textContent=current.name+' was transferred to '+labels[dest]+
    ' Crew. OT position: '+result.destination_ot_position+
-   '. The previous crew history and permanent call number are linked. Open the destination list to verify.';
+   '. IE/AS position: '+result.destination_ieas_position+
+   (result.ieas_carry_date?' (IE/AS date: '+result.ieas_carry_date+')':' (no prior dated IE/AS activity)')+
+   '. Previous crew history and permanent call number remain linked. Open both destination rotations to verify.';
   ui.openNewCrew.hidden=false;
   ui.openNewCrew.href=root+(dest==='alpha'?'':dest+'/');
  }catch(e){message('Transfer was not saved: '+String(e.message||e))}
