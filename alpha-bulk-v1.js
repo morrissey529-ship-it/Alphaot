@@ -89,7 +89,7 @@
     roster.innerHTML='';
     let number=0;
     for(const officer of officers){
-      if(officer.status!=='Active')continue;
+      if(officer.status!=='Active'||officer.vacation_unavailable)continue;
       number++;
       const label=document.createElement('label');
       label.className='bulk-person';

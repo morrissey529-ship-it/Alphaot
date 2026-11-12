@@ -60,6 +60,7 @@
     if(o.status==='Bonding')return 'Bonding';
     if(o.status==='Jury Duty')return 'Jury Duty';
     if(o.status==='Bereavement'||(o.bereavement_start_date&&o.bereavement_return_date&&today()>=o.bereavement_start_date&&today()<o.bereavement_return_date))return 'Bereavement';
+    if(o.vacation_unavailable)return 'Upcoming Vacation';
     if(!available(o))return 'Unavailable Today';
     return 'Active';
   }
@@ -100,7 +101,7 @@
       const editable=canEdit()&&isAvailable;
       const statusClass=currentStatus.toLowerCase().replace(/[^a-z]+/g,'-').replace(/^-|-$/g,'');
       const badge='<span class="ieas-badge '+(isAvailable?'ieas-active':'ieas-unavailable')+' ieas-status-'+statusClass+'">'+safe(currentStatus)+'</span>';
-      const note=o.status==='Vacation'&&o.vacation_return_date?' · Returns '+prettyDate(o.vacation_return_date):'';
+      const note=o.vacation_unavailable?' · Vacation booked; skipped for the upcoming block':(o.status==='Vacation'&&o.vacation_return_date?' · Returns '+prettyDate(o.vacation_return_date):'');
       const last=recentSummary(o);
       const history='<button type="button" class="dark ieas-utility" data-ieas-action="history" data-officer-id="'+safe(o.id)+'">History</button>';
       const assign=editable?'<button type="button" class="dark ieas-utility" data-ieas-action="toggle" data-officer-id="'+safe(o.id)+'">Assign</button>':'';
