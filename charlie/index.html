@@ -69,6 +69,12 @@ header .head #topMode{position:absolute;right:0;top:50%;transform:translateY(-50
 #authDlg .authAssistance{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
 #authDlg .authAssistance button{border:0;background:transparent;color:var(--blue,#216ca5);text-decoration:underline;text-underline-offset:2px;font-size:13px;padding:6px 0;cursor:pointer}
 #accountHelpDlg .authHelpStatus{min-height:18px;font-size:13px;margin-top:12px;line-height:1.5}
+
+/* Explicit connection state: do not imply an empty roster while loading fails. */
+.rosterLoadState{margin:9px 2px 12px;padding:11px 12px;border:1px solid #52748b;border-radius:9px;
+  background:#193246;color:#d4e7f5;font-size:13px;line-height:1.4;text-align:center}
+.rosterLoadState[data-state="ready"]{display:none!important}
+.rosterLoadState[data-state="error"]{border-color:#bb8857;background:#352c27;color:#ffe5c8}
 </style></head><body><div class="app"><header><div class="head"><div class="title"><div class="brand"><h1 class="brandTitle">Charlie Crew Overtime</h1><div class="sub">Night Shift · 2-2-3 Rotation</div></div></div><div id="topMode" class="pill">View only</div></div><section class="infoHub" aria-label="Charlie OT information hub">
   <div class="hubHeading"><span id="alphaHubDate" class="hubDate" role="status" aria-live="off">Loading date…</span></div>
   <div class="hubGrid">
@@ -86,7 +92,7 @@ header .head #topMode{position:absolute;right:0;top:50%;transform:translateY(-50
 <div class="stats"><div class="stat"><b id="ac">0</b><span>Active</span></div><div class="stat"><b id="oc">0</b><span>Off Shift</span></div><div class="stat"><b id="vc">0</b><span>Vacation</span></div></div>
 <div class="hubNotice" id="viewerNote">This is not the official overtime list</div>
 <nav class="tools" aria-label="Charlie OT actions"><button class="dark" onclick="loadAll()">Refresh</button><button type="button" class="dark" onclick="openSeniority()">Seniority</button><button class="dark" id="authBtn" onclick="openAuth()">Admin Sign In</button><button class="dark hidden" id="addBtn" onclick="openNewOfficer()">+ Add Officer</button><button class="dark hidden" id="accessBtn" onclick="openAccess()">Manage Access</button><button class="dark hidden" id="signoutBtn" onclick="signOut()">Sign Out</button></nav>
-</section></header><div class="section">Current Charlie List</div><div id="list"></div></div>
+</section></header><div class="section">Current Charlie List</div><div id="rosterLoadState" class="rosterLoadState" data-state="loading" role="status" aria-live="polite">Loading the live overtime list…</div><div id="list"></div></div>
 <dialog id="authDlg"><div class="modal"><h2>Admin Sign In</h2><div class="help">Sign in with your Charlie OT account. New accounts start as Viewer unless an Admin promotes them.</div><label>Email</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com"><label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="At least 6 characters"><div id="authMsg" class="error"></div><div class="row"><button class="dark" onclick="authDlg.close()">Cancel</button><button class="blue" onclick="signIn()">Sign In</button></div><div class="row"><button class="dark" onclick="signUp()">Create Account</button></div><div class="authAssistance"><button type="button" onclick="openAccountHelp('recover')">Forgot Password?</button><button type="button" onclick="openAccountHelp('confirmation')">Confirmation link not working?</button></div></div></dialog><dialog id="accountHelpDlg" aria-labelledby="accountHelpTitle"><div class="modal">
 <h2 id="accountHelpTitle">Reset password</h2>
 <p id="accountHelpDescription" class="help"></p>
@@ -104,7 +110,7 @@ header .head #topMode{position:absolute;right:0;top:50%;transform:translateY(-50
 <div class="row"><button type="button" class="blue" id="renameSaveBtn" onclick="saveOfficerName()">Save Name</button><button type="button" class="dark" onclick="renameDlg.close()">Cancel</button></div>
 </div></dialog><div id="toast" class="toast"></div>
 <script>
-const APP_BUILD='20261111-vacation-dark-no-target-v3';
+const APP_BUILD='20261112-roster-first-avoid-504-v1';
 const OT_CREW='charlie';
 try{localStorage.removeItem('ot_block_target_'+OT_CREW)}catch{}
 let historyOfficerId=null,historyData=null,historyNonce=0;
@@ -175,7 +181,73 @@ async function sendAccountHelpLink(){
  }finally{btn.disabled=false}
 }
 
-async function signUp(){authMsg.textContent='';try{let d=await api('/auth/v1/signup?redirect_to='+encodeURIComponent(ACCOUNT_EMAIL_CALLBACK),{method:'POST',auth:false,body:JSON.stringify({email:email.value.trim(),password:password.value})});if(d.access_token){session=d;localStorage.setItem('alpha_session',JSON.stringify(session));authDlg.close();await loadRole();await loadAll();toast('Account created')}else{authMsg.textContent='Account created. Check your email to confirm it, then come back and sign in. New accounts start as Viewer.'}}catch(e){authMsg.textContent=e.message}}async function signIn(){authMsg.textContent='';try{let d=await api('/auth/v1/token?grant_type=password',{method:'POST',auth:false,body:JSON.stringify({email:email.value.trim(),password:password.value})});session=d;localStorage.setItem('alpha_session',JSON.stringify(session));authDlg.close();await loadRole();await loadAll();toast('Signed in')}catch(e){authMsg.textContent=e.message}}function signOut(){clearHistory();session=null;role='viewer';localStorage.removeItem('alpha_session');refreshMode();render();loadAll();toast('Signed out')}async function loadAll(){if(reorderBusy||drag)return;try{await api('/rest/v1/rpc/process_vacation_returns',{method:'POST',auth:false,body:'{}'})}catch{}try{officers=await api('/rest/v1/rpc/alpha_list_summary_for_block',{method:'POST',auth:true,body:JSON.stringify({p_target_date:getOTTargetDate()})});render();if(historyDlg.open&&historyOfficerId&&role==='admin')await fetchHistory(historyOfficerId)}catch(e){toast('Unable to load list: '+e.message)}}
+async function signUp(){authMsg.textContent='';try{let d=await api('/auth/v1/signup?redirect_to='+encodeURIComponent(ACCOUNT_EMAIL_CALLBACK),{method:'POST',auth:false,body:JSON.stringify({email:email.value.trim(),password:password.value})});if(d.access_token){session=d;localStorage.setItem('alpha_session',JSON.stringify(session));authDlg.close();await loadRole();await loadAll();toast('Account created')}else{authMsg.textContent='Account created. Check your email to confirm it, then come back and sign in. New accounts start as Viewer.'}}catch(e){authMsg.textContent=e.message}}async function signIn(){authMsg.textContent='';try{let d=await api('/auth/v1/token?grant_type=password',{method:'POST',auth:false,body:JSON.stringify({email:email.value.trim(),password:password.value})});session=d;localStorage.setItem('alpha_session',JSON.stringify(session));authDlg.close();await loadRole();await loadAll();toast('Signed in')}catch(e){authMsg.textContent=e.message}}function signOut(){clearHistory();session=null;role='viewer';localStorage.removeItem('alpha_session');refreshMode();render();loadAll();toast('Signed out')}let rosterRequest=null;
+let rosterLoaded=false;
+let vacationCheckBusy=false;
+let vacationCheckAttemptAt=0;
+function rosterLoadingState(state){
+ const el=document.getElementById('rosterLoadState');
+ if(!el)return;
+ el.dataset.state=state;
+ if(state==='loading'){
+   el.textContent='Loading the live overtime list…';
+ }else if(state==='error'){
+   el.textContent=rosterLoaded
+     ?'Connection interrupted. Showing the last loaded list; tap Refresh to retry.'
+     :'Could not load the overtime list. The officers have not been removed. Tap Refresh to retry.';
+ }else{
+   el.textContent='';
+ }
+ if(!rosterLoaded&&state==='error'){
+   for(const id of ['ac','oc','vc','bc','mc','bnc','jc','uc']){
+     const node=document.getElementById(id);
+     if(node)node.textContent='—';
+   }
+ }
+}
+function runVacationCheckAfterRoster(){
+ // A completed vacation block needs processing only once per day per browser.
+ // Never hold the read-only roster behind this potentially slow write operation.
+ if(vacationCheckBusy||!rosterLoaded)return;
+ const key='ot_vacation_processed_'+OT_CREW+'_'+today();
+ try{if(localStorage.getItem(key)==='done')return}catch{}
+ if(Date.now()-vacationCheckAttemptAt<15*60*1000)return;
+ vacationCheckAttemptAt=Date.now();
+ vacationCheckBusy=true;
+ api('/rest/v1/rpc/process_vacation_returns',{method:'POST',auth:false,body:'{}'})
+ .then(()=>{
+   try{localStorage.setItem(key,'done')}catch{}
+   // A completed full-block drop or automatic return may change the roster.
+   // Reload once after successful vacation processing, never recursively schedule it.
+   if(!document.hidden)loadAll();
+ })
+ .catch(()=>{/* Retry later; do not hide an otherwise valid roster. */})
+ .finally(()=>{vacationCheckBusy=false});
+}
+async function loadAll(){
+ if(reorderBusy||drag)return;
+ if(rosterRequest)return rosterRequest;
+ rosterLoadingState('loading');
+ rosterRequest=(async()=>{
+   try{
+     const fresh=await api('/rest/v1/rpc/alpha_list_summary_for_block',{
+       method:'POST',auth:true,body:JSON.stringify({p_target_date:getOTTargetDate()})
+     });
+     if(!Array.isArray(fresh))throw Error('Invalid overtime list response');
+     officers=fresh;
+     rosterLoaded=true;
+     render();
+     rosterLoadingState('ready');
+     if(historyDlg.open&&historyOfficerId&&role==='admin')await fetchHistory(historyOfficerId);
+   }catch(error){
+     rosterLoadingState('error');
+     // Preserve any previously loaded roster instead of replacing it with zeroes.
+     if(!rosterLoaded)console.warn('OT list unavailable:',String(error?.message||error));
+   }
+ })();
+ try{await rosterRequest}finally{rosterRequest=null}
+ if(rosterLoaded)runVacationCheckAfterRoster();
+}
 function recentHTML(o){let items=o.recent_activity||[];if(!items.length)return '<div class="noActivity">No recorded activity</div>';return items.map(x=>`<div class="activityLine"><time>${esc(fmt(x.date))}</time><span>${esc((x.types||[]).join(' · '))}</span></div>`).join('')}
 function render(){let act=officers.filter(o=>o.status==='Active'),vac=officers.filter(o=>o.status==='Vacation'),off=officers.filter(o=>o.status!=='Active'&&o.status!=='Vacation');list.innerHTML='';let n=0,edit=role==='admin'||role==='editor';for(let o of officers){let el=eligible(o),idx=officers.indexOf(o),canUp=validMove(idx,idx-1),canDown=validMove(idx,idx+1);if(el)n++;let tempUnavailable=o.temporarily_unavailable&&o.temporarily_unavailable_date===today();let futureVacation=!!o.vacation_unavailable;let isPower=o.crew==='Power',pAvail=isPower?powerAvailability():null,cls=o.status==='Active'?'active':o.status==='Vacation'?'vacation':'offshift';let statusLine=o.status==='Vacation'&&o.vacation_return_date?'Vacation • returns '+fmt(o.vacation_return_date):(futureVacation&&o.status==='Active'?'Not eligible for the next OT / IE-AS block':(isPower&&o.status==='Active'?pAvail.label:''));let c=document.createElement('div');c.className='card'+(isPower?' powercard':'')+(isPower&&o.status==='Active'&&!el&&!tempUnavailable?' power-ineligible':'')+(tempUnavailable?' temp-unavailable':'')+(futureVacation?' vacation-void':'');c.id='c-'+o.id;c.dataset.id=o.id;c.innerHTML=`${role==='admin'&&(canUp||canDown)?`<div class="reorderTools"><button type="button" class="dark" aria-label="Move ${esc(o.name)} up" ${!canUp||!navigator.onLine?'disabled':''} onclick="moveStep('${o.id}',-1)">↑</button><button type="button" class="dark" aria-label="Move ${esc(o.name)} down" ${!canDown||!navigator.onLine?'disabled':''} onclick="moveStep('${o.id}',1)">↓</button><button type="button" class="dark dragHandle" aria-label="Drag ${esc(o.name)} to reorder" ${!navigator.onLine?'disabled':''} onpointerdown="startDrag(event,'${o.id}')">☰ Move</button></div>`:''}<div class="main"><div class="num ${el?'':'off'} ${isPower?'power':''}">${el?n:'–'}</div><div><div class="nameRow"><div class="name">${esc(o.name)}</div>${isPower?`<div class="badge powerbadge">Power Crew</div>`:''}${tempUnavailable?`<div class="badge unavailbadge">Unavailable Today</div>`:''}${futureVacation?`<div class="badge vacationbadge">Upcoming Vacation</div>`:''}${o.called_off_date?`<div class="badge calledoffbadge">Called Off ${o.called_off_event_type==='Training'?'Training':'OT'} Day • ${esc(fmt(o.called_off_date))}</div>`:''}<div class="badge ${cls}">${esc(o.status)}</div></div>${statusLine?`<div class="meta">${esc(statusLine)}</div>`:''}<div class="activityTitle">Recent Activity</div>${recentHTML(o)}${o.upcoming?`<div class="scheduled">Scheduled • ${esc(fmt(o.upcoming.date))} — ${esc(o.upcoming.type)}</div>`:''}</div></div>${edit?`<div class="actions"><button class="dark" onclick="toggle('${o.id}')">Update Officer</button>${role==='admin'?`<button class="dark" onclick="openHistory('${o.id}')">60-Day History</button><button type="button" class="dark removeOfficerBtn" onclick="removeOfficer('${o.id}')">Remove Officer</button>`:''}</div><div class="editor"><label>Action / Status</label><select id="a-${o.id}" onchange="chg('${o.id}')">${['Active','Off Shift','Vacation','Military','Bonding','Jury Duty','Unavailable Today','Volunteer OT','Required OT','Training','Called Off','Undo OT'].map(x=>`<option>${x}</option>`).join('')}</select><div id="dw-${o.id}"><label>Date</label><input type="date" id="d-${o.id}" value="${today()}"></div><div id="vac-${o.id}" class="vacationDayEditor hidden">
 <div class="vacationEditorHead"><strong>Vacation workdays</strong><small>Select scheduled shifts</small></div>
