@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer"><title>Overtime · Account Access</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f3f7fa;color:#20344a}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:18px;display:grid;place-items:center}
+main{width:min(100%,520px);background:#fff;border:1px solid #d9e3eb;border-radius:15px;padding:clamp(20px,4vw,34px);box-shadow:0 15px 35px #1234}
+header{font-size:12px;font-weight:800;color:#205d89;letter-spacing:.04em;text-transform:uppercase;margin-bottom:15px}
+h1{font-size:27px;margin:0 0 12px}p{line-height:1.5;color:#4b5d70}
+label{display:block;font-size:14px;font-weight:700;margin-top:14px;margin-bottom:6px}
+input{font:inherit;font-size:16px;width:100%;padding:12px;border:1px solid #b6c8d7;border-radius:8px}
+button{font:inherit;font-weight:700;color:white;background:#21679e;border:0;border-radius:8px;padding:12px 16px;margin-top:18px;min-height:44px;cursor:pointer}
+button:disabled{opacity:.5}small{font-size:13px;color:#647489}
+#error{font-size:13px;color:#a92b2b}#resetForm{border-top:1px solid #e4ebf0;padding-top:10px}
+nav{border-top:1px solid #e4ebf0;margin-top:25px;padding-top:18px}
+nav strong{font-size:15px}nav ul{margin:12px 0;padding-left:20px;display:grid;gap:10px}
+a{color:#186199;text-underline-offset:3px}.notice{font-size:13px}
+</style></head>
+<body><main>
+<header>Constellation Crew Overtime</header>
+<h1 id="pageTitle">Account access</h1>
+<p id="status" role="status" aria-live="polite">Checking the email link…</p>
+<form id="resetForm" hidden>
+<label for="newPassword">New password</label><input id="newPassword" type="password" autocomplete="new-password" minlength="8" required>
+<small>At least 8 characters.</small>
+<label for="repeatPassword">Confirm new password</label><input id="repeatPassword" type="password" autocomplete="new-password" minlength="8" required>
+<p id="error" role="alert" aria-live="polite"></p>
+<button type="submit" id="resetSubmit">Update Password</button>
+</form>
+<nav><strong>Open your crew</strong><ul>
+<li><a href="https://morrissey529-ship-it.github.io/Alphaot/">Alpha</a></li>
+<li><a href="https://morrissey529-ship-it.github.io/Alphaot/bravo/">Bravo</a></li>
+<li><a href="https://morrissey529-ship-it.github.io/Alphaot/charlie/">Charlie</a></li>
+<li><a href="https://morrissey529-ship-it.github.io/Alphaot/delta/">Delta</a></li>
+</ul></nav>
+<p class="notice">Email links may expire or work only once. If a link fails, open your crew website and select Forgot Password or Confirmation link not working?</p>
+</main>
+<script>
+(function(){
+ 'use strict';
+ const U="https://hvihhsrhoqbbhkobayhx.supabase.co",K="sb_publishable_XrolNcWigiHLyj_96h7TmA_306hd00Y";
+ const hash=new URLSearchParams(location.hash.slice(1)),query=new URLSearchParams(location.search);
+ const type=hash.get('type')||query.get('type'),accessToken=hash.get('access_token'),tokenHash=query.get('token_hash');
+ const errorDescription=hash.get('error_description')||query.get('error_description');
+ const status=document.getElementById('status'),title=document.getElementById('pageTitle'),form=document.getElementById('resetForm'),error=document.getElementById('error'),submit=document.getElementById('resetSubmit');
+ let token=null;
+ try{history.replaceState(null,'',location.pathname)}catch(e){}
+ async function api(path,method,body,access){
+  const res=await fetch(U+path,{method:method,headers:{'apikey':K,'Content-Type':'application/json','Authorization':'Bearer '+(access||K)},...(body?{body:JSON.stringify(body)}:{})});
+  const text=await res.text();let data={};try{data=text?JSON.parse(text):{}}catch(e){}
+  if(!res.ok)throw Error(data?.message||data?.msg||data?.error_description||data?.error||('HTTP '+res.status));
+  return data;
+ }
+ function failed(message){title.textContent='Email link unavailable';status.textContent=message||'The link is expired or already used. Please request another email from the sign-in page.';form.hidden=true}
+ async function showConfirmed(access){
+  await api('/auth/v1/user','GET',null,access);
+  title.textContent='Email confirmed';
+  status.textContent='Your email is verified. Return to your crew website and sign in using the email and password you registered. Your Admin access remains unchanged.';
+ }
+ async function showRecovery(access){
+  await api('/auth/v1/user','GET',null,access);
+  token=access;title.textContent='Choose a new password';
+  status.textContent='Your recovery link is valid. Enter a new password below.';
+  form.hidden=false;document.getElementById('newPassword').focus();
+ }
+ async function initialize(){
+  if(errorDescription){failed('The email link could not be verified: '+errorDescription+'. Request a fresh link from your crew website.');return}
+  try{
+   if(tokenHash&&['recovery','signup','email'].includes(type)){
+    const data=await api('/auth/v1/verify','POST',{type:type==='signup'?'email':type,token_hash:tokenHash});
+    if(!data.access_token)throw Error('No verification session returned');
+    if(type==='recovery')await showRecovery(data.access_token);
+    else await showConfirmed(data.access_token);
+    return;
+   }
+   if(accessToken&&type==='recovery'){await showRecovery(accessToken);return}
+   if(accessToken&&['signup','email','invite','magiclink'].includes(type)){await showConfirmed(accessToken);return}
+   if(type){failed('The email link was missing its verification token. Try the newest email link.');return}
+   title.textContent='Account sign-in';
+   status.textContent='Select your crew below to sign in or request a new confirmation or password-reset link.';
+  }catch(e){token=null;failed('The link was expired, already used, or could not be verified. Return to your crew website and request a fresh email.')}
+ }
+ form.addEventListener('submit',async function(event){
+  event.preventDefault();
+  if(!token){failed('Recovery session expired. Request a new email link.');return}
+  const first=document.getElementById('newPassword').value,second=document.getElementById('repeatPassword').value;
+  if(first.length<8){error.textContent='Password must contain at least 8 characters.';return}
+  if(first!==second){error.textContent='Passwords do not match.';return}
+  submit.disabled=true;error.textContent='Updating…';
+  try{
+   await api('/auth/v1/user','PUT',{password:first},token);
+   token=null;form.reset();form.hidden=true;error.textContent='';
+   title.textContent='Password updated';
+   status.textContent='Your new password has been saved. Return to your crew and sign in with the same email and new password. Admin permissions are unchanged.';
+  }catch(e){error.textContent='Could not update password: '+(e?.message||'Request another link.')}
+  finally{submit.disabled=false}
+ });
+ initialize();
+})();
+</script></body></html>
