@@ -560,6 +560,10 @@
   `;
   style.textContent += `
     /* Keep existing Active, Vacation and Off Shift colors unchanged. */
+    /* OJT is a visible, unnumbered training state; the tile is hidden when empty. */
+    .badge.ojt{background:#1e4150;color:#b9f0ee}
+    .infoHub .stat:has(#ojtc) b{color:#9ee6de}
+    .app>header .infoHub .stats>.stat[hidden]{display:none!important}
     .badge.military{background:#263a5a;color:#aecbff}
     .badge.juryduty{background:#473127;color:#ffc3a2}
     .badge.bonding{background:#3b2b51;color:#d8b9ff}
@@ -585,12 +589,13 @@
     stats.appendChild(stat);
   }
   if(stats){
-    for(const [id,label] of [['mc','Military'],['bnc','Bonding'],['jc','Jury Duty'],['uc','Unavailable']]){
+    for(const [id,label] of [['mc','Military'],['bnc','Bonding'],['jc','Jury Duty'],['ojtc','OJT'],['uc','Unavailable']]){
       if(document.getElementById(id))continue;
       const stat=document.createElement('div');
       stat.className='stat';
       stat.innerHTML='<b id="'+id+'">0</b><span>'+label+'</span>';
       stats.appendChild(stat);
+      if(id==='ojtc')stat.hidden=true;
     }
   }
   // Eligibility is evaluated for the next Bravo off-day OT block, not
@@ -676,6 +681,9 @@
       }
     }
     document.getElementById('oc').textContent=officers.filter(o=>o.status==='Off Shift').length;
+    const ojtCount=officers.filter(o=>o.status==='OJT').length;
+    const ojtNum=document.getElementById('ojtc');
+    if(ojtNum){ojtNum.textContent=ojtCount;ojtNum.closest('.stat').hidden=ojtCount===0;}
     document.getElementById('bc').textContent=officers.filter(o=>(o.status==='Active'||o.status==='Bereavement')&&voidForBereavement(o,upcoming)).length;
     document.getElementById('mc').textContent=officers.filter(o=>o.status==='Military').length;
     document.getElementById('bnc').textContent=officers.filter(o=>o.status==='Bonding').length;
@@ -685,6 +693,10 @@
     for(const o of officers){
       const card=document.getElementById('c-'+o.id);
       if(!card)continue;
+      if(o.status==='OJT'){
+        const badge=card.querySelector('.nameRow .offshift');
+        if(badge){badge.classList.replace('offshift','ojt');badge.textContent='OJT';}
+      }
       if(o.status==='Bereavement'){
         const badge=card.querySelector('.nameRow .offshift');
         if(badge){badge.classList.replace('offshift','bereavement');badge.textContent='Bereavement'}

@@ -56,6 +56,7 @@
   function statusText(o){
     if(o.status==='Vacation')return 'Vacation';
     if(o.status==='Off Shift')return 'Off Shift';
+    if(o.status==='OJT')return 'OJT';
     if(o.status==='Military')return 'Military';
     if(o.status==='Bonding')return 'Bonding';
     if(o.status==='Jury Duty')return 'Jury Duty';
