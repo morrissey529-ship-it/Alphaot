@@ -178,6 +178,7 @@ function addVacationDay(id){
  const officer=officers.find(x=>x.id===id);
  if(!date||!/^\d{4}-\d{2}-\d{2}$/.test(date))return toast('Choose a valid vacation date');
  if(officer?.crew==='Power')return toast('Power Crew uses a separate schedule; vacation booking here is for Alpha/Bravo/Charlie/Delta');
+ if(date<today())return toast('Vacation must be today or later');
  if(!alphaWorks(date))return toast('Choose a scheduled workday for this crew');
  const days=selectedVacationDays.get(id)||new Set();
  if(days.has(date)||officer?.vacation_days?.includes(date))return toast('Vacation day already selected or scheduled');
@@ -195,8 +196,12 @@ async function cancelVacationDay(id,date){
  if(!officer||!confirm('Remove '+fmt(date)+' from '+officer.name+'\u2019s vacation days? This also corrects any resulting vacation drop.'))return;
  try{
    const revision=officers[0]?.revision;
-   await api('/rest/v1/rpc/alpha_cancel_vacation_day_auth',{
-     method:'POST',body:JSON.stringify({p_officer_id:id,p_day:date,p_expected_revision:revision==null?null:Number(revision)})
+   if(date<today())return toast('Past vacation days cannot be cancelled here. Use the administrative correction process.');
+   await api('/rest/v1/rpc/alpha_set_vacation_days_auth',{
+     method:'POST',body:JSON.stringify({
+       p_officer_id:id,p_window_start:date,p_window_end:date,p_days:[],
+       p_expected_revision:revision==null?null:Number(revision)
+     })
    });
    toast('Vacation day removed');await loadAll();
  }catch(e){toast(e.message)}
@@ -216,15 +221,24 @@ async function apply(id){
    if(a==='Vacation'){
      const dates=Array.from(selectedVacationDays.get(id)||[]).sort();
      if(!dates.length)return toast('Add the scheduled vacation workdays first');
-     const result=await api('/rest/v1/rpc/alpha_add_vacation_days_auth',{
-       method:'POST',body:JSON.stringify({p_officer_id:id,p_days:dates,p_expected_revision:r==null?null:Number(r)})
+     if(dates[0]<today())return toast('New vacation bookings must be today or later');
+     const start=dates[0],end=dates[dates.length-1];
+     if((Date.parse(end+'T12:00:00Z')-Date.parse(start+'T12:00:00Z'))/86400000>55)
+       return toast('Select vacation days within one 56-day window');
+     const officer=officers.find(x=>x.id===id);
+     const existing=(officer?.vacation_days||[]).filter(x=>x>=start&&x<=end);
+     const merged=Array.from(new Set([...existing,...dates])).sort();
+     const result=await api('/rest/v1/rpc/alpha_set_vacation_days_auth',{
+       method:'POST',body:JSON.stringify({
+         p_officer_id:id,p_window_start:start,p_window_end:end,p_days:merged,
+         p_expected_revision:r==null?null:Number(r)
+       })
      });
      selectedVacationDays.delete(id);
-     toast((result?.added||0)+' vacation workday(s) saved');
+     toast(dates.length+' vacation workday(s) saved');
    }else{
      const officer=officers.find(o=>o.id===id);
-     if(a==='Active'&&officer?.vacation_days?.length&&
-       !confirm('Setting this officer Active will cancel their upcoming vacation dates. Continue?'))return;
+     if(a==='Active'&&officer?.vacation_days?.some(day=>day>=today()))return toast('Remove scheduled future vacation days first');
      await api('/rest/v1/rpc/alpha_apply_action_auth',{
        method:'POST',body:JSON.stringify({p_officer_id:id,p_action:a,p_event_date:d,p_vacation_return_date:null})
      });
