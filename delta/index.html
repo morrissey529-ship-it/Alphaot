@@ -215,11 +215,11 @@ function runVacationCheckAfterRoster(){
  vacationCheckAttemptAt=Date.now();
  vacationCheckBusy=true;
  api('/rest/v1/rpc/process_vacation_returns',{method:'POST',auth:false,body:'{}'})
- .then(()=>{
+ .then(result=>{
    try{localStorage.setItem(key,'done')}catch{}
-   // A completed full-block drop or automatic return may change the roster.
-   // Reload once after successful vacation processing, never recursively schedule it.
-   if(!document.hidden)loadAll();
+   // Full-block drops need an immediate refresh. Other automatic status
+   // changes will appear on the existing 30-second auto-refresh.
+   if(Number(result)>0&&!document.hidden)loadAll();
  })
  .catch(()=>{/* Retry later; do not hide an otherwise valid roster. */})
  .finally(()=>{vacationCheckBusy=false});
@@ -227,7 +227,7 @@ function runVacationCheckAfterRoster(){
 async function loadAll(){
  if(reorderBusy||drag)return;
  if(rosterRequest)return rosterRequest;
- rosterLoadingState('loading');
+ if(!rosterLoaded)rosterLoadingState('loading');
  rosterRequest=(async()=>{
    try{
      const fresh=await api('/rest/v1/rpc/alpha_list_summary_for_block',{
@@ -238,7 +238,9 @@ async function loadAll(){
      rosterLoaded=true;
      render();
      rosterLoadingState('ready');
-     if(historyDlg.open&&historyOfficerId&&role==='admin')await fetchHistory(historyOfficerId);
+     if(historyDlg.open&&historyOfficerId&&role==='admin'){
+       try{await fetchHistory(historyOfficerId)}catch{/* History errors must not hide the OT list. */}
+     }
    }catch(error){
      rosterLoadingState('error');
      // Preserve any previously loaded roster instead of replacing it with zeroes.
