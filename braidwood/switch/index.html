@@ -36,7 +36,7 @@ button:disabled{opacity:.42;cursor:not-allowed}
 <main>
 <div class="eyebrow">Admin tools · Crew management</div>
 <h1>Switch Crews</h1>
-<p class="lead">Move an officer between Alpha, Bravo, Charlie and Delta. Their last qualifying activity is used to suggest a new OT position. Review it carefully before confirming a change.</p>
+<p class="lead">Move an officer between Alpha, Bravo, Charlie and Delta. Their previous OT and IE/AS activity dates are reviewed separately so they enter each rotation in the appropriate position.</p>
 <div class="card">
 <h2>Officer Transfer</h2>
 <div class="details" id="officerDetails" role="status" aria-live="polite">Checking existing Admin access and live officer records…</div>
@@ -45,7 +45,9 @@ button:disabled{opacity:.42;cursor:not-allowed}
 <div id="placementFields"><p class="tip" id="suggested"></p>
 <div class="rows"><div><label for="anchor">Place relative to</label><select id="anchor"></select></div>
 <div><label for="position">Position</label><select id="position"><option value="before">Directly above</option><option value="after">Directly below</option></select></div></div></div>
-<div class="rules" id="rules">Current OT and Training history will remain linked. No artificial overtime drop will occur. Power Crew moves are not available yet.</div>
+<h2 style="margin-top:22px">IE/AS Rotation</h2>
+<p class="tip" id="ieasSuggested" aria-live="polite">Checking the officer's most recent IE/AS activity…</p>
+<div class="rules" id="rules">Existing OT, Training and IE/AS history will remain linked. No artificial OT or IE/AS assignment is added. Power Crew moves are not available yet.</div>
 </div>
 <div id="feedback" role="alert" aria-live="polite"></div>
 <div id="success" class="success" hidden></div>
@@ -56,4 +58,4 @@ button:disabled{opacity:.42;cursor:not-allowed}
 </div>
 </div>
 </main><div class="footer">Braidwood Security Overtime · Admin Only</div></div>
-<script src="./switch.js?v=20261112-transfer-v1"></script></body></html>
+<script src="./switch.js?v=20261112-ieas-transfer-v2"></script></body></html>
