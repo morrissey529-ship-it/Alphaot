@@ -117,7 +117,7 @@ function renderVacationSelection(id){
 function addVacationDay(id){
  const date=document.getElementById('vac-day-'+id)?.value;
  const officer=officers.find(x=>x.id===id);
- if(!date||!/^\\d{4}-\\d{2}-\\d{2}$/.test(date))return toast('Choose a valid vacation date');
+ if(!date||!/^\d{4}-\d{2}-\d{2}$/.test(date))return toast('Choose a valid vacation date');
  if(officer?.crew==='Power')return toast('Power Crew uses a separate schedule; vacation booking here is for Alpha/Bravo/Charlie/Delta');
  if(!alphaWorks(date))return toast('Choose a scheduled workday for this crew');
  const days=selectedVacationDays.get(id)||new Set();
