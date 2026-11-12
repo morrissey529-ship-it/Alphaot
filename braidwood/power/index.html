@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0c1827"><meta name="description" content="Power Crew preview — Braidwood Security Overtime">
+<title>Power Crew | Braidwood Security Overtime</title><link rel="icon" type="image/svg+xml" href="../icon.svg">
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#09121e;color:#eaf4fb;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse 85% 50% at 100% -15%,#2d46535c,transparent),#09121e}
+button,input,select{font:inherit}button{cursor:pointer}a{color:inherit;text-underline-offset:3px}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #a2d5f1;outline-offset:3px}
+.wrap{max-width:930px;padding:22px clamp(16px,4vw,35px) 44px;margin:0 auto}
+nav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border-bottom:1px solid #34536b;padding:0 0 19px}
+.back{text-decoration:none;font-size:13px;font-weight:680;color:#b6d4e7}.back:hover{color:#fff}
+.brand{color:#9dbbcf;font-size:11px;letter-spacing:.14em;font-weight:760}.preview{border:1px solid #637482;border-radius:30px;padding:6px 10px;font-size:10px;font-weight:800;color:#ced9e1}
+.hero{padding:36px 0 20px}.eyebrow{color:#dfc28e;font-weight:760;letter-spacing:.15em;text-transform:uppercase;font-size:11px;margin-bottom:10px}
+h1{font-size:clamp(32px,5vw,52px);letter-spacing:-.035em;margin:0 0 10px}
+.subtitle{font-size:15px;line-height:1.6;color:#b2c7d6;margin:0;max-width:620px}
+.toolbar{margin-top:25px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.toolbar h2{font-size:16px;margin:0}.tools{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+button,.buttonlink{border-radius:9px;padding:10px 13px;border:1px solid #58788e;background:#203d53;color:#e9f5fd;text-decoration:none;font-size:13px;font-weight:650;min-height:42px}
+button:hover,.buttonlink:hover{background:#2a526c}.mutedbtn{background:transparent}.authStatus{color:#b1cede;font-size:12px}
+#loading{padding:26px 20px;text-align:center;border-radius:12px;border:1px solid #476178;background:#142839;color:#c7dbe8}
+#loading[hidden],#record[hidden],#editPanel[hidden],#signInModal[hidden]{display:none!important}
+#loading[data-error="true"]{border-color:#a47a65;background:#332723;color:#f1d4c8}
+.card{margin-top:13px;border:1px solid #46647a;border-radius:17px;overflow:hidden;background:linear-gradient(150deg,#182e42,#101f2e 80%);box-shadow:0 10px 25px #0003}
+.cardHeader{padding:20px 23px;display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid #335268}
+.cardTitle{min-width:0}.cardTitle h3{font-size:clamp(24px,4vw,32px);margin:0 0 6px;line-height:1.15}
+.cardTitle p{font-size:12px;color:#a6c1d3;margin:0}
+.status{flex:0 0 auto;display:inline-flex;align-items:center;border-radius:99px;padding:7px 12px;background:#315168;border:1px solid #557d95;color:#e2f3fb;font-size:12px;font-weight:760}
+.status.active{background:#224b3d;border-color:#447967;color:#c4f0d9}
+.status.ojt{background:#284f54;border-color:#487c82;color:#c6efee}
+.detail{padding:16px 23px 21px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.miniLabel{font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:750;color:#8fabbd}
+.bigValue{font-size:clamp(18px,3.3vw,24px);font-weight:800;color:#f2f8fe;margin-top:6px}
+.recent{padding:14px 23px 20px;border-top:1px solid #345067}.recent h4{font-size:13px;margin:0 0 10px}.recent ul{margin:0;padding:0;list-style:none}.recent li{padding:9px 0;border-bottom:1px solid #304759;font-size:13px;color:#d9e9f4;display:flex;justify-content:space-between;gap:8px}.recent li:last-child{border-bottom:none}
+.pending{margin-top:15px;padding:13px 15px;border:1px solid #74644c;border-radius:11px;background:#302a20;color:#edd5a9;font-size:13px;line-height:1.55}
+.pending strong{color:#f2e0b6}.linkbox{margin:15px 0 0;padding:14px 16px;border-radius:10px;border:1px solid #38566c;background:#142b3b;color:#bed6e5;font-size:13px;line-height:1.65}
+.linkbox a{color:#d5eafa;font-weight:700}
+#editPanel{padding:18px 23px;background:#162e3f;border-top:1px solid #45647a}.editTitle{font-weight:740;font-size:14px;margin:0 0 8px}
+#editPanel label{font-size:12px;display:block;margin-bottom:7px;color:#b6cfdf}
+#editPanel select{width:100%;background:#0c2132;border:1px solid #64849b;border-radius:8px;color:#f4faff;font-size:16px;padding:10px}
+.editActions{display:flex;justify-content:flex-end;gap:9px;margin-top:13px}
+#editPanel p{color:#a9c2d3;font-size:12px;line-height:1.5;margin:11px 0 0}
+#message{font-size:13px;color:#c5dded;line-height:1.5;min-height:0;margin-top:10px}#message:empty{display:none}
+[hidden]{display:none!important}
+#signInModal{position:fixed;inset:0;background:#050b12dc;display:grid;place-items:center;padding:14px;z-index:10}
+.modalCard{width:min(100%,430px);background:#162b3d;border:1px solid #52728b;border-radius:16px;padding:24px;box-shadow:0 20px 60px #0008}
+.modalCard h2{margin:0 0 12px;font-size:23px}.modalCard p{font-size:13px;color:#acc6d8;line-height:1.55}
+.modalCard label{display:block;font-size:12px;margin:13px 0 6px;color:#c2d7e7}
+.modalCard input{display:block;width:100%;background:#0c2132;border:1px solid #607c91;border-radius:8px;color:#f5faff;font-size:16px;padding:11px}
+.modalActions{display:flex;justify-content:flex-end;gap:10px;margin-top:15px}
+#authError{color:#ffbfbb;font-size:12px;margin-top:10px;min-height:14px}
+.footer{color:#829eae;font-size:11px;margin-top:28px;text-align:center}
+@media(max-width:440px){.detail{gap:13px}.cardHeader,.detail,.recent,#editPanel{padding-left:15px;padding-right:15px}.cardHeader{gap:8px}.status{font-size:11px;padding:6px 9px}.recent li{font-size:12px}}
+</style></head>
+<body><div class="wrap">
+<nav><a class="back" href="../">← Braidwood Security Overtime</a><span class="brand">POWER CREW</span><span class="preview">PREVIEW</span></nav>
+<main>
+<section class="hero"><div class="eyebrow">05 / 05 · Existing Alpha-backed record</div><h1>Power Crew</h1><p class="subtitle">A dedicated page for Haberkorn. This preview reads the same live officer record used by Alpha, so status changes and history stay synchronized.</p></section>
+<div class="toolbar"><h2>Current Officer</h2><div class="tools"><span class="authStatus" id="roleLabel">View only</span><button type="button" id="signInButton" onclick="openSignIn()">Admin Sign In</button><button type="button" id="signOutButton" class="mutedbtn" onclick="signOut()" hidden>Sign Out</button><button type="button" onclick="refresh()">Refresh</button></div></div>
+<div id="loading" role="status" aria-live="polite">Loading Haberkorn’s live record…</div>
+<div id="record" hidden>
+<article class="card" aria-label="Power crew officer">
+<div class="cardHeader"><div class="cardTitle"><h3 id="officerName">Haberkorn</h3><p>Existing Power Crew officer · shared live record</p></div><span class="status" id="officerStatus">—</span></div>
+<div class="detail"><div><div class="miniLabel">Call Number</div><div class="bigValue" id="callNumber">—</div></div><div><div class="miniLabel">Recent Rotation Activity</div><div class="bigValue" id="latestEvent">—</div></div></div>
+<div class="recent"><h4>Recent activity</h4><ul id="recentList"></ul></div>
+<div id="editPanel" hidden><div class="editTitle">Update Haberkorn's status</div><label for="newStatus">Action / Status</label><select id="newStatus"><option>Active</option><option>Off Shift</option><option>OJT</option></select><div class="editActions"><button type="button" onclick="saveStatus()" id="saveStatusButton">Save Status</button></div><p>For now, this page supports status changes only. OT assignments and Power-specific rotation rules remain in the existing system until defined. Changing OJT back to Active uses the existing Initial reentry rule.</p></div>
+</article>
+</div>
+<p id="message" role="status" aria-live="polite"></p>
+<div class="pending"><strong>Power-specific rules aren't configured yet.</strong> Haberkorn remains attached to his existing Alpha-backed rotation and history. No new Power database, duplicate officer or independent OT rules have been created.</div>
+<div class="linkbox">Need the current full OT or calendar tools? <a href="../../">Open the existing Alpha OT website</a>. Both views use the same underlying data.</div>
+</main><div class="footer">Braidwood Security Overtime · Power Crew Preview</div></div>
+<div id="signInModal" hidden role="dialog" aria-modal="true" aria-labelledby="signInTitle">
+<div class="modalCard"><h2 id="signInTitle">Admin Sign In</h2><p>Use the same account you already use for Alpha, Bravo, Charlie or Delta. No new approval is required.</p>
+<form id="loginForm"><label for="email">Email</label><input id="email" type="email" autocomplete="email" required><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required><div id="authError" role="alert"></div><div class="modalActions"><button type="button" class="mutedbtn" onclick="closeSignIn()">Cancel</button><button type="submit" id="loginButton">Sign In</button></div></form>
+<p>Forgot your password? Use <a href="../../account.html">Account Recovery</a> to reset it.</p>
+</div></div>
+<script>
+(function(){
+'use strict';
+const API="https://hvihhsrhoqbbhkobayhx.supabase.co";
+const KEY="sb_publishable_XrolNcWigiHLyj_96h7TmA_306hd00Y";
+const OFFICER_ID='a61d8975-b7fc-4e3d-9cbd-5cd42afa7ecd';
+const SESSION_KEY='alpha_session';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s);
+let officer=null,role='viewer',busy=false,refreshAgain=false,requestController=null;
+function session(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch{return null}}
+function inform(msg){$('message').textContent=msg||''}
+function displayDate(iso){
+ if(!iso)return'—';
+ const d=new Date(iso+'T12:00:00Z');
+ return new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}).format(d);
+}
+async function api(path,method='GET',body=null,authenticated=false,signal=null){
+ const stored=session();
+ const token=authenticated&&stored?.access_token?stored.access_token:KEY;
+ const response=await fetch(API+path,{
+   method,headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},
+   ...(body!==null?{body:JSON.stringify(body)}:{}),...(signal?{signal}:{})
+ });
+ let data;
+ const raw=await response.text();
+ try{data=raw?JSON.parse(raw):null}catch{data=raw}
+ if(!response.ok)throw Error(data?.msg||data?.message||data?.error_description||data?.hint||('HTTP '+response.status));
+ return data;
+}
+async function refresh(){
+ if(busy){refreshAgain=true;return}
+ busy=true;
+ const prior=officer;
+ if(!prior){$('loading').hidden=false;$('loading').dataset.error='false';$('loading').textContent='Loading Haberkorn’s live record…'}
+ const controller=new AbortController();requestController=controller;
+ const timeout=setTimeout(()=>controller.abort(),14000);
+ try{
+   const data=await api('/rest/v1/rpc/alpha_list_summary_for_block','POST',{p_target_date:null},false,controller.signal);
+   if(!Array.isArray(data))throw Error('Invalid officer list response');
+   const found=data.filter(x=>x.id===OFFICER_ID&&x.crew==='Power');
+   if(found.length!==1)throw Error('Haberkorn was not found in the original Power record');
+   officer=found[0];render();$('loading').hidden=true;inform('');
+ }catch(error){
+   const description=error?.name==='AbortError'?'The request timed out':esc(error?.message||error);
+   $('loading').dataset.error='true';
+   $('loading').textContent=prior?'Unable to refresh live data. Last loaded information remains visible.':'Could not load the Power officer record. '+description+'. Tap Refresh to try again.';
+   $('loading').hidden=!!prior;
+   inform(prior?'Connection interrupted: '+description:'');
+ }finally{
+   clearTimeout(timeout);requestController=null;busy=false;
+   if(refreshAgain){refreshAgain=false;refresh()}
+ }
+}
+function render(){
+ if(!officer)return;
+ $('record').hidden=false;
+ $('officerName').textContent=officer.name;
+ const st=officer.status||'Unknown';
+ $('officerStatus').textContent=st;
+ $('officerStatus').className='status'+(st==='Active'?' active':st==='OJT'?' ojt':'');
+ $('callNumber').textContent=Number.isInteger(officer.call_number)?'#'+officer.call_number:'Not assigned';
+ const last=officer.display_event_type;
+ $('latestEvent').textContent=last||'Initial';
+ const recent=Array.isArray(officer.recent_activity)?officer.recent_activity:[];
+ $('recentList').replaceChildren();
+ if(recent.length){
+  for(const activity of recent.slice(0,6)){
+   const li=document.createElement('li');
+   const event=document.createElement('span');
+   event.textContent=(activity.types||[]).join(' · ')||'Recorded activity';
+   const date=document.createElement('span');
+   date.textContent=displayDate(activity.date);
+   li.append(event,date);$('recentList').appendChild(li);
+  }
+ }else{
+  const li=document.createElement('li');li.textContent='No recorded recent activity';$('recentList').appendChild(li);
+ }
+ const editing=role==='admin'||role==='editor';
+ $('editPanel').hidden=!editing;
+ if(['Active','Off Shift','OJT'].includes(st))$('newStatus').value=st;
+ else {$('newStatus').selectedIndex=-1}
+}
+async function refreshRole(){
+ const stored=session();
+ role='viewer';
+ if(stored?.access_token&&stored?.user?.id){
+  try{
+    const list=await api('/rest/v1/profiles?select=role&id=eq.'+encodeURIComponent(stored.user.id),'GET',null,true);
+    const possible=list?.[0]?.role;
+    if(possible==='admin'||possible==='editor')role=possible;
+  }catch(error){
+    // An expired session must not allow edits. Avoid clearing another crew's
+    // local session just because this independent preview had a network error.
+  }
+ }
+ $('roleLabel').textContent=role==='admin'?'Admin':role==='editor'?'Editor':'View only';
+ $('signInButton').hidden=role==='admin'||role==='editor';
+ $('signOutButton').hidden=!stored?.access_token;
+ render();
+}
+function openSignIn(){$('authError').textContent='';$('signInModal').hidden=false;$('email').focus()}
+function closeSignIn(){$('signInModal').hidden=true;$('password').value=''}
+async function logIn(e){
+ e.preventDefault();
+ const btn=$('loginButton');if(btn.disabled)return;
+ btn.disabled=true;$('authError').textContent='';
+ try{
+   const data=await api('/auth/v1/token?grant_type=password','POST',{
+     email:$('email').value.trim(),password:$('password').value
+   });
+   if(!data?.access_token||!data?.user?.id)throw Error('Sign-in did not return an active session');
+   localStorage.setItem(SESSION_KEY,JSON.stringify(data));
+   closeSignIn();await refreshRole();inform('Signed in with your existing account.');
+ }catch(error){$('authError').textContent=esc(error?.message||error)}
+ finally{btn.disabled=false}
+}
+function signOut(){
+ localStorage.removeItem(SESSION_KEY);
+ role='viewer';refreshRole();inform('Signed out. This also clears the shared crew sign-in on this browser.');
+}
+async function saveStatus(){
+ if(!(role==='admin'||role==='editor')||!officer)return inform('Admin or Editor sign-in required.');
+ const newStatus=$('newStatus').value;
+ if(!['Active','Off Shift','OJT'].includes(newStatus))return inform('Select Active, Off Shift, or OJT.');
+ if(newStatus===officer.status)return inform('The officer is already marked '+newStatus+'.');
+ const btn=$('saveStatusButton');btn.disabled=true;inform('Saving live status…');
+ try{
+   const previous=officer.status;
+   await api('/rest/v1/rpc/alpha_apply_action_auth','POST',{
+     p_officer_id:OFFICER_ID,p_action:newStatus,p_event_date:null,p_vacation_return_date:null
+   },true);
+   inform('Status saved to the shared live record.');
+   await refresh();
+ }catch(error){inform('Unable to save: '+esc(error?.message||error))}
+ finally{btn.disabled=false}
+}
+$('loginForm').addEventListener('submit',logIn);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshRole();refresh()}});
+setInterval(()=>{if(!document.hidden&&!busy&&!$('signInModal').hidden)return;
+ if(!document.hidden&&!busy&&!$('editPanel').contains(document.activeElement))refresh()},45000);
+refreshRole();refresh();
+window.openSignIn=openSignIn;window.closeSignIn=closeSignIn;window.signOut=signOut;
+window.refresh=refresh;window.saveStatus=saveStatus;
+})();
+</script></body></html>
