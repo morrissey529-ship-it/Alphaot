@@ -57,12 +57,45 @@ header .head #topMode{position:absolute;right:0;top:50%;transform:translateY(-50
 .vacation-void .num.off{opacity:.75}
 @media(max-width:430px){.vacationAddRow{flex-wrap:wrap}.vacationAddRow button{width:100%}}
 
-.otTargetBar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-start;margin:9px 0 12px;padding:9px 12px;background:#edf3fa;border:1px solid #d4e0ee;border-radius:10px}
-.otTargetBar label{display:inline-block;margin:0;font-size:12px;flex:0 1 auto}
-.otTargetBar input{width:auto;max-width:190px;min-width:140px;padding:7px 9px}
-.otTargetBar button{min-height:35px;padding:6px 10px;font-size:12px}
-.otTargetBar small{font-size:11px;color:var(--muted);flex-basis:100%}
-@media(max-width:460px){.otTargetBar label{flex-basis:100%}.otTargetBar input{flex:1}}
+/* Compact OT eligibility reference — intentionally subordinate to the roster.
+   After the existing date/stats/actions on the four crew operations screens. */
+.app>header .otTargetBar{
+  order:7!important;width:100%;min-width:0;margin:9px 0 2px!important;
+  padding:10px 12px!important;border:1px solid #52758d!important;border-radius:10px!important;
+  background:linear-gradient(120deg,#1c3548,#152b3d 70%,#132637)!important;
+  box-shadow:inset 0 1px 0 #b9dcf51d,0 2px 7px #0002!important;
+  display:flex!important;align-items:center;justify-content:space-between;gap:12px!important;
+  flex-wrap:wrap;color:#ecf5fb!important;
+}
+.otTargetSummary{display:flex;min-width:0;align-items:center;gap:10px;flex:1 1 150px}
+.otTargetIcon{flex:0 0 26px;color:#a8d3f1;width:26px;height:26px}
+.otTargetText{min-width:0;display:flex;flex-direction:column;gap:1px}
+.otTargetEyebrow{font-size:10px;font-weight:750;letter-spacing:.09em;color:#a5bfd2;text-transform:uppercase}
+.otTargetDate{display:block;color:#f4faff;font-size:17px;font-weight:750;line-height:1.22;font-variant-numeric:tabular-nums}
+.otTargetNote{display:block;color:#a6c3d8;font-size:11px;line-height:1.35;margin-top:2px}
+.otTargetControls{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex:0 1 auto}
+.otTargetControls.hidden{display:none!important}
+.otTargetBar .otTargetControls input{
+  width:155px;min-width:0;max-width:155px;min-height:36px;margin:0;padding:6px 9px;
+  border:1px solid #64829a;border-radius:8px;color:#f4faff!important;
+  background:#102334!important;font-size:13px;color-scheme:dark;
+}
+.otTargetBar .otTargetControls button{
+  flex:0 0 auto;min-height:36px;margin:0;padding:7px 10px;
+  border:1px solid #62829b;border-radius:8px;color:#e7f4ff;
+  background:#28445c;font-size:12px;font-weight:650;
+}
+.otTargetBar .otTargetControls button:hover{background:#335774;border-color:#80a6c2}
+.otTargetSrOnly{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;
+  margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;border:0!important}
+@media(max-width:530px){
+ .app>header .otTargetBar{padding:9px 11px!important;gap:8px!important}
+ .otTargetSummary{flex-basis:100%}
+ .otTargetControls{flex:1 1 100%;justify-content:flex-start;padding-left:36px}
+ .otTargetBar .otTargetControls input{flex:1 1 148px;width:min(54vw,165px);max-width:170px}
+ .otTargetDate{font-size:16px}
+}
 
 #authDlg .authAssistance{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
 #authDlg .authAssistance button{border:0;background:transparent;color:var(--blue,#216ca5);text-decoration:underline;text-underline-offset:2px;font-size:13px;padding:6px 0;cursor:pointer}
@@ -83,11 +116,20 @@ header .head #topMode{position:absolute;right:0;top:50%;transform:translateY(-50
   </div>
 <div class="stats"><div class="stat"><b id="ac">0</b><span>Active</span></div><div class="stat"><b id="oc">0</b><span>Off Shift</span></div><div class="stat"><b id="vc">0</b><span>Vacation</span></div></div>
 <div class="hubNotice" id="viewerNote">This is not the official overtime list</div>
-<div class="otTargetBar" role="group" aria-label="Overtime block eligibility date">
-<label for="otBlockTarget">OT / IE-AS block being filled</label>
-<input id="otBlockTarget" type="date" onchange="setOTBlockTarget(this.value)" aria-label="OT block date">
-<button class="dark" type="button" onclick="setOTBlockTarget('')">Automatic</button>
-<small id="otBlockTargetNote">Automatic next OT block</small>
+<div class="otTargetBar" role="region" aria-label="Current OT eligibility reference">
+  <div class="otTargetSummary">
+    <svg class="otTargetIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/><path d="m9 15 2 2 4-4"/></svg>
+    <div class="otTargetText">
+      <span class="otTargetEyebrow">OT eligibility for</span>
+      <strong id="otBlockTargetDisplay" class="otTargetDate">Upcoming OT block</strong>
+      <small id="otBlockTargetNote" class="otTargetNote">Numbers reflect eligibility for this block</small>
+    </div>
+  </div>
+  <div id="otTargetControls" class="otTargetControls hidden">
+    <label for="otBlockTarget" class="otTargetSrOnly">Choose the OT block date</label>
+    <input id="otBlockTarget" type="date" onchange="setOTBlockTarget(this.value)" aria-label="OT block being filled">
+    <button type="button" onclick="setOTBlockTarget('')" aria-label="Reset to the upcoming OT block">Automatic</button>
+  </div>
 </div><nav class="tools" aria-label="Alpha OT actions"><button class="dark" onclick="loadAll()">Refresh</button><button type="button" class="dark" onclick="openSeniority()">Seniority</button><button class="dark" id="authBtn" onclick="openAuth()">Admin Sign In</button><button class="dark hidden" id="addBtn" onclick="openNewOfficer()">+ Add Officer</button><button class="dark hidden" id="accessBtn" onclick="openAccess()">Manage Access</button><button class="dark hidden" id="signoutBtn" onclick="signOut()">Sign Out</button></nav>
 </section></header><div class="section">Current Alpha List</div><div id="list"></div></div>
 <dialog id="authDlg"><div class="modal"><h2>Admin Sign In</h2><div class="help">Sign in with your Alpha OT account. New accounts start as Viewer unless an Admin promotes them.</div><label>Email</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com"><label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="At least 6 characters"><div id="authMsg" class="error"></div><div class="row"><button class="dark" onclick="authDlg.close()">Cancel</button><button class="blue" onclick="signIn()">Sign In</button></div><div class="row"><button class="dark" onclick="signUp()">Create Account</button></div><div class="authAssistance"><button type="button" onclick="openAccountHelp('recover')">Forgot Password?</button><button type="button" onclick="openAccountHelp('confirmation')">Confirmation link not working?</button></div></div></dialog><dialog id="accountHelpDlg" aria-labelledby="accountHelpTitle"><div class="modal">
@@ -107,7 +149,7 @@ header .head #topMode{position:absolute;right:0;top:50%;transform:translateY(-50
 <div class="row"><button type="button" class="blue" id="renameSaveBtn" onclick="saveOfficerName()">Save Name</button><button type="button" class="dark" onclick="renameDlg.close()">Cancel</button></div>
 </div></dialog><div id="toast" class="toast"></div>
 <script>
-const APP_BUILD='20261111-vacation-workdays-v1';
+const APP_BUILD='20261111-compact-ot-eligibility-v2';
 const OT_CREW='alpha';
 let otTargetDate=(()=>{try{return localStorage.getItem('ot_block_target_'+OT_CREW)||''}catch{return''}})();
 let historyOfficerId=null,historyData=null,historyNonce=0;
@@ -125,28 +167,42 @@ function otShiftISO(iso,n){
  d.setUTCDate(d.getUTCDate()+n);
  return d.toISOString().slice(0,10);
 }
-function getOTTargetDate(){
- if(otTargetDate&&(!/^\d{4}-\d{2}-\d{2}$/.test(otTargetDate)
-   ||otTargetDate<otShiftISO(today(),-14)||otTargetDate>otShiftISO(today(),180))){
-   otTargetDate='';
-   try{localStorage.removeItem('ot_block_target_'+OT_CREW)}catch{}
- }
- if(otTargetDate)return otTargetDate;
+function automaticOTTargetDate(){
  for(let offset=0;offset<14;offset++){
    const candidate=otShiftISO(today(),offset);
    if(!alphaWorks(candidate))return candidate;
  }
  return today();
 }
+function getOTTargetDate(){
+ // Viewers always see the automatic next OT block, never a saved editor choice.
+ if(role!=='admin'&&role!=='editor')return automaticOTTargetDate();
+ if(otTargetDate&&(!/^\d{4}-\d{2}-\d{2}$/.test(otTargetDate)
+   ||otTargetDate<otShiftISO(today(),-14)||otTargetDate>otShiftISO(today(),180))){
+   otTargetDate='';
+   try{localStorage.removeItem('ot_block_target_'+OT_CREW)}catch{}
+ }
+ return otTargetDate||automaticOTTargetDate();
+}
 function refreshOTTargetBar(){
+ const editing=role==='admin'||role==='editor';
+ const selected=getOTTargetDate();
  const inp=document.getElementById('otBlockTarget');
+ const display=document.getElementById('otBlockTargetDisplay');
  const msg=document.getElementById('otBlockTargetNote');
- if(inp)inp.value=getOTTargetDate();
- if(msg)msg.textContent=otTargetDate
-   ?'Using your selected block for eligibility and numbering'
-   :'Automatic: upcoming off-duty block. Select the OT date when filling a different block.';
+ const controls=document.getElementById('otTargetControls');
+ if(inp)inp.value=selected;
+ if(display)display.textContent=fmt(selected);
+ if(controls)controls.classList.toggle('hidden',!editing);
+ if(msg)msg.textContent=editing
+   ?(otTargetDate?'Selected block · displayed positions update only':'Automatic · choose another date if filling a different block')
+   :'Numbered officers are eligible for this block';
 }
 async function setOTBlockTarget(date){
+ if(role!=='admin'&&role!=='editor'){
+   refreshOTTargetBar();
+   return;
+ }
  if(date&&(!/^\d{4}-\d{2}-\d{2}$/.test(date)
    ||date<otShiftISO(today(),-14)||date>otShiftISO(today(),180))){
    toast('Choose a date within two weeks past or six months ahead');
@@ -164,7 +220,7 @@ async function setOTBlockTarget(date){
 }
 refreshOTTargetBar();
 
-function refreshMode(){if(role!=='admin')clearHistory();let edit=role==='admin'||role==='editor';topMode.textContent=role==='admin'?'Admin':role==='editor'?'Editor':'View only';authBtn.classList.toggle('hidden',!!session);signoutBtn.classList.toggle('hidden',!session);addBtn.classList.toggle('hidden',role!=='admin');accessBtn.classList.toggle('hidden',role!=='admin');viewerNote.textContent=role==='admin'&&!navigator.onLine?'Offline — connect to save a reorder.':edit?'You are signed in as '+role+'. Changes save to the shared live list.':'This is not the official overtime list'}function openAuth(){authMsg.textContent='';authDlg.showModal()}
+function refreshMode(){if(role!=='admin')clearHistory();let edit=role==='admin'||role==='editor';topMode.textContent=role==='admin'?'Admin':role==='editor'?'Editor':'View only';authBtn.classList.toggle('hidden',!!session);signoutBtn.classList.toggle('hidden',!session);addBtn.classList.toggle('hidden',role!=='admin');accessBtn.classList.toggle('hidden',role!=='admin');viewerNote.textContent=role==='admin'&&!navigator.onLine?'Offline — connect to save a reorder.':edit?'You are signed in as '+role+'. Changes save to the shared live list.':'This is not the official overtime list';refreshOTTargetBar()}function openAuth(){authMsg.textContent='';authDlg.showModal()}
 const ACCOUNT_EMAIL_CALLBACK="https://morrissey529-ship-it.github.io/Alphaot/account.html";
 let accountHelpMode='recover';
 function openAccountHelp(mode){
@@ -207,7 +263,7 @@ async function sendAccountHelpLink(){
  }finally{btn.disabled=false}
 }
 
-async function signUp(){authMsg.textContent='';try{let d=await api('/auth/v1/signup?redirect_to='+encodeURIComponent(ACCOUNT_EMAIL_CALLBACK),{method:'POST',auth:false,body:JSON.stringify({email:email.value.trim(),password:password.value})});if(d.access_token){session=d;localStorage.setItem('alpha_session',JSON.stringify(session));authDlg.close();await loadRole();await loadAll();toast('Account created')}else{authMsg.textContent='Account created. Check your email to confirm it, then come back and sign in. New accounts start as Viewer.'}}catch(e){authMsg.textContent=e.message}}async function signIn(){authMsg.textContent='';try{let d=await api('/auth/v1/token?grant_type=password',{method:'POST',auth:false,body:JSON.stringify({email:email.value.trim(),password:password.value})});session=d;localStorage.setItem('alpha_session',JSON.stringify(session));authDlg.close();await loadRole();await loadAll();toast('Signed in')}catch(e){authMsg.textContent=e.message}}function signOut(){clearHistory();session=null;role='viewer';localStorage.removeItem('alpha_session');refreshMode();render();toast('Signed out')}async function loadAll(){if(reorderBusy||drag)return;try{await api('/rest/v1/rpc/process_vacation_returns',{method:'POST',auth:false,body:'{}'})}catch{}try{officers=await api('/rest/v1/rpc/alpha_list_summary_for_block',{method:'POST',auth:true,body:JSON.stringify({p_target_date:getOTTargetDate()})});render();if(historyDlg.open&&historyOfficerId&&role==='admin')await fetchHistory(historyOfficerId)}catch(e){toast('Unable to load list: '+e.message)}}
+async function signUp(){authMsg.textContent='';try{let d=await api('/auth/v1/signup?redirect_to='+encodeURIComponent(ACCOUNT_EMAIL_CALLBACK),{method:'POST',auth:false,body:JSON.stringify({email:email.value.trim(),password:password.value})});if(d.access_token){session=d;localStorage.setItem('alpha_session',JSON.stringify(session));authDlg.close();await loadRole();await loadAll();toast('Account created')}else{authMsg.textContent='Account created. Check your email to confirm it, then come back and sign in. New accounts start as Viewer.'}}catch(e){authMsg.textContent=e.message}}async function signIn(){authMsg.textContent='';try{let d=await api('/auth/v1/token?grant_type=password',{method:'POST',auth:false,body:JSON.stringify({email:email.value.trim(),password:password.value})});session=d;localStorage.setItem('alpha_session',JSON.stringify(session));authDlg.close();await loadRole();await loadAll();toast('Signed in')}catch(e){authMsg.textContent=e.message}}function signOut(){clearHistory();session=null;role='viewer';localStorage.removeItem('alpha_session');refreshMode();render();loadAll();toast('Signed out')}async function loadAll(){if(reorderBusy||drag)return;try{await api('/rest/v1/rpc/process_vacation_returns',{method:'POST',auth:false,body:'{}'})}catch{}try{officers=await api('/rest/v1/rpc/alpha_list_summary_for_block',{method:'POST',auth:true,body:JSON.stringify({p_target_date:getOTTargetDate()})});render();if(historyDlg.open&&historyOfficerId&&role==='admin')await fetchHistory(historyOfficerId)}catch(e){toast('Unable to load list: '+e.message)}}
 function recentHTML(o){let items=o.recent_activity||[];if(!items.length)return '<div class="noActivity">No recorded activity</div>';return items.map(x=>`<div class="activityLine"><time>${esc(fmt(x.date))}</time><span>${esc((x.types||[]).join(' · '))}</span></div>`).join('')}
 function render(){let act=officers.filter(o=>o.status==='Active'),vac=officers.filter(o=>o.status==='Vacation'),off=officers.filter(o=>o.status!=='Active'&&o.status!=='Vacation');list.innerHTML='';let n=0,edit=role==='admin'||role==='editor';for(let o of officers){let el=eligible(o),idx=officers.indexOf(o),canUp=validMove(idx,idx-1),canDown=validMove(idx,idx+1);if(el)n++;let tempUnavailable=o.temporarily_unavailable&&o.temporarily_unavailable_date===today();let futureVacation=!!o.vacation_unavailable;let isPower=o.crew==='Power',pAvail=isPower?powerAvailability():null,cls=o.status==='Active'?'active':o.status==='Vacation'?'vacation':'offshift';let statusLine=o.status==='Vacation'&&o.vacation_return_date?'Vacation • returns '+fmt(o.vacation_return_date):(futureVacation&&o.status==='Active'?'Not eligible for the next OT / IE-AS block':(isPower&&o.status==='Active'?pAvail.label:''));let c=document.createElement('div');c.className='card'+(isPower?' powercard':'')+(isPower&&o.status==='Active'&&!el&&!tempUnavailable?' power-ineligible':'')+(tempUnavailable?' temp-unavailable':'')+(futureVacation?' vacation-void':'');c.id='c-'+o.id;c.dataset.id=o.id;c.innerHTML=`${role==='admin'&&(canUp||canDown)?`<div class="reorderTools"><button type="button" class="dark" aria-label="Move ${esc(o.name)} up" ${!canUp||!navigator.onLine?'disabled':''} onclick="moveStep('${o.id}',-1)">↑</button><button type="button" class="dark" aria-label="Move ${esc(o.name)} down" ${!canDown||!navigator.onLine?'disabled':''} onclick="moveStep('${o.id}',1)">↓</button><button type="button" class="dark dragHandle" aria-label="Drag ${esc(o.name)} to reorder" ${!navigator.onLine?'disabled':''} onpointerdown="startDrag(event,'${o.id}')">☰ Move</button></div>`:''}<div class="main"><div class="num ${el?'':'off'} ${isPower?'power':''}">${el?n:'–'}</div><div><div class="nameRow"><div class="name">${esc(o.name)}</div>${isPower?`<div class="badge powerbadge">Power Crew</div>`:''}${tempUnavailable?`<div class="badge unavailbadge">Unavailable Today</div>`:''}${futureVacation?`<div class="badge vacationbadge">Upcoming Vacation</div>`:''}${o.called_off_date?`<div class="badge calledoffbadge">Called Off ${o.called_off_event_type==='Training'?'Training':'OT'} Day • ${esc(fmt(o.called_off_date))}</div>`:''}<div class="badge ${cls}">${esc(o.status)}</div></div>${statusLine?`<div class="meta">${esc(statusLine)}</div>`:''}<div class="activityTitle">Recent Activity</div>${recentHTML(o)}${o.upcoming?`<div class="scheduled">Scheduled • ${esc(fmt(o.upcoming.date))} — ${esc(o.upcoming.type)}</div>`:''}</div></div>${edit?`<div class="actions"><button class="dark" onclick="toggle('${o.id}')">Update Officer</button>${role==='admin'?`<button class="dark" onclick="openHistory('${o.id}')">60-Day History</button><button type="button" class="dark removeOfficerBtn" onclick="removeOfficer('${o.id}')">Remove Officer</button>`:''}</div><div class="editor"><label>Action / Status</label><select id="a-${o.id}" onchange="chg('${o.id}')">${['Active','Off Shift','Vacation','Military','Bonding','Jury Duty','Unavailable Today','Volunteer OT','Required OT','Training','Called Off','Undo OT'].map(x=>`<option>${x}</option>`).join('')}</select><div id="dw-${o.id}"><label>Date</label><input type="date" id="d-${o.id}" value="${today()}"></div><div id="vac-${o.id}" class="vacationDayEditor hidden"><label>Vacation workdays</label><div class="vacationAddRow"><input id="vac-day-${o.id}" type="date" value="${today()}" aria-label="Vacation workday"><button type="button" class="dark" onclick="addVacationDay('${o.id}')">Add Day</button></div><div id="vac-selected-${o.id}" class="vacationPills"></div><div class="help">Add each scheduled workday they are taking off, then choose Save. The return is automatic on their next scheduled workday not marked as vacation. A drop only happens after a full 2- or 3-day block is completed.</div><div class="vacationExistingLabel">Already scheduled vacation days</div><div class="vacationPills">${Array.isArray(o.vacation_days)&&o.vacation_days.length?o.vacation_days.map(day=>`<span class="vacationPill">${esc(fmt(day))}<button type="button" title="Remove ${esc(day)} vacation day" onclick="cancelVacationDay('${o.id}','${day}')">×</button></span>`).join(''):'<span class="help">None recorded</span>'}</div></div><div class="row"><button class="blue" onclick="apply('${o.id}')">Save</button><button class="dark" onclick="toggle('${o.id}',false)">Cancel</button></div>${role==='admin'?`<div class="nameChangeRow"><button type="button" onclick="openNameEditor('${o.id}')">Change Name</button></div>`:''}</div>`:''}`;list.appendChild(c)}ac.textContent=act.length;oc.textContent=off.length;vc.textContent=vac.length;refreshMode()}
 function sameGroup(a,b){return a&&b&&a.crew===b.crew&&a.status===b.status}
