@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0d1723"><meta name="robots" content="noindex">
+<title>Switch Crews | Braidwood Security Overtime</title><link rel="icon" href="../icon.svg" type="image/svg+xml">
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#09121e;color:#f0f8fc;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse 90% 45% at 95% 0%,#28465b77,transparent),#09121e}
+a{color:#b5ddf1;text-underline-offset:3px}button,select{font:inherit}button{cursor:pointer}
+button:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid #a7d7eb;outline-offset:3px}
+.wrap{max-width:850px;margin:auto;padding:23px clamp(16px,4vw,36px) 46px}
+nav{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #36566d;padding-bottom:19px}
+.back{text-decoration:none;font-weight:750;font-size:13px;background:#1b3a54;border:1px solid #597d99;border-radius:9px;padding:10px 13px;min-height:42px;display:inline-flex;align-items:center}
+.brand{font-size:11px;letter-spacing:.12em;color:#91b2c6;text-transform:uppercase;font-weight:760}
+main{padding-top:35px}.eyebrow{color:#92c1df;font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:760}
+h1{font-size:clamp(32px,5vw,52px);letter-spacing:-.04em;line-height:1.1;margin:11px 0 12px}
+.lead{color:#b3cad9;max-width:660px;line-height:1.6;margin:0 0 27px}
+.card{background:linear-gradient(150deg,#193449,#111e2d);border:1px solid #4e6c80;border-radius:16px;padding:clamp(17px,3vw,27px);box-shadow:0 12px 40px #0003}
+h2{font-size:17px;margin:0 0 15px}.details{white-space:pre-line;border:1px solid #47677c;border-radius:10px;padding:14px;background:#122a3b;line-height:1.6;font-size:14px;margin:0 0 17px;color:#e2edf4}
+label{display:block;color:#bcd6e6;font-size:12px;font-weight:750;margin:16px 0 7px}
+select{width:100%;padding:12px;border-radius:8px;color:#f4faff;background:#0d2334;border:1px solid #6989a0;font-size:16px}
+.rows{display:grid;grid-template-columns:1fr 1fr;gap:14px}.tip{font-size:13px;color:#bdd2e2;line-height:1.6;margin:12px 0}
+.rules{padding:14px;margin-top:20px;background:#302a22;border:1px solid #856f4f;color:#f2dcbb;border-radius:11px;font-size:13px;line-height:1.6}
+#feedback{font-size:13px;color:#ffbdb6;margin-top:14px;line-height:1.55;min-height:14px}
+.actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:16px}
+.actions button,.actions a{min-height:43px;border-radius:9px;padding:11px 15px;font-size:13px;font-weight:750;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.secondary{background:#244258;border:1px solid #5e7b91;color:#f0f9ff}
+.primary{background:#d4e8f4;border:1px solid #bed7e7;color:#142a3c}
+button:disabled{opacity:.42;cursor:not-allowed}
+.success{background:#15392c;border:1px solid #4a886e;border-radius:11px;padding:15px;color:#d3f6e1;font-size:14px;line-height:1.6}
+[hidden]{display:none!important}
+.footer{font-size:11px;color:#83a0b1;text-align:center;margin-top:28px}
+@media(max-width:490px){.rows{grid-template-columns:1fr}.wrap{padding-top:17px}.card{padding:18px}}
+</style></head>
+<body><div class="wrap">
+<nav><a href="../" class="back">← Back to Crews</a><span class="brand">Braidwood Security Overtime</span></nav>
+<main>
+<div class="eyebrow">Admin tools · Crew management</div>
+<h1>Switch Crews</h1>
+<p class="lead">Move an officer between Alpha, Bravo, Charlie and Delta. Their last qualifying activity is used to suggest a new OT position. Review it carefully before confirming a change.</p>
+<div class="card">
+<h2>Officer Transfer</h2>
+<div class="details" id="officerDetails" role="status" aria-live="polite">Checking existing Admin access and live officer records…</div>
+<div id="formFields" hidden>
+<label for="destination">New Crew</label><select id="destination"></select>
+<div id="placementFields"><p class="tip" id="suggested"></p>
+<div class="rows"><div><label for="anchor">Place relative to</label><select id="anchor"></select></div>
+<div><label for="position">Position</label><select id="position"><option value="before">Directly above</option><option value="after">Directly below</option></select></div></div></div>
+<div class="rules" id="rules">Current OT and Training history will remain linked. No artificial overtime drop will occur. Power Crew moves are not available yet.</div>
+</div>
+<div id="feedback" role="alert" aria-live="polite"></div>
+<div id="success" class="success" hidden></div>
+<div class="actions">
+<a id="returnCrew" class="secondary" href="../">Return to Crew</a>
+<a id="openNewCrew" class="primary" href="../" hidden>Open New Crew</a>
+<button id="confirm" class="primary" type="button" disabled>Confirm Switch</button>
+</div>
+</div>
+</main><div class="footer">Braidwood Security Overtime · Admin Only</div></div>
+<script src="./switch.js?v=20261112-transfer-v1"></script></body></html>
