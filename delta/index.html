@@ -77,7 +77,14 @@ header .head #topMode{position:absolute;right:0;top:50%;transform:translateY(-50
 .rosterLoadState[data-state="error"]{border-color:#bb8857;background:#352c27;color:#ffe5c8}
 
 .ojtRuleNote{padding:9px 12px;margin:9px 0;border:1px solid #527a8f;border-left:3px solid #73b9cb;background:#163247;color:#c7e4f2;font-size:12px;line-height:1.45;border-radius:7px}
-</style></head><body><div class="app"><header><div class="head"><div class="title"><div class="brand"><h1 class="brandTitle">Delta Crew Overtime</h1><div class="sub">Night Shift · 2-2-3 Rotation</div></div></div><div id="topMode" class="pill">View only</div></div><section class="infoHub" aria-label="Delta OT information hub">
+
+/* Braidwood Security Overtime: top-of-page return navigation. */
+header .crewHomeNav{display:flex;align-items:center;justify-content:flex-start;margin:0 0 12px;padding:0}
+header .crewHomeLink{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:39px;padding:9px 15px;border:1px solid #577c98;border-radius:10px;background:#1d3d57;color:#f3f9fe!important;text-decoration:none!important;font-size:13px;font-weight:750;line-height:1.2;box-shadow:0 2px 9px #0002;transition:background .15s,border-color .15s}
+header .crewHomeLink:hover{background:#2a5675;border-color:#86b3cd}
+header .crewHomeLink:focus-visible{outline:3px solid #98d2ef;outline-offset:3px}
+@media(max-width:560px){header .crewHomeNav{justify-content:center;margin-bottom:13px}header .crewHomeLink{width:min(100%,240px)}}
+</style></head><body><div class="app"><header><nav class="crewHomeNav" aria-label="Return to Braidwood Security Overtime"><a class="crewHomeLink" href="../braidwood/"><span aria-hidden="true">←</span> Back to Crews</a></nav><div class="head"><div class="title"><div class="brand"><h1 class="brandTitle">Delta Crew Overtime</h1><div class="sub">Night Shift · 2-2-3 Rotation</div></div></div><div id="topMode" class="pill">View only</div></div><section class="infoHub" aria-label="Delta OT information hub">
   <div class="hubHeading"><span id="alphaHubDate" class="hubDate" role="status" aria-live="off">Loading date…</span></div>
   <div class="hubGrid">
     <div class="hubTesting" role="group" aria-label="Today's testing">
