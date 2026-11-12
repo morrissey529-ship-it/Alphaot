@@ -110,7 +110,7 @@ header .head #topMode{position:absolute;right:0;top:50%;transform:translateY(-50
 <div class="row"><button type="button" class="blue" id="renameSaveBtn" onclick="saveOfficerName()">Save Name</button><button type="button" class="dark" onclick="renameDlg.close()">Cancel</button></div>
 </div></dialog><div id="toast" class="toast"></div>
 <script>
-const APP_BUILD='20261112-roster-first-avoid-504-v1';
+const APP_BUILD='20261112-ot-roster-recovery-v2';
 const OT_CREW='alpha';
 try{localStorage.removeItem('ot_block_target_'+OT_CREW)}catch{}
 let historyOfficerId=null,historyData=null,historyNonce=0;
@@ -198,7 +198,7 @@ function rosterLoadingState(state){
  }else{
    el.textContent='';
  }
- if(!rosterLoaded&&state==='error'){
+ if(!rosterLoaded&&(state==='loading'||state==='error')){
    for(const id of ['ac','oc','vc','bc','mc','bnc','jc','uc']){
      const node=document.getElementById(id);
      if(node)node.textContent='—';
@@ -230,9 +230,19 @@ async function loadAll(){
  if(!rosterLoaded)rosterLoadingState('loading');
  rosterRequest=(async()=>{
    try{
-     const fresh=await api('/rest/v1/rpc/alpha_list_summary_for_block',{
-       method:'POST',auth:true,body:JSON.stringify({p_target_date:getOTTargetDate()})
-     });
+     // A stalled cellular or server request must not hold the roster in
+     // "Loading…" forever. Previous successful data is kept on refresh failure.
+     const controller=new AbortController();
+     const timeout=setTimeout(()=>controller.abort(),15000);
+     let fresh;
+     try{
+       fresh=await api('/rest/v1/rpc/alpha_list_summary_for_block',{
+         method:'POST',auth:true,body:JSON.stringify({p_target_date:getOTTargetDate()}),
+         signal:controller.signal
+       });
+     }finally{
+       clearTimeout(timeout);
+     }
      if(!Array.isArray(fresh))throw Error('Invalid overtime list response');
      officers=fresh;
      rosterLoaded=true;
@@ -244,7 +254,7 @@ async function loadAll(){
    }catch(error){
      rosterLoadingState('error');
      // Preserve any previously loaded roster instead of replacing it with zeroes.
-     if(!rosterLoaded)console.warn('OT list unavailable:',String(error?.message||error));
+     console.warn('OT list unavailable:',error?.name==='AbortError'?'The request timed out':String(error?.message||error));
    }
  })();
  try{await rosterRequest}finally{rosterRequest=null}
