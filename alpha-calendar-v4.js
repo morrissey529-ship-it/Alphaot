@@ -607,14 +607,15 @@
     return d.toISOString().slice(0,10);
   };
   const nextOTBlock=()=>{
-    let date=today();
-    for(let i=0;i<15&&alphaWorks(date);i++)date=plusDays(date,1);
-    const start=date;
-    let end=date;
-    for(let i=0;i<7&&!alphaWorks(date);i++){
-      end=date;
-      date=plusDays(date,1);
-    }
+    // Use the supervisor's selected assignment date, not the nearest calendar day off.
+    const target=typeof getOTTargetDate==='function'?getOTTargetDate():today();
+    const targetWorks=alphaWorks(target);
+    let start=target;
+    for(let i=0;i<6&&alphaWorks(plusDays(start,-1))===targetWorks;i++)
+      start=plusDays(start,-1);
+    let end=target;
+    for(let i=0;i<6&&alphaWorks(plusDays(end,1))===targetWorks;i++)
+      end=plusDays(end,1);
     return {start,end};
   };
   const voidForBereavement=(officer,block)=>

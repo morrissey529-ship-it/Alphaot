@@ -165,7 +165,7 @@
     try{
       // This is the same existing availability/vacation return refresh used by OT List.
       if(typeof loadAll==='function')await loadAll();
-      const data=await api('/rest/v1/rpc/ieas_list_summary',{method:'POST',auth:false,body:'{}'});
+      const data=await api('/rest/v1/rpc/ieas_list_summary_for_block',{method:'POST',auth:false,body:JSON.stringify({p_target_date:getOTTargetDate()})});
       if(!Array.isArray(data))throw Error('Invalid IE/AS list response');
       roster=data;
       render();

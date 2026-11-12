@@ -110,6 +110,11 @@
   openButton.addEventListener('click',open);
   roster.addEventListener('change',updateSelection);
   dateField.addEventListener('change',updateSelection);
+  actionField.addEventListener('change',()=>{
+    if(['Volunteer OT','Required OT'].includes(actionField.value)
+      &&typeof getOTTargetDate==='function')dateField.value=getOTTargetDate();
+    updateSelection();
+  });
   dialog.querySelector('#alphaBulkClear').addEventListener('click',()=>{
     if(busy)return;
     roster.querySelectorAll('input:checked').forEach(x=>{x.checked=false;});
