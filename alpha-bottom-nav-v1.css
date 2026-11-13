@@ -183,3 +183,76 @@
     color:#f0fbff!important;
   }
 }
+
+/* Five balanced slots on mobile: OT List | IE/AS | Crews | Calendar | OT Stats.
+   The Crews slot is a plain link, not an application tab. */
+.alpha-crews-nav-link{display:none!important}
+@media(max-width:700px){
+  body>.alpha-tabs.alpha-bottom-navigation{
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  }
+  body>.alpha-tabs.alpha-bottom-navigation .alpha-crews-nav-link{
+    box-sizing:border-box!important;
+    position:relative!important;
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:center!important;
+    align-items:center!important;
+    min-width:0!important;
+    min-height:59px!important;
+    padding:7px 2px 11px!important;
+    gap:3px!important;
+    margin:0!important;
+    border:1px solid transparent!important;
+    border-radius:14px!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    color:#dfebf4!important;
+    text-decoration:none!important;
+    text-align:center!important;
+    line-height:1!important;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+  }
+  body>.alpha-tabs.alpha-bottom-navigation .alpha-crews-nav-icon{
+    display:grid!important;
+    flex:0 0 20px!important;
+    width:20px!important;
+    height:20px!important;
+    place-items:center!important;
+    color:#d2e2ed!important;
+  }
+  body>.alpha-tabs.alpha-bottom-navigation .alpha-crews-nav-icon svg{
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+  }
+  body>.alpha-tabs.alpha-bottom-navigation .alpha-crews-nav-label{
+    display:block!important;
+    color:inherit!important;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+    font-size:11px!important;
+    font-weight:580!important;
+    line-height:1.05!important;
+    white-space:nowrap!important;
+    letter-spacing:0!important;
+  }
+  body>.alpha-tabs.alpha-bottom-navigation .alpha-crews-nav-link:active{
+    background:rgba(84,135,168,.25)!important;
+  }
+  body>.alpha-tabs.alpha-bottom-navigation .alpha-crews-nav-link:focus-visible{
+    outline:2px solid #b8ecff!important;
+    outline-offset:-3px!important;
+  }
+}
+@media(max-width:360px){
+  body>.alpha-tabs.alpha-bottom-navigation .alpha-crews-nav-link{
+    min-height:56px!important;padding:6px 1px 11px!important;
+  }
+  body>.alpha-tabs.alpha-bottom-navigation .alpha-crews-nav-icon{
+    width:18px!important;height:18px!important;flex-basis:18px!important;
+  }
+  body>.alpha-tabs.alpha-bottom-navigation .alpha-crews-nav-label{
+    font-size:10px!important;
+  }
+}
