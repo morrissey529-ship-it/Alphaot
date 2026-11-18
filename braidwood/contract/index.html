@@ -90,6 +90,13 @@ mark{background:#ffe69a;color:#162b3c;border-radius:3px;padding:1px 2px}
 .wage-table th:first-child{text-align:left}
 .wage-table tbody tr:nth-child(even){background:#f7fafc}
 .wage-table tbody tr:last-child th,.wage-table tbody tr:last-child td{border-bottom:0}
+
+.data-table-block{scroll-margin-top:88px;margin:21px 0 25px}
+.data-table-block .sub-heading{margin:0 0 14px}
+.holiday-list{margin:10px 0 21px;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 12px;list-style:none;font-family:system-ui,-apple-system,sans-serif}
+.holiday-list li{font-size:13px;font-weight:650;line-height:1.5;padding:11px 13px;border:1px solid #d8e5ed;border-radius:8px;background:#f5f9fc;color:#345469}
+@media(max-width:580px){.holiday-list{grid-template-columns:1fr;gap:7px}.holiday-list li{font-size:12px;padding:9px 11px}}
+
 #searchResults{margin:20px clamp(19px,5vw,54px) 10px;padding:19px;border-radius:13px;border:1px solid #cadde8;background:#edf5fa}
 #searchResults[hidden]{display:none}
 .results-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 13px}
