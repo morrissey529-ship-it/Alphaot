@@ -247,9 +247,13 @@ function searchNow(){
   lastMatches=[];renderChapters([]);return;
  }
  const q=value.toLocaleLowerCase();
- const matches=index.filter(item=>{
+ let matches=index.filter(item=>{
   const txt=item.text.toLocaleLowerCase();return words.every(w=>txt.includes(w));
  });
+ const related=!matches.length&&words.length>1;
+ if(related){
+  matches=index.filter(item=>words.some(w=>item.text.toLocaleLowerCase().includes(w)));
+ }
  matches.sort((a,b)=>{
   const av=a.text.toLocaleLowerCase().includes(q)?1:0,bv=b.text.toLocaleLowerCase().includes(q)?1:0;
   return bv-av||chapters.indexOf(a.chapter)-chapters.indexOf(b.chapter);
@@ -257,7 +261,7 @@ function searchNow(){
  lastMatches=matches;shown=20;
  searchPanel.hidden=false;
  resultsCount.textContent=matches.length+" matching passage"+(matches.length===1?"":"s");
- searchStatus.textContent=matches.length?"Tap a result to jump directly to its passage.":"No results found. Try fewer or different words.";
+ searchStatus.textContent=matches.length?(related?"No single passage contains every word. Showing related matches; try fewer words for a narrower result.":"Tap a result to jump directly to its passage."):"No results found. Try fewer or different words.";
  resultsHTML(matches,words);
  renderChapters(words);
 }
