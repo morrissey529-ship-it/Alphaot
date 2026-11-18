@@ -17,9 +17,22 @@ function highlight(text,words){
  return String(text).split(re).map((part,i)=>i%2?"<mark>"+esc(part)+"</mark>":esc(part)).join("");
 }
 function niceTitle(ch){return ch.kind==="article"?ch.label.replace(/^Article\s+\d+\s*·\s*/i,""):ch.label.replace(/^Appendix\s+[A-Z]\s*·\s*/i,"");}
-const specials=new Set(["VACATIONS","SICK LEAVE AND PAID LEAVE","Compensation For Vacation","Approval of Vacation Time","Vacation Donation Program","Notice to Union of Benefit Changes.","Benefits Administration."]);
+const specials=new Set(["VACATIONS","SICK LEAVE AND PAID LEAVE","Compensation For Vacation","Approval of Vacation Time","Vacation Donation Program","Notice to Union of Benefit Changes.","Benefits Administration.","New Hires","Carryover and Buyback","Upon Termination"]);
 function sourceLines(ch){
  let t=String(ch.text).replace(/\r/g,"").replace(/￾/g,"-");
+ if(ch.id==="a17"){
+  const start=t.indexOf("The following is the vacation schedule:");
+  const last="Years 25+ 276 23.0";
+  const end=t.indexOf(last,start);
+  if(start>=0&&end>start)t=t.slice(0,start)+"\n[[VACATION_TABLE]]\n"+t.slice(end+last.length);
+  const hire=/Hired January 1 through March 31 48 Hours\s*\nHired April 1 through June 30 40 Hours\s*\nHired July 1 through September 30 28 Hours\s*\nHired October 1 through December 31 16 Hours/;
+  t=t.replace(hire,"\n[[NEW_HIRE_LEAVE_TABLE]]\n");
+ }else if(ch.id==="a15"){
+  const start=t.indexOf("The Company observes the following holidays");
+  const last="Labor Day";
+  const end=t.indexOf(last,start);
+  if(start>=0&&end>start)t=t.slice(0,start)+"\n[[HOLIDAY_TABLE]]\n"+t.slice(end+last.length);
+ }
  let lines=t.split("\n");
  if(ch.kind==="article"){
   const title=niceTitle(ch);
@@ -64,6 +77,18 @@ function buildBlocks(ch){
  for(const raw of lines){
   const s=raw.trim();
   if(!s){flush();continue;}
+  if(s==="[[VACATION_TABLE]]"){
+    flush();activeSection="Vacation schedule";emit("vacationTable","Vacation schedule: Service Vacation Hours Total Days at 12 Hour Shifts 0-12 Months 36 3.0 Year 1 144 12.0 Year 2 156 13.0 Years 3-4 168 14.0 Years 5-9 180 15.0 Years 10-14 192 16.0 Years 15-19 204 17.0 Years 20-24 228 19.0 Years 25+ 276 23.0",ch.id+"-vacation-schedule");
+    continue;
+  }
+  if(s==="[[NEW_HIRE_LEAVE_TABLE]]"){
+    flush();activeSection="Year-of-hire paid leave";emit("newHireLeaveTable","Hired January 1 through March 31 48 Hours Hired April 1 through June 30 40 Hours Hired July 1 through September 30 28 Hours Hired October 1 through December 31 16 Hours",ch.id+"-paid-leave-schedule");
+    continue;
+  }
+  if(s==="[[HOLIDAY_TABLE]]"){
+    flush();activeSection="Observed holidays";emit("holidayTable","The Company observes nine holidays annually: New Year’s Day (January 1), Martin Luther King Jr. Day, Memorial Day, Independence Day (July 4th), Labor Day, Thanksgiving Day, Day after Thanksgiving, Christmas Eve (December 24), Christmas (December 25)",ch.id+"-holiday-list");
+    continue;
+  }
   const section=s.match(/^Section\s+(\d{1,2})\.(\d{1,2})\b[.:]?\s*/i);
   if(section){
    flush();
@@ -106,7 +131,7 @@ const chapters=source.map(ch=>({...ch,title:niceTitle(ch),blocks:buildBlocks(ch)
 const index=[];
 for(const ch of chapters){
  index.push({chapter:ch,id:ch.id,text:ch.label,kind:"title",context:""});
- for(const b of ch.blocks)if(["paragraph","clause","section","subhead"].includes(b.kind)){
+ for(const b of ch.blocks)if(["paragraph","clause","section","subhead","wages","bonuses","vacationTable","newHireLeaveTable","holidayTable"].includes(b.kind)){
   index.push({chapter:ch,id:b.id,text:b.text,kind:b.kind,context:b.context});
  }
 }
@@ -129,7 +154,7 @@ chapters.forEach(ch=>{
  toc.appendChild(a);
 });
 if(window.matchMedia("(max-width:920px)").matches)tocDetails.open=false;
-function wagesTable(words){
+function wagesTable(words,id){
  const rows=[
  ["Annual GWI","3.0%","2.5%","2.5%"],
  ["Trainee","$24.12","$24.72","$25.34"],
@@ -139,18 +164,34 @@ function wagesTable(words){
  ["Sr. Security Officer","$32.83","$33.65","$34.49"]
  ];
  const rowsHTML=rows.map(r=>'<tr>'+r.map((v,i)=>i?'<td>'+highlight(v,words)+'</td>':'<th scope="row">'+highlight(v,words)+'</th>').join("")+'</tr>').join("");
- return '<div class="table-scroll"><table class="wage-table"><thead><tr><th scope="col">Classification</th><th scope="col">Apr 26, 2024</th><th scope="col">Apr 26, 2025</th><th scope="col">Apr 26, 2026</th></tr></thead><tbody>'+rowsHTML+'</tbody></table></div>'+
+ return '<div class="table-scroll" id="'+id+'"><table class="wage-table"><thead><tr><th scope="col">Classification</th><th scope="col">Apr 26, 2024</th><th scope="col">Apr 26, 2025</th><th scope="col">Apr 26, 2026</th></tr></thead><tbody>'+rowsHTML+'</tbody></table></div>'+
  '<p class="chapter-paragraph">*All officers newly hired or coming from another site are “New Hires” and enter employment at Braidwood CNS as new hires in accordance with the terms and conditions of the CBA.</p>';
 }
-function bonusesTable(words){
+
+function bonusesTable(words,id){
+ const rows=[["Year 2","$600.00","$300.00"],["Year 3","$600.00","$300.00"]];
+ const entries=rows.map(r=>'<tr>'+r.map((v,i)=>i?'<td>'+highlight(v,words)+'</td>':'<th scope="row">'+highlight(v,words)+'</th>').join("")+'</tr>').join("");
+ return '<div id="'+id+'"><div class="source-notice"><strong>Ratification bonus:</strong> '+highlight("$1,250.00",words)+'</div>'+
+ '<h3 class="sub-heading">Retention bonuses</h3><div class="table-scroll"><table class="wage-table"><thead><tr><th>Year</th><th>Security I–Senior</th><th>Trainee</th></tr></thead><tbody>'+entries+'</tbody></table></div>'+
+ '<p class="chapter-paragraph">*Retention Bonus to be paid to active employees no later than the first 1st pay period in December.</p></div>';
+}
+function vacationTable(words,id){
  const rows=[
- ["Ratification bonus","$1,250.00","—"],
- ["Retention · second year","$600.00","$300.00"],
- ["Retention · third year","$600.00","$300.00"]
+ ["0-12 Months","36","3.0"],["Year 1","144","12.0"],["Year 2","156","13.0"],
+ ["Years 3-4","168","14.0"],["Years 5-9","180","15.0"],["Years 10-14","192","16.0"],
+ ["Years 15-19","204","17.0"],["Years 20-24","228","19.0"],["Years 25+","276","23.0"]
  ];
  const entries=rows.map(r=>'<tr>'+r.map((v,i)=>i?'<td>'+highlight(v,words)+'</td>':'<th scope="row">'+highlight(v,words)+'</th>').join("")+'</tr>').join("");
- return '<div class="table-scroll"><table class="wage-table"><thead><tr><th>Bonus</th><th>Security I–Senior</th><th>Trainee</th></tr></thead><tbody>'+entries+'</tbody></table></div>'+
- '<p class="chapter-paragraph">*Retention Bonus to be paid to active employees no later than the first 1st pay period in December.</p>';
+ return '<section id="'+id+'" class="data-table-block"><h3 class="sub-heading">Vacation schedule</h3><div class="table-scroll"><table class="wage-table"><thead><tr><th>Vacation service</th><th>Vacation hours</th><th>Days at 12-hour shifts</th></tr></thead><tbody>'+entries+'</tbody></table></div></section>';
+}
+function newHireLeaveTable(words,id){
+ const rows=[["January 1 through March 31","48"],["April 1 through June 30","40"],["July 1 through September 30","28"],["October 1 through December 31","16"]];
+ const entries=rows.map(r=>'<tr><th scope="row">'+highlight(r[0],words)+'</th><td>'+highlight(r[1],words)+' hours</td></tr>').join("");
+ return '<section id="'+id+'" class="data-table-block"><h3 class="sub-heading">Paid leave during year of hire</h3><div class="table-scroll"><table class="wage-table"><thead><tr><th>Hire date</th><th>Paid leave</th></tr></thead><tbody>'+entries+'</tbody></table></div></section>';
+}
+function holidayTable(words,id){
+ const dates=["New Year’s Day (January 1)","Martin Luther King Jr. Day","Memorial Day","Independence Day (July 4th)","Labor Day","Thanksgiving Day","Day after Thanksgiving","Christmas Eve (December 24)","Christmas (December 25)"];
+ return '<section id="'+id+'" class="data-table-block"><h3 class="sub-heading">Observed holidays</h3><ul class="holiday-list">'+dates.map(d=>'<li>'+highlight(d,words)+'</li>').join("")+'</ul></section>';
 }
 function blockHTML(b,words){
  switch(b.kind){
@@ -158,8 +199,11 @@ function blockHTML(b,words){
   case "subhead":return '<h3 class="sub-heading" id="'+b.id+'">'+highlight(b.text,words)+'</h3>';
   case "clause":return '<p class="chapter-clause" id="'+b.id+'">'+highlight(b.text,words)+'</p>';
   case "note":return '<p class="source-notice" id="'+b.id+'">'+highlight(b.text,words)+'</p>';
-  case "wages":return wagesTable(words);
-  case "bonuses":return bonusesTable(words);
+  case "wages":return wagesTable(words,b.id);
+  case "bonuses":return bonusesTable(words,b.id);
+  case "vacationTable":return vacationTable(words,b.id);
+  case "newHireLeaveTable":return newHireLeaveTable(words,b.id);
+  case "holidayTable":return holidayTable(words,b.id);
   default:return '<p class="chapter-paragraph" id="'+b.id+'">'+highlight(b.text,words)+'</p>';
  }
 }
