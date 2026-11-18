@@ -41,7 +41,8 @@ header .head #topMode{position:absolute;right:0;top:50%;transform:translateY(-50
 .nameChangeRow{display:flex;justify-content:flex-end;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
 .nameChangeRow button{min-height:34px;padding:6px 12px;font-size:12px;font-weight:650;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:7px}
 .nameChangeRow button:hover,.nameChangeRow button:focus-visible{background:var(--raised,#f3f6fa);color:var(--text)}
-#renameDlg .row{margin-top:18px}
+#renameDlg .row,#callNumberDlg .row{margin-top:18px}
+.nameChangeRow{gap:8px;flex-wrap:wrap}
 
 
 /* Vacation scheduling: consistent with the dark OT editing surface */
@@ -121,6 +122,13 @@ header .crewHomeLink:focus-visible{outline:3px solid #98d2ef;outline-offset:3px}
 <label for="renameInput">New name</label><input id="renameInput" type="text" maxlength="80" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();saveOfficerName()}">
 <div id="renameFeedback" class="error" role="status" aria-live="polite"></div>
 <div class="row"><button type="button" class="blue" id="renameSaveBtn" onclick="saveOfficerName()">Save Name</button><button type="button" class="dark" onclick="renameDlg.close()">Cancel</button></div>
+</div></dialog><dialog id="callNumberDlg" aria-labelledby="callNumberDlgTitle"><div class="modal">
+<h2 id="callNumberDlgTitle">Change Officer Call Number</h2>
+<p id="callNumberOfficer" class="help"></p>
+<label for="callNumberInput">Call number (1–9999)</label><input id="callNumberInput" type="number" min="1" max="9999" step="1" inputmode="numeric" placeholder="Leave blank to clear" onkeydown="if(event.key==='Enter'){event.preventDefault();saveOfficerCallNumber()}">
+<div class="help">This changes the officer's call number only. It will not move their OT or IE/AS position.</div>
+<div id="callNumberFeedback" class="error" role="status" aria-live="polite"></div>
+<div class="row"><button type="button" class="blue" id="callNumberSaveBtn" onclick="saveOfficerCallNumber()">Save Call Number</button><button type="button" class="dark" onclick="callNumberDlg.close()">Cancel</button></div>
 </div></dialog><div id="toast" class="toast"></div>
 <script>
 const APP_BUILD='20261112-switch-crews-v1';
@@ -280,7 +288,7 @@ function render(){let act=officers.filter(o=>o.status==='Active'),vac=officers.f
 <div class="vacationEditorSection"><div class="vacationSectionTitle">Days to save</div><div id="vac-selected-${o.id}" class="vacationPills" aria-live="polite"><span class="vacationEmpty">No new days selected</span></div></div>
 <div class="vacationEditorSection existing"><div class="vacationSectionTitle">Already scheduled</div><div class="vacationPills">${Array.isArray(o.vacation_days)&&o.vacation_days.length?o.vacation_days.map(day=>`<span class="vacationPill">${esc(fmt(day))}<button type="button" title="Remove ${esc(day)} vacation day" aria-label="Remove ${esc(day)} vacation day" onclick="cancelVacationDay('${o.id}','${day}')">×</button></span>`).join(''):'<span class="vacationEmpty">No vacation days recorded</span>'}</div></div>
 <p class="vacationRuleNote">Admins can add past vacation dates (up to one year). A completed full 2- or 3-day work block creates one correctly dated Vacation Return drop automatically. Partial blocks never drop. Existing OT activity stays intact. Past dates require admin access and cannot be removed with the standard day-cancel button.</p>
-</div><div class="row"><button class="blue" onclick="apply('${o.id}')">Save</button><button class="dark" onclick="toggle('${o.id}',false)">Cancel</button></div>${role==='admin'?`<div class="nameChangeRow"><button type="button" onclick="openNameEditor('${o.id}')">Change Name</button></div>`:''}</div>`:''}`;list.appendChild(c)}ac.textContent=act.length;oc.textContent=off.length;vc.textContent=vac.length;refreshMode()}
+</div><div class="row"><button class="blue" onclick="apply('${o.id}')">Save</button><button class="dark" onclick="toggle('${o.id}',false)">Cancel</button></div>${role==='admin'?`<div class="nameChangeRow"><button type="button" onclick="openNameEditor('${o.id}')">Change Name</button><button type="button" onclick="openCallNumberEditor('${o.id}')">Change Call Number</button></div>`:''}</div>`:''}`;list.appendChild(c)}ac.textContent=act.length;oc.textContent=off.length;vc.textContent=vac.length;refreshMode()}
 function sameGroup(a,b){return a&&b&&a.crew===b.crew&&a.status===b.status}
 function validMove(i,j){let a=officers[i],b=officers[j];return sameGroup(a,b)&&officers.slice(Math.min(i,j),Math.max(i,j)+1).every(x=>sameGroup(a,x))}
 function moveStep(id,direction){if(role!=='admin'||reorderBusy||drag)return;let i=officers.findIndex(o=>o.id===id),j=i+direction;if(!validMove(i,j))return toast('Move within one crew and status section');saveMove(id,officers[j].id,direction<0?'before':'after')}
@@ -448,6 +456,53 @@ async function saveOfficerName(){
  }catch(error){
    renameFeedback.textContent='Could not rename officer: '+error.message;
  }finally{renameSaveBtn.disabled=false}
+}
+let callNumberOfficerId=null;
+const callNumberDlg=document.getElementById('callNumberDlg');
+const callNumberInput=document.getElementById('callNumberInput');
+const callNumberFeedback=document.getElementById('callNumberFeedback');
+const callNumberSaveBtn=document.getElementById('callNumberSaveBtn');
+callNumberDlg.addEventListener('close',()=>{callNumberOfficerId=null;callNumberFeedback.textContent='';callNumberSaveBtn.disabled=false});
+function openCallNumberEditor(id){
+ if(role!=='admin')return toast('Admin access required');
+ const officer=officers.find(o=>o.id===id);
+ if(!officer)return toast('Officer not found. Refresh the list.');
+ callNumberOfficerId=id;
+ document.getElementById('callNumberOfficer').textContent='Officer: '+officer.name+' | Current call number: '+(officer.call_number??'None');
+ callNumberInput.value=officer.call_number??'';
+ callNumberFeedback.textContent='';
+ callNumberSaveBtn.disabled=false;
+ callNumberDlg.showModal();
+ callNumberInput.focus();
+ callNumberInput.select();
+}
+async function saveOfficerCallNumber(){
+ if(role!=='admin'||!callNumberDlg.open||!callNumberOfficerId)return toast('Admin access required');
+ const officer=officers.find(o=>o.id===callNumberOfficerId);
+ if(!officer)return callNumberFeedback.textContent='Officer not found. Refresh the list.';
+ const raw=callNumberInput.value.trim();
+ if(raw!==''&&!/^[0-9]+$/.test(raw))return callNumberFeedback.textContent='Enter a whole number from 1 to 9999';
+ const next=raw===''?null:Number(raw);
+ if(next!==null&&(!Number.isInteger(next)||next<1||next>9999))
+   return callNumberFeedback.textContent='Call number must be between 1 and 9999';
+ if(next===(officer.call_number??null)){callNumberDlg.close();return toast('Call number is unchanged')}
+ if(next!==null&&officers.some(o=>o.id!==callNumberOfficerId&&Number(o.call_number)===next))
+   return callNumberFeedback.textContent='Another officer already has this call number on this crew';
+ callNumberSaveBtn.disabled=true;
+ callNumberFeedback.textContent='';
+ try{
+   const revision=officers[0]?.revision;
+   const result=await api('/rest/v1/rpc/alpha_change_call_number_auth',{
+     method:'POST',body:JSON.stringify({
+       p_officer_id:callNumberOfficerId,p_new_call_number:next,
+       p_expected_revision:revision==null?null:Number(revision)
+     })
+   });
+   callNumberDlg.close();
+   await loadAll();
+   toast(result?.unchanged?'Call number unchanged':'Officer call number updated');
+ }catch(error){callNumberFeedback.textContent='Could not change call number: '+error.message}
+ finally{callNumberSaveBtn.disabled=false}
 }
 function syncNewOfficerForm(){const transfer=newMode.value==='Transfer';newInitialOptions.classList.toggle('hidden',transfer);newTransferOptions.classList.toggle('hidden',!transfer);if(transfer){const previous=newPlacement.value;newPlacement.innerHTML=officers.filter(o=>o.status===newStatus.value).map(o=>`<option value="${esc(o.id)}">${esc(o.name)}${o.crew==='Power'?' (Power Crew)':''}</option>`).join('');if(Array.from(newPlacement.options).some(o=>o.value===previous))newPlacement.value=previous;}}function openNewOfficer(){if(role!=='admin')return toast('Admin access required');newName.value='';newStatus.value='Active';newMode.value='Initial';newEvent.value='Initial';newDate.value=today();newTransferEvent.value='Required OT';newTransferDate.value=today();newTransferCall.value='';newPlacementSide.value='after';syncNewOfficerForm();addDlg.showModal()}async function addOfficer(){if(role!=='admin')return toast('Admin access required');try{let name=newName.value.trim();if(!name)return toast('Enter the officer name');if(newMode.value==='Transfer'){if(!newTransferDate.value)return toast('Enter the previous qualifying event date');if(!newPlacement.value)return toast('Choose where to place this transfer');if(newTransferCall.value&&(!Number.isInteger(Number(newTransferCall.value))||Number(newTransferCall.value)<1||Number(newTransferCall.value)>9999))return toast('Enter a valid call number');const detail=await api('/rest/v1/rpc/alpha_add_transfer_auth',{method:'POST',body:JSON.stringify({p_name:name,p_status:newStatus.value,p_baseline_event_type:newTransferEvent.value,p_baseline_event_date:newTransferDate.value,p_anchor_id:newPlacement.value,p_placement:newPlacementSide.value,p_call_number:newTransferCall.value?Number(newTransferCall.value):null,p_expected_revision:officers[0]?.revision?Number(officers[0].revision):null})});addDlg.close();toast(name+' added as Transfer '+(detail.position==='after'?'below ':'above ')+detail.anchor);await loadAll();return;}if(!newDate.value)return toast('Enter the date added to the list');await api('/rest/v1/rpc/alpha_add_officer_auth',{method:'POST',body:JSON.stringify({p_name:name,p_status:newStatus.value,p_baseline_event_type:'Initial',p_baseline_event_date:newDate.value})});addDlg.close();toast(name+' added as Initial');await loadAll()}catch(e){toast(e.message)}}async function openAccess(){if(role!=='admin')return toast('Admin access required');accessMsg.textContent='';accessList.innerHTML='<div class="help">Loading accounts…</div>';accessDlg.showModal();try{let rows=await api('/rest/v1/profiles?select=id,email,role&order=created_at.asc');accessList.innerHTML='';if(!rows.length){accessList.innerHTML='<div class="help">No accounts yet.</div>';return}for(let p of rows){let wrap=document.createElement('div');wrap.style.cssText='background:#f8fafc;border:1px solid #dbe3ec;border-radius:9px;padding:12px';wrap.innerHTML=`<div style="font-weight:800;word-break:break-word">${esc(p.email||'No email')}</div><div style="display:flex;gap:8px;align-items:center;margin-top:9px"><select id="role-${p.id}" style="margin:0">${['viewer','editor','admin'].map(r=>`<option value="${r}" ${r===p.role?'selected':''}>${r[0].toUpperCase()+r.slice(1)}</option>`).join('')}</select><button class="blue" style="flex:0 0 auto" onclick="saveRole('${p.id}')">Save</button></div>`;accessList.appendChild(wrap)}}catch(e){accessMsg.textContent=e.message}}async function saveRole(id){if(role!=='admin')return toast('Admin access required');let next=document.getElementById('role-'+id).value;try{await api('/rest/v1/profiles?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({role:next})});toast('Access updated');await loadRole();if(role==='admin')await openAccess();else accessDlg.close()}catch(e){toast(e.message)}}async function checkForAppUpdate(){try{let r=await fetch(location.pathname+'?buildcheck='+Date.now(),{cache:'no-store'});let txt=await r.text(),m=txt.match(/const APP_BUILD='([^']+)'/);if(m&&m[1]!==APP_BUILD){location.reload()}}catch(e){}}window.addEventListener('online',()=>{render();loadAll()});window.addEventListener('offline',render);document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkForAppUpdate();if(session)loadRole()}});window.addEventListener('storage',e=>{if(e.key==='alpha_session'){let next;try{next=JSON.parse(e.newValue||'null')}catch{next=null}if(next?.access_token!==session?.access_token){clearHistory();session=next;loadRole().then(loadAll)}}});setInterval(()=>{if(session)loadRole()},30000);setInterval(checkForAppUpdate,60000);(async()=>{await loadRole();await loadAll()})();function autoRefreshList(){if(reorderBusy||drag||document.querySelector('.card.open')||document.querySelector('dialog[open]'))return;loadAll()}setInterval(autoRefreshList,30000);
 </script><script src="./alpha-calendar-v4.js?v=20261112-ojt-v1"></script><script src="../alpha-bulk-v1.js?v=20261111-vacation-days-bulk-v1"></script><script src="../alpha-undo-v1.js?v=20261107-bravo-stable"></script><script src="./alpha-call-numbers-v1.js?v=20261107-bravo-stable"></script><script src="../alpha-testing-rotation-v1.js?v=20261107-bravo-stable"></script><script src="../alpha-monthly-ot-summary-v1.js?v=20261107-bravo-stable"></script><script src="./alpha-ieas-v1.js?v=20261112-ojt-v1"></script><script src="../alpha-ot-stats-v1.js?v=20261107-bravo-stable"></script><script src="../alpha-ot-worked-podium-v1.js?v=20261107-bravo-stable"></script><script src="./alpha-command-v1.js?v=20261107-bravo-stable"></script><script src="./alpha-executive-v1.js?v=20261107-bravo-stable"></script><script src="./alpha-bottom-nav-v1.js?v=20261107-bravo-stable"></script><script src="../braidwood-crews-nav-v1.js?v=20261112-crews-in-dock-v1"></script><script src="../alpha-switch-crews-v1.js?v=20261112-switch-crews-v1"></script></body></html>
