@@ -18,10 +18,9 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 const norm=s=>String(s).replace(/-\s*\n\s*/g,"-").replace(/\s+/g," ").trim();
 const tokens=q=>q.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean).slice(0,8);
 function highlight(s,terms){
- let t=esc(s);
- if(!terms.length)return t;
+ if(!terms.length)return esc(s);
  const patterns=[...new Set(terms)].sort((a,b)=>b.length-a.length).map(x=>x.replace(/[^\w\s]/g,c=>"\\"+c));
- return t.replace(new RegExp("("+patterns.join("|")+")","gi"),"<mark>$1</mark>");
+ return String(s).split(new RegExp("("+patterns.join("|")+")","gi")).map((part,i)=>i%2?"<mark>"+esc(part)+"</mark>":esc(part)).join("");
 }
 function labelGroup(s){return s.group==="article"?"Articles":s.group==="appendix"?"Appendices":s.group==="letter"?"Letters and side agreements":"Introduction";}
 let lastGroup="";
@@ -40,16 +39,16 @@ pages.forEach(p=>{
  const ongoing=[...sections].reverse().find(s=>s.page<=p.number);
  pageTitles.set(p.number,starting.length?starting.map(s=>s.title).join(" · "):(ongoing?.title||"Agreement"));
 });
-function wageTable(){
+function wageTable(terms){
  const rows=[
  ["GWI","3.0%","2.5%","2.5%"],["Trainee","$24.12","$24.72","$25.34"],
  ["Security Officer I","$25.59","$26.23","$26.89"],["Security Officer II","$26.20","$26.86","$27.53"],
  ["Security Officer III","$27.58","$28.27","$28.98"],["Sr. Security Officer","$32.83","$33.65","$34.49"]];
- return '<h3 id="appA">Appendix A · Wages</h3><table class="wages"><thead><tr><th>Classification</th><th>Apr 26, 2024</th><th>Apr 26, 2025</th><th>Apr 26, 2026</th></tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(c=>'<td>'+esc(c)+'</td>').join("")+'</tr>').join("")+'</tbody></table><p class="wages-note">The wage schedule is transcribed from Appendix A of the signed agreement.</p><p>*All officers newly hired or coming from another site are “New Hires” and enter employment at Braidwood CNS as new hires in accordance with the terms and conditions of the CBA.</p>';
+ return '<h3 id="appA">Appendix A · Wages</h3><table class="wages"><thead><tr><th>Classification</th><th>Apr 26, 2024</th><th>Apr 26, 2025</th><th>Apr 26, 2026</th></tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(c=>'<td>'+highlight(c,terms)+'</td>').join("")+'</tr>').join("")+'</tbody></table><p class="wages-note">The wage schedule is transcribed from Appendix A of the signed agreement.</p><p>*All officers newly hired or coming from another site are “New Hires” and enter employment at Braidwood CNS as new hires in accordance with the terms and conditions of the CBA.</p>';
 }
 function pageMarkup(p,terms){
  if(p.number===72)return '<p class="signature-note" id="signature">This is the graphical signature page in the signed agreement. Its image cannot be reproduced in a text-only transcription. The signed source document remains authoritative.</p>';
- if(p.number===70)return wageTable();
+ if(p.number===70)return wageTable(terms);
  const text=p.plain.replace(/-\s*\n\s*/g,"-").replace(/\n\s*(?=(?:ARTICLE\s+\d+|Section\s+\d+\.\d+|STEP\s+\d+|APPENDIX\s+[A-Z]|PREAMBLE)\b)/gi,"\n\n");
  const blocks=text.split(/\n\s*\n/).map(norm).filter(Boolean);
  const already=new Set(),html=[];
@@ -58,7 +57,14 @@ function pageMarkup(p,terms){
   if(art){
    const s=byId.get("a"+art[1]);const id=s?.id||"a"+art[1];already.add(id);
    html.push('<h3 id="'+id+'">'+highlight(s?.title||b,terms)+'</h3>');
-   const start=b.search(/\bSection\s+\d+\.\d+\b/i);if(start>=0)html.push('<p>'+highlight(b.slice(start),terms)+'</p>');
+   // Preserve any clause prose on the same extracted paragraph as an article title.
+   let rest=b.replace(/^ARTICLE\s+\d{1,2}\b/i,"").trim();
+   const titleTokens=(s?.title?.split("·").slice(1).join("·")||"").match(/[a-z0-9]+/gi)||[];
+   if(titleTokens.length){
+    const flexTitle=new RegExp("^"+titleTokens.map(x=>x.toLowerCase()).join("[^a-z0-9]+")+"\\b","i");
+    rest=rest.replace(flexTitle,"").trim();
+   }
+   if(rest)html.push('<p>'+highlight(rest,terms)+'</p>');
    continue;
   }
   if(/^PREAMBLE\b/i.test(b)){
