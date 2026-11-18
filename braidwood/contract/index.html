@@ -1,83 +1,180 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0b1725"><meta name="description" content="Search and navigate the Braidwood Security NUNSO signed 2024–2027 collective bargaining agreement by article and printed page.">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1929">
+<meta name="description" content="A readable, searchable edition of the signed 2024–2027 Braidwood NUNSO union collective bargaining agreement, organized by article and section.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Union Contract | Braidwood Security</title>
 <link rel="icon" type="image/svg+xml" href="../icon.svg">
 <style>
-:root{color-scheme:dark;--bg:#091421;--surface:#132639;--panel:#172e42;--border:#39536b;--text:#eaf3fa;--muted:#9eb9ce;--accent:#90d2ed;--soft:#b9d9e8;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:100px}body{margin:0;background:radial-gradient(ellipse 55% 380px at 100% -100px,#1a3d56,transparent),var(--bg);color:var(--text);line-height:1.55}
-a{color:inherit}a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #91d8ef;outline-offset:3px}button{cursor:pointer}
-.top{position:sticky;top:0;z-index:15;background:#0a1829ee;backdrop-filter:blur(18px);border-bottom:1px solid #31516a}
-.top-inner{max-width:1260px;min-height:65px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:15px;padding:9px clamp(16px,4vw,34px)}
-.brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-weight:800;letter-spacing:.02em;font-size:14px}.shield{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#1f4560;color:#b9e6f3;border:1px solid #5b859e;font-weight:900;font-size:19px}
-.brand span:last-child{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8db6cb;font-weight:600}
-.home-link{white-space:nowrap;border:1px solid #53718b;border-radius:10px;padding:10px 13px;color:#dcecf4;text-decoration:none;font-size:13px;font-weight:750;background:#21394c}
-.home-link:hover{background:#2a4a60}
-.wrap{max-width:1260px;margin:auto;padding:0 clamp(16px,4vw,34px) 80px}
-.hero{padding:34px 0 22px}.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:790}.hero h1{margin:9px 0 9px;font-size:clamp(30px,5vw,49px);letter-spacing:-.036em;line-height:1.13}.hero p{color:#b7cad9;max-width:850px;margin:0;font-size:14px;line-height:1.7}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 5px}.chip{background:#1b3348;border:1px solid #476981;padding:7px 11px;border-radius:50px;color:#cfe4ee;font-size:12px;text-decoration:none;font-weight:700}.chip:hover{background:#2a4962}
-.search-shell{position:relative;padding:16px;border:1px solid #56758a;border-radius:17px;background:linear-gradient(140deg,#1b3b52,#102336);box-shadow:0 9px 28px #0002;margin:16px 0 23px}
-.search-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}.search-top label{font-size:13px;font-weight:780}.search-top small{color:#b6cbd9}
-.input-row{display:flex;gap:9px}.search-field{position:relative;flex:1}.search-field svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:#8ab5cd}
-#searchInput{background:#081c2e;border:1px solid #547790;border-radius:11px;width:100%;height:48px;padding:8px 14px 8px 43px;color:#f2f7fa;font-size:16px;outline:0}#searchInput:focus{border-color:#a7d6ef;box-shadow:0 0 0 3px #75c5ea30}
-.clear{background:#274257;border:1px solid #4e7693;border-radius:10px;color:#edf7fa;padding:0 15px;font-weight:700;font-size:12px}
-#searchStatus{display:block;margin-top:9px;color:#add1e3;font-size:12px;min-height:16px}
-.layout{display:grid;grid-template-columns:295px minmax(0,1fr);align-items:start;gap:22px}
-.sidebar{position:sticky;top:80px;max-height:calc(100vh - 105px);overflow:auto;border:1px solid var(--border);background:#102235;border-radius:15px;scrollbar-color:#4d738a transparent}
-.toc details[open]>summary{border-bottom:1px solid #36536a}.toc summary{font-size:14px;font-weight:800;cursor:pointer;padding:16px 17px;display:flex;align-items:center;justify-content:space-between}.toc summary::-webkit-details-marker{display:none}
-.toc-group{padding:12px 13px 14px}.toc-title{font-size:10px;letter-spacing:.13em;text-transform:uppercase;font-weight:850;color:#85b8ce;margin:13px 7px 7px}
-.toc-link{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;text-decoration:none;padding:9px 9px;border-radius:8px;color:#c6dbe8;font-size:12px;line-height:1.25}.toc-link:hover,.toc-link.current{background:#28465e;color:#fff}
-.toc-link .name{max-width:215px}.toc-link .pg{color:#91b3ca;font-weight:720;min-width:24px;text-align:right}
-.reader-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border-bottom:1px solid #345269;margin:0 0 14px;padding:4px 0 13px}.reader-header h2{font-size:18px;letter-spacing:-.01em;margin:0}.reader-header p{margin:3px 0 0;color:#a3bbce;font-size:12px}
-.page-tools{display:flex;gap:8px}.page-tools button{padding:8px 10px;border:1px solid #496c84;border-radius:8px;background:#1c3447;color:#e1f0f6;font-size:12px;font-weight:700}
-.doc-page{background:#fcfdfd;color:#243449;border-radius:13px;border:1px solid #bfd2e0;margin:0 0 14px;box-shadow:0 8px 26px #0002;scroll-margin-top:85px;overflow:hidden}
-.page-top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 21px;border-bottom:1px solid #d4dee5;background:#eef4f8}.page-number{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;color:#426078}.page-section{font-size:11px;color:#567387;text-align:right;font-weight:700}
-.page-body{padding:clamp(19px,3.5vw,34px) clamp(18px,5vw,46px) 36px;max-width:940px;font-size:15px;line-height:1.82}
-.page-body p{margin:0 0 1.1em}.page-body h3{margin:1.25em 0 .8em;border-bottom:1px solid #c9d9e2;padding-bottom:8px;font-size:18px;color:#142a3c;line-height:1.4}.page-body h3:first-child{margin-top:0}
-.page-body .section-id{font-weight:800;color:#224e6a}.page-body .clauses{margin:4px 0 15px;padding-left:18px;border-left:3px solid #b4cddd}
-.page-body mark{background:#ffde77;color:#172235;padding:1px 2px;border-radius:2px}
-.page-body .signature-note{background:#eff5f9;border:1px solid #cedfe8;border-radius:10px;padding:13px 15px;font-size:13px;color:#416075}
-.wages{width:100%;border-collapse:collapse;font-size:13px;margin:15px 0 22px}.wages th,.wages td{border:1px solid #c2d3dd;padding:8px 7px;text-align:right}.wages th:first-child,.wages td:first-child{text-align:left}.wages th{background:#e8f0f5;color:#204258}.wages tr:nth-child(even){background:#f6f9fb}.wages-note{font-size:11px;color:#5a7281;margin:-7px 0 18px}
-.search-results{border-radius:15px;border:1px solid #426980;background:#132a3d;margin-bottom:20px;padding:15px}.search-results[hidden]{display:none}.search-results h2{font-size:17px;margin:0 0 10px}.result-list{display:grid;gap:8px}.result{display:block;text-decoration:none;padding:12px 13px;border-radius:10px;border:1px solid #3b5d75;background:#1c364a}.result:hover{background:#284a62}.result strong{font-size:13px;color:#e4f4fc}.result small{display:block;font-size:11px;color:#9fbed1;margin:4px 0}.result p{font-size:12px;line-height:1.5;margin:7px 0 0;color:#c9dce8}.result mark{background:#f6d37e;color:#20334a;padding:1px 2px}.result-more{color:#bad2e1;font-size:12px;margin-top:10px}
-.footer{margin-top:32px;border-top:1px solid #345269;padding-top:15px;color:#91adbd;font-size:12px;line-height:1.6}
-.top-link{display:inline-block;margin:10px 0;color:#8fd2eb;font-size:12px;text-decoration:none;font-weight:750}
-@media(max-width:900px){.layout{grid-template-columns:1fr;gap:15px}.sidebar{position:static;max-height:none}.toc details:not([open]) .toc-group{display:none}.toc details[open] .toc-group{max-height:390px;overflow:auto}.hero{padding-top:23px}}
-@media(max-width:560px){.wrap{padding-left:13px;padding-right:13px}.top-inner{padding-left:13px;padding-right:13px}.home-link{padding:9px 11px}.hero h1{font-size:30px}.search-top{align-items:flex-start;flex-direction:column;gap:2px}.page-body{font-size:14px;line-height:1.75}.wages{font-size:11px}.wages th,.wages td{padding:7px 4px}.reader-header h2{font-size:16px}}
-@media print{.top,.sidebar,.search-shell,.search-results,.chips,.page-tools,.footer{display:none!important}body{background:#fff;color:#000}.wrap{max-width:none;padding:0}.layout{display:block}.doc-page{break-inside:avoid;box-shadow:none;border:none;margin-bottom:10px}.page-body{padding:10px 15px}.page-top{background:#fff}}
+:root{
+  color-scheme:light;
+  --navy:#0c1b2c;--navy-2:#142a40;--blue:#285a79;--sky:#a7d8e9;
+  --paper:#fff;--page:#eff3f6;--ink:#243443;--muted:#617485;
+  --line:#d9e3ea;--line-dark:#36536a;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:86px}
+body{margin:0;background:var(--page);color:var(--ink);line-height:1.6}
+button,input{font:inherit}
+button,a{-webkit-tap-highlight-color:transparent}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #73b5d8;outline-offset:3px}
+button{cursor:pointer}
+.topbar{position:sticky;top:0;z-index:40;border-bottom:1px solid #33536c;background:#0d2033f2;backdrop-filter:blur(16px);color:#e7f5fd}
+.topbar-inner{max-width:1320px;min-height:67px;margin:auto;padding:10px clamp(15px,4vw,38px);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit;min-width:0}
+.brand-icon{width:39px;height:39px;flex:none;display:grid;place-items:center;border-radius:12px;background:#29516a;border:1px solid #6b99b3;font-size:18px;font-weight:900;color:#d4eefb}
+.brand-copy{min-width:0}.brand-copy strong{display:block;font-size:13px;line-height:1.15;letter-spacing:.075em}.brand-copy small{display:block;color:#9cbcd0;letter-spacing:.08em;font-size:10px;margin-top:4px}
+.home-button{color:#dceef7;text-decoration:none;white-space:nowrap;padding:10px 13px;font-size:12px;font-weight:750;border:1px solid #52718b;border-radius:10px;background:#21394f}
+.home-button:hover{background:#2b4a62}
+.container{max-width:1320px;margin:auto;padding:0 clamp(15px,4vw,38px) 60px}
+.hero{background:linear-gradient(120deg,#10253b 0%,#163e54 100%);color:#fff;border-radius:0 0 21px 21px;padding:34px clamp(21px,4vw,42px) 30px;box-shadow:0 8px 24px #0e253b20}
+.eyebrow{font-size:11px;letter-spacing:.15em;color:#a5d0e1;text-transform:uppercase;font-weight:800}
+.hero h1{font-size:clamp(30px,4.2vw,46px);line-height:1.12;letter-spacing:-.038em;margin:10px 0 12px}
+.hero p{margin:0;color:#c3d6e4;line-height:1.7;font-size:14px;max-width:730px}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.meta-row span{border:1px solid #5b8297;background:#24445a;border-radius:999px;padding:6px 12px;color:#cde4ef;font-size:11px;font-weight:700}
+.finder{margin:21px 0 14px;background:#fff;border-radius:15px;border:1px solid #d6e1e9;padding:18px 19px 15px;box-shadow:0 4px 14px #1a3d5910}
+.finder-head{display:flex;gap:6px 12px;align-items:baseline;justify-content:space-between;flex-wrap:wrap;margin-bottom:11px}
+.finder-head label{font-weight:800;color:#203a50;font-size:15px}.finder-head small{color:#6b8293;font-size:12px}
+.input-row{display:flex;gap:9px}
+.input-wrap{flex:1;min-width:0;position:relative}
+.input-wrap svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#6b8ba0;pointer-events:none}
+#searchInput{width:100%;height:49px;border-radius:10px;background:#f8fbfd;color:#172b3f;border:1px solid #abc2d2;font-size:16px;padding:10px 13px 10px 46px}
+#searchInput:focus{border-color:#377fa2;box-shadow:0 0 0 3px #b6dff04b;outline:none}
+#clearSearch{background:#eef4f8;border:1px solid #b9cddc;color:#32536b;padding:0 15px;border-radius:10px;font-size:12px;font-weight:800}
+#searchStatus{display:block;font-size:12px;color:#668093;margin-top:9px}
+.quick{display:flex;flex-wrap:wrap;align-items:center;gap:8px 7px;margin-bottom:25px}
+.quick-label{color:#667d8e;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-right:4px}
+.quick a{background:#e2edf4;border:1px solid #cfdee8;border-radius:100px;color:#295670;font-size:12px;font-weight:750;text-decoration:none;padding:7px 12px}
+.quick a:hover{border-color:#85b0c7;background:#d5e8f3}
+.grid{display:grid;grid-template-columns:minmax(225px,284px) minmax(0,1fr);gap:21px;align-items:start}
+.toc{position:sticky;top:85px;max-height:calc(100vh - 105px);overflow:auto;background:#fff;border:1px solid #d5e1e9;border-radius:14px;box-shadow:0 5px 14px #122d4310}
+.toc summary{list-style:none;display:flex;justify-content:space-between;gap:10px;align-items:center;padding:16px 18px;cursor:pointer;font-size:14px;font-weight:850;color:#29465c;background:#f7fafb}
+.toc summary::-webkit-details-marker{display:none}
+.toc summary .chevron{font-size:20px;font-weight:500;line-height:1;transition:transform .15s}
+.toc details[open] summary .chevron{transform:rotate(180deg)}
+#tocList{padding:8px 11px 18px}
+.toc-category{margin:16px 7px 7px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#66879d;font-weight:850}
+.toc-link{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#405d71;padding:9px 9px;text-decoration:none;font-size:12px;line-height:1.38;border-radius:8px}
+.toc-link svg{flex:none;color:#91aabb}.toc-link:hover,.toc-link.active{background:#e3eff7;color:#174e6e}
+.main{min-width:0;background:#fff;border:1px solid #d6e1e8;border-radius:14px;overflow:hidden;box-shadow:0 7px 20px #132c4014}
+.main-heading{padding:23px clamp(20px,5vw,52px) 20px;border-bottom:1px solid #dce6ed;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center;background:#f9fcfd}
+.main-heading h2{margin:0 0 5px;font-size:18px;font-weight:850;letter-spacing:-.01em}
+.main-heading p{font-size:12px;color:#6c8393;margin:0}
+.main-heading button{border:1px solid #bdd1dc;background:#fff;border-radius:9px;padding:9px 13px;font-size:12px;font-weight:750;color:#47687f}
+.main-heading button:hover{background:#edf5fa}
+.chapter{padding:clamp(26px,4vw,46px) clamp(19px,5vw,54px);border-bottom:1px solid #dfebf0;scroll-margin-top:82px}
+.chapter:last-child{border-bottom:0}
+.chapter-heading{margin-bottom:25px;padding-bottom:19px;border-bottom:1px solid #e0e8ed}
+.chapter-tag{font-size:10px;letter-spacing:.16em;font-weight:900;color:#3980a1;text-transform:uppercase;display:block;margin-bottom:10px}
+.chapter-heading h2{font-size:clamp(24px,3.1vw,32px);letter-spacing:-.03em;line-height:1.15;margin:0;color:#17374b;font-weight:840}
+.chapter-text{max-width:73ch;font-family:Georgia,"Times New Roman",serif;font-size:16px;line-height:1.83;overflow-wrap:break-word}
+.chapter-paragraph{margin:0 0 17px}
+.section-heading{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:16px;color:#205270;font-weight:850;border-left:3px solid #4389a8;padding:8px 13px;margin:33px 0 15px;background:#edf5f9;border-radius:0 6px 6px 0;scroll-margin-top:88px}
+.sub-heading{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#244d65;font-weight:850;font-size:16px;margin:31px 0 14px;scroll-margin-top:88px}
+.chapter-clause{margin:9px 0 12px 11px;padding:5px 0 5px 15px;border-left:2px solid #b4cbda;color:#24394b}
+.source-notice{padding:15px 18px;border:1px solid #d4e2e9;background:#f2f7fa;border-radius:10px;font-family:system-ui,sans-serif;font-size:13px;line-height:1.65;color:#506e7f}
+.chapter-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:27px;border-top:1px solid #e5edf1;padding-top:15px;font-family:system-ui,-apple-system,sans-serif;font-size:11px;color:#92a7b3}
+.chapter-footer a{text-decoration:none;color:#347da0;font-size:12px;font-weight:800}
+.chapter-footer a:hover{text-decoration:underline}
+mark{background:#ffe69a;color:#162b3c;border-radius:3px;padding:1px 2px}
+.table-scroll{overflow-x:auto;max-width:100%;margin:17px 0 20px;border-radius:10px;border:1px solid #d5e2e9}
+.wage-table{border-collapse:collapse;width:100%;min-width:440px;font-family:system-ui,sans-serif;font-size:13px}
+.wage-table th,.wage-table td{padding:11px 12px;border-bottom:1px solid #dce6eb;text-align:right;font-variant-numeric:tabular-nums}
+.wage-table thead th{background:#e9f2f7;color:#335c74;font-size:11px;font-weight:850}
+.wage-table tbody th{font-weight:750;text-align:left}
+.wage-table th:first-child{text-align:left}
+.wage-table tbody tr:nth-child(even){background:#f7fafc}
+.wage-table tbody tr:last-child th,.wage-table tbody tr:last-child td{border-bottom:0}
+#searchResults{margin:20px clamp(19px,5vw,54px) 10px;padding:19px;border-radius:13px;border:1px solid #cadde8;background:#edf5fa}
+#searchResults[hidden]{display:none}
+.results-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 13px}
+.results-head h2{margin:0;font-size:16px;color:#244961}.results-head span{font-size:12px;color:#5c7c90}
+#resultList{display:grid;gap:8px}
+.search-hit{display:block;background:#fff;border:1px solid #d5e3eb;padding:13px 14px;border-radius:10px;color:#243c4d;text-decoration:none}
+.search-hit:hover{border-color:#79b1cc;background:#f9fdff}
+.search-hit-kicker{display:block;font-family:system-ui,sans-serif;color:#337ca0;font-size:11px;font-weight:850}
+.search-hit p{margin:6px 0;font-family:Georgia,serif;font-size:14px;line-height:1.55;color:#314a5e}
+.search-hit-open{display:block;font-size:11px;color:#6792a9;font-weight:750}
+#showMore{border:1px solid #aacddd;background:#fff;border-radius:9px;color:#2c6887;font-size:12px;font-weight:750;padding:9px 14px;margin-top:13px}
+.source-footer{font-size:12px;color:#6c8190;margin:22px auto 0;max-width:1060px;text-align:center;line-height:1.7}
+@media(max-width:920px){
+ .grid{grid-template-columns:1fr;gap:14px}
+ .toc{position:static;max-height:none;overflow:visible}
+ .toc details[open] #tocList{max-height:375px;overflow:auto;border-top:1px solid #e2ecf2}
+ .toc details:not([open]) #tocList{display:none}
+}
+@media(max-width:540px){
+ .container{padding-left:12px;padding-right:12px}
+ .topbar-inner{padding:9px 13px;min-height:58px}
+ .brand-copy strong{font-size:12px}.brand-copy small{font-size:9px}
+ .home-button{padding:9px 10px}
+ .hero{padding:25px 21px 24px;border-radius:0 0 16px 16px}
+ .hero h1{font-size:31px}.hero p{font-size:13px}
+ .finder{padding:14px}.finder-head{display:block}.finder-head small{display:block;margin-top:3px}
+ .quick{margin-bottom:15px}.quick-label{width:100%}
+ .main-heading{padding:20px 19px}
+ .chapter{padding:28px 20px}
+ .chapter-text{font-size:15px;line-height:1.78}
+ .chapter-heading h2{font-size:25px}
+ #searchResults{margin:15px 14px}
+ .chapter-clause{margin-left:3px;padding-left:12px}
+}
+@media print{
+ @page{margin:17mm}
+ .topbar,.hero,.finder,.quick,.toc,.main-heading button,.chapter-footer,.source-footer,#searchResults{display:none!important}
+ body{background:#fff}.container{max-width:none;padding:0}
+ .grid{display:block}.main{box-shadow:none;border:0}
+ .chapter{break-before:page;border:none;padding:5px 0}
+ .chapter:first-child{break-before:auto}
+ .chapter-text{font-size:12pt;max-width:none}
+}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-</style></head>
+</style>
+</head>
 <body>
-<div class="top"><div class="top-inner">
-<a class="brand" href="../" aria-label="Braidwood Overtime home"><span class="shield">B</span><span>BRAIDWOOD SECURITY<span>Union Contract Reader</span></span></a>
-<a class="home-link" href="../">← Crew Home</a>
-</div></div>
-<div class="wrap">
-<header class="hero">
-<div class="eyebrow">Signed collective bargaining agreement · NUNSO</div>
-<h1>Your union contract, <span style="color:#a9d9eb">organized.</span></h1>
-<p>Constellation Nuclear Security, LLC and the National Union of Nuclear Security Officers (NUNSO). Effective <strong>April 26, 2024</strong> through <strong>April 26, 2027</strong>. The agreement's original numbered pages and wording are retained in this searchable reading copy.</p>
-<nav class="chips" aria-label="Popular contract sections">
-<a class="chip" href="#a12">Hours &amp; OT</a><a class="chip" href="#a20">Overtime</a><a class="chip" href="#a17">Vacation &amp; Sick</a><a class="chip" href="#appA">Wages</a><a class="chip" href="#a15">Holidays</a><a class="chip" href="#a7">Grievances</a>
-</nav>
-</header>
-<section class="search-shell" role="search">
-<div class="search-top"><label for="searchInput">Search the entire contract</label><small>Find terms, phrases, article numbers, or topics</small></div>
-<div class="input-row"><div class="search-field"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"><circle cx="10.8" cy="10.8" r="7.2" stroke="currentColor" stroke-width="2"/><path d="m16.3 16.3 5 5" stroke="currentColor" stroke-width="2"/></svg><input id="searchInput" type="search" placeholder="Try overtime, holiday, vacation, seniority…" autocomplete="off" aria-describedby="searchStatus"></div><button class="clear" id="clearSearch" type="button" hidden>Clear</button></div>
-<span id="searchStatus" role="status" aria-live="polite">Search the signed 2024–2027 agreement across all 77 numbered pages.</span>
+<header class="topbar"><div class="topbar-inner">
+<a href="../" class="brand"><span class="brand-icon" aria-hidden="true">B</span><span class="brand-copy"><strong>BRAIDWOOD SECURITY</strong><small>COLLECTIVE BARGAINING AGREEMENT</small></span></a>
+<a class="home-button" href="../">← Home</a>
+</div></header>
+<div class="container">
+<section class="hero">
+ <div class="eyebrow">NUNSO · Signed union contract</div>
+ <h1>The agreement, made easier to read.</h1>
+ <p>Browse the full Braidwood Security agreement by article and section without the original PDF's page breaks. Search for what matters and go straight to the relevant passage.</p>
+ <div class="meta-row"><span>2024–2027 agreement</span><span>27 articles</span><span>Wages, appendices &amp; letters</span></div>
 </section>
-<div class="layout">
-<aside class="sidebar toc"><details id="tocDetails" open><summary>Table of Contents <span aria-hidden="true">⌄</span></summary><nav class="toc-group" id="tocList" aria-label="Contract table of contents"></nav></details></aside>
-<main>
-<div class="reader-header"><div><h2>Agreement text</h2><p>27 articles · Appendices &amp; letters · Printed pages 1–77</p></div><div class="page-tools"><button type="button" onclick="window.print()">Print reader</button></div></div>
-<section id="searchResults" class="search-results" hidden aria-live="polite"><h2 id="resultsHeading">Search results</h2><div id="resultList" class="result-list"></div><div id="resultMore" class="result-more"></div></section>
-<div id="contractPages" aria-label="Full union agreement"></div>
-<a class="top-link" href="#searchInput">↑ Back to search</a>
-</main>
+<section class="finder" role="search" aria-label="Search union contract">
+ <div class="finder-head"><label for="searchInput">Search the entire contract</label><small>Find exact terms, article numbers, or phrases</small></div>
+ <div class="input-row"><div class="input-wrap">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"><circle cx="10.8" cy="10.8" r="7.2" stroke="currentColor" stroke-width="2"/><path d="m16.3 16.3 5 5" stroke="currentColor" stroke-width="2"/></svg>
+  <input id="searchInput" type="search" placeholder="Search overtime, vacation, seniority..." autocomplete="off" aria-describedby="searchStatus"></div>
+ <button type="button" id="clearSearch" hidden>Clear</button></div>
+ <span id="searchStatus" role="status" aria-live="polite">Search articles, sections, wages and the letters of agreement.</span>
+</section>
+<nav class="quick" aria-label="Popular topics">
+ <span class="quick-label">Quick access</span>
+ <a href="#a12">Hours &amp; Overtime</a><a href="#a20">Overtime Rotation</a><a href="#a17">Vacation &amp; Sick Leave</a>
+ <a href="#appA">Wages</a><a href="#a15">Holidays</a><a href="#a7">Grievances</a>
+</nav>
+<div class="grid">
+ <aside class="toc" aria-label="Browse contract contents"><details id="tocDetails" open>
+  <summary>Browse the agreement <span class="chevron" aria-hidden="true">⌄</span></summary>
+  <nav id="tocList" aria-label="Table of contents"></nav>
+ </details></aside>
+ <main class="main">
+  <div class="main-heading"><div><h2>Full agreement</h2><p>Organized continuously by article and section · Original wording retained</p></div><button type="button" onclick="window.print()">Print / Save</button></div>
+  <section id="searchResults" hidden aria-live="polite"><div class="results-head"><h2>Search results</h2><span id="resultsCount"></span></div><div id="resultList"></div><button id="showMore" hidden type="button">Show more results</button></section>
+  <div id="contractChapters" aria-label="Full 2024 to 2027 union agreement"></div>
+ </main>
 </div>
-<footer class="footer">Reading copy transcribed from the signed Braidwood 2024–2027 agreement. This layout reorganizes navigation and line wrapping only; the signed agreement controls in the event of a discrepancy. The original signature page is graphical and is noted at printed page 72. No bargaining proposal is included.</footer>
+<p class="source-footer">Based on the signed Braidwood Security / NUNSO 2024–2027 collective bargaining agreement. This reading layout changes formatting, not contract terms. The signed original controls if a transcription or layout discrepancy exists. The original signature graphic is not reproduced in this text reader.</p>
 </div>
-<script src="./agreement-data.js?v=20261118-1"></script>
-<script src="./reader.js?v=20261118-1"></script>
-</body></html>
+<script src="./agreement-chapters.js?v=20261118-continuous-v1"></script>
+<script src="./reader.js?v=20261118-continuous-v1"></script>
+</body>
+</html>
