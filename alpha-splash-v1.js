@@ -52,6 +52,19 @@ function attemptPlay(){
   promise.then(()=>{if(!finished)startTimer();}).catch(()=>{promptForTap();});
  }else startTimer();
 }
+const sound=document.getElementById("alphaSplashSound");
+if(sound){
+ sound.addEventListener("click",()=>{
+  if(finished)return;
+  video.muted=false;
+  video.defaultMuted=false;
+  video.removeAttribute("muted");
+  video.volume=1;
+  sound.textContent="Sound on";
+  sound.disabled=true;
+  if(video.paused)attemptPlay();
+ });
+}
 skip.addEventListener("click",finish);
 video.addEventListener("click",()=>{if(!started)attemptPlay();});
 video.addEventListener("playing",startTimer);
