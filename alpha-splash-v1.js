@@ -1,45 +1,69 @@
-/* Alpha-only 15-second splash. Video asset: assets/alpha-splash-15s.mp4.
-   Never block OT access if the asset is unavailable or playback fails. */
+/* Alpha-only splash. The uploaded 15-second MP4 is served directly from /assets.
+   iOS Safari/PWA: don't issue a HEAD request before media playback; allow tap-to-play
+   when the browser blocks autoplay. All failures are skippable and never block OT. */
 (function(){
 "use strict";
 const splash=document.getElementById("alphaSplash");
-if(!splash)return;
 const video=document.getElementById("alphaSplashVideo");
 const skip=document.getElementById("alphaSplashSkip");
 const progress=document.getElementById("alphaSplashProgress");
-const DURATION=15000;
-let timer=null,started=0,done=false,animation=null;
+if(!splash||!video||!skip||!progress)return;
+const MAX_DURATION=15000;
+let finished=false,started=false,frame=null,timeout=null,begin=0;
+let readyTimeout=null;
+function clear(){
+ if(frame!==null)cancelAnimationFrame(frame);
+ if(timeout!==null)clearTimeout(timeout);
+ if(readyTimeout!==null)clearTimeout(readyTimeout);
+}
 function finish(){
- if(done)return;
- done=true;
- if(timer!==null)clearTimeout(timer);
- if(animation!==null)cancelAnimationFrame(animation);
- video.pause();
+ if(finished)return;
+ finished=true;clear();
+ try{video.pause();}catch(_){}
  splash.classList.add("alpha-splash-exit");
  setTimeout(()=>{splash.remove();document.body.classList.remove("alpha-splash-active");},220);
 }
 function tick(){
- if(done)return;
- const elapsed=performance.now()-started;
- progress.style.width=Math.min(100,elapsed/DURATION*100)+"%";
- if(elapsed>=DURATION){finish();return;}
- animation=requestAnimationFrame(tick);
+ if(finished||!started)return;
+ progress.style.width=Math.min(100,100*(performance.now()-begin)/MAX_DURATION)+"%";
+ frame=requestAnimationFrame(tick);
+}
+function startTimer(){
+ if(started||finished)return;
+ started=true;begin=performance.now();
+ timeout=setTimeout(finish,MAX_DURATION);
+ frame=requestAnimationFrame(tick);
+}
+function promptForTap(){
+ if(finished)return;
+ const label=document.getElementById("alphaSplashLabel");
+ if(label)label.textContent="Tap video to play";
+ video.controls=true;
+ video.style.cursor="pointer";
+}
+function attemptPlay(){
+ if(finished)return;
+ video.muted=true;video.defaultMuted=true;
+ video.setAttribute("muted","");
+ video.setAttribute("playsinline","");
+ let promise;
+ try{promise=video.play();}catch(_){promptForTap();return;}
+ if(promise&&typeof promise.then==="function"){
+  promise.then(()=>{if(!finished)startTimer();}).catch(()=>{promptForTap();});
+ }else startTimer();
 }
 skip.addEventListener("click",finish);
-video.addEventListener("error",finish);
+video.addEventListener("click",()=>{if(!started)attemptPlay();});
+video.addEventListener("playing",startTimer);
 video.addEventListener("ended",finish);
-const activate=()=>{
- if(done)return;
- started=performance.now();
- splash.hidden=false;
- document.body.classList.add("alpha-splash-active");
- timer=setTimeout(finish,DURATION);
- animation=requestAnimationFrame(tick);
- const p=video.play();
- if(p&&typeof p.catch==="function")p.catch(finish);
-};
-fetch(video.currentSrc||video.querySelector("source")?.src,{method:"HEAD",cache:"force-cache"}).then(r=>{
- if(!r.ok)throw new Error("Splash asset unavailable");
- activate();
-}).catch(finish);
+video.addEventListener("error",()=>{
+ const label=document.getElementById("alphaSplashLabel");
+ if(label)label.textContent="Video could not load";
+ setTimeout(finish,1000);
+});
+video.addEventListener("loadedmetadata",()=>{if(!started)attemptPlay();},{once:true});
+splash.hidden=false;
+document.body.classList.add("alpha-splash-active");
+readyTimeout=setTimeout(()=>{if(!started&&video.readyState===0)promptForTap();},4000);
+try{video.load();attemptPlay();}catch(_){promptForTap();}
 })();
