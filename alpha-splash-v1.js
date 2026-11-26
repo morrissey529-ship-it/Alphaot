@@ -62,7 +62,11 @@ if(sound){
   video.volume=1;
   sound.textContent="Sound on";
   sound.disabled=true;
-  if(video.paused)attemptPlay();
+  if(video.paused){
+   let p;
+   try{p=video.play();}catch(_){sound.textContent="Tap to play with sound";sound.disabled=false;return;}
+   if(p&&typeof p.catch==="function")p.catch(()=>{sound.textContent="Tap to play with sound";sound.disabled=false;});
+  }
  });
 }
 skip.addEventListener("click",finish);
